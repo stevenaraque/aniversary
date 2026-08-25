@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { Trophy, RotateCcw, Eye, Sparkles } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
+import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 const GRID_SIZE = 4
@@ -101,7 +102,8 @@ export default function Puzzle({ onNext }) {
   const progress = ((TOTAL_TILES - board.reduce((acc, t, i) => acc + (t === i ? 1 : 0), 0) + 1) / TOTAL_TILES) * 100
 
   return (
-    <motion.div className="main-wrapper min-h-screen bg-liquid relative overflow-hidden py-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div className="main-wrapper min-h-screen relative overflow-hidden py-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <AnimatedBackground />
       {/* ambient */}
       <motion.div className="absolute top-16 left-10" animate={{ opacity: 0.08, x: [0, 12, -6, -12, 0], y: [0, -10, -18, -6, 0] }} transition={{ duration: 7, repeat: Infinity }}><BatIcon className="w-7 h-7 text-crimson" /></motion.div>
       <motion.div className="absolute bottom-20 right-10" animate={{ opacity: 0.06, x: [0, -10, 6, 8, 0], y: [0, -8, -12, -4, 0] }} transition={{ duration: 8, repeat: Infinity, delay: 1 }}><FlowerIcon className="w-6 h-6 text-sunflower" /></motion.div>

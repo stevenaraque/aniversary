@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react'
 import { ChevronLeft, ChevronRight, X, Camera, Play } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
+import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 const PLACEHOLDER_MEMORIES = [
@@ -45,11 +46,12 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
 
   return (
     <motion.div
-      className="main-wrapper min-h-screen relative overflow-hidden py-12 bg-liquid"
+      className="main-wrapper min-h-screen relative overflow-hidden py-12"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      <AnimatedBackground />
       <motion.div
         className="absolute top-20 left-12"
         animate={{ opacity: 0.1, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}

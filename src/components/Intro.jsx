@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
 import { Heart, Skull } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
+import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 function CursorFollower() {
@@ -125,11 +126,12 @@ export default function Intro({ onNext }) {
   return (
     <motion.div
       ref={containerRef}
-      className="main-wrapper min-h-screen bg-liquid relative overflow-hidden"
+      className="main-wrapper min-h-screen relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      <AnimatedBackground />
       <CursorFollower />
 
       {[...Array(6)].map((_, i) => (

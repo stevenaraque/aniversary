@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Mail, Heart, Feather } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
+import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 export default function Letter({ onNext }) {
@@ -9,11 +10,12 @@ export default function Letter({ onNext }) {
 
   return (
     <motion.div
-      className="main-wrapper min-h-screen relative overflow-hidden bg-liquid"
+      className="main-wrapper min-h-screen relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      <AnimatedBackground />
       <motion.div
         className="absolute top-24 left-16"
         animate={{ opacity: 0.1, x: [0, 8, -4, -8, 0], y: [0, -6, -12, -4, 0] }}
