@@ -6,6 +6,8 @@
 **Stack:** React 19 + Vite 8 + Tailwind 4 + Motion + Lucide  
 **Paleta:** Negro `#050505` / Rojo `#8b0000→#dc143c` / Dorado `#d4af37→#f9e076` / Girasol `#f4a900`
 
+> **Para retomar en otro chat:** lee `CONTEXT.md` en la raíz — contiene ramas, decisiones, stack y pendientes.
+
 ---
 
 ## Flujo (7 secciones, `App.jsx:12` con `AnimatePresence`)
