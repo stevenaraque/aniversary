@@ -1,54 +1,65 @@
 # 2 Años — Mi Canelita 🌻🦇
 
-> Un regalo interactivo para celebrar 2 años juntos (24.08.2024 → 24.08.2026). Una experiencia web inmersiva desplegable en Vercel con diseño **Liquid Glass**, física de movimiento y micro-interacciones.
+> Regalo interactivo por 2 años juntos (24.08.2024 → 24.08.2026). Web inmersiva en React con **Liquid Glass**, **Motion Advanced** y patrón **Container/Wrapper** spacious.
 
-**Repositorio:** https://github.com/stevenaraque/2-a-os-mi-canelita  
+**Repos:** `stevenaraque/aniversary` (`main` estable) + `reflect/spacious-glass` (experimental spacious)  
 **Stack:** React 19 + Vite 8 + Tailwind 4 + Motion + Lucide  
-**Paleta:** Negro profundo `#050505` / Rojo sangre `#8b0000` → `#dc143c` / Girasol `#f4a900`
+**Paleta:** Negro `#050505` / Rojo `#8b0000→#dc143c` / Dorado `#d4af37→#f9e076` / Girasol `#f4a900`
 
 ---
 
-## Flujo de la experiencia
+## Flujo (7 secciones, `App.jsx:12` con `AnimatePresence`)
 
-La app es una narrativa guiada en 7 secciones con progresión bloqueada:
+| # | Sección | Ruta | Qué hace |
+|---|---------|------|----------|
+| 1 | **Intro** | `Intro.jsx:124` | **Lluvia de estrellas** 80 puntos + orbs dorados/crimson, título `Nuestro Tiempo` word-by-word, `Heart` + `BatIcon`/`FlowerIcon` caracterizados (ojos, pétalos), cursor follower `useMotionValue+useSpring`, layout `main-wrapper→container` esparcido |
+| 2 | **Countdown** | `Countdown.jsx:46` | Años/meses/días/horas/min/seg vivo desde `2024-08-24`, cards `glass-refraction` |
+| 3 | **Puzzle 4×4** | `Puzzle.jsx:64` | 16 piezas, board `glass-deep` + spotlight mouse, tiles con specular, hueco frosted shimmer. Lógica `isSolvable` fija (suma impar) |
+| 4 | **MemoryLane** | `MemoryLane.jsx:17` | Carrusel swipe `drag x` (offset 80/vel 400), lightbox `backdrop-blur-xl` |
+| 5 | **Letter** | `Letter.jsx:8` | Sobre `rotateY 90→0`, párrafos stagger `blur(4px)` |
+| 6 | **Collage** | `Collage.jsx:39` | Masonry `columns` + `glass` hover lift, lightbox |
+| 7 | **Playlist** | `Playlist.jsx:14` | Player `glass-prominent` + visualizer `useAnimation`, lista activa |
 
-| # | Sección | Ruta | Descripción |
-|---|---------|------|-------------|
-| 1 | **Intro** | `Intro.jsx` | Presentación con Heart pulsante, título word-by-word stagger, cursor follower con `useMotionValue+useSpring`, bats flotantes. Botón glass con shimmer. |
-| 2 | **Countdown** | `Countdown.jsx` | Contador vivo años/meses/días/horas/min/seg desde `2024-08-24`. Cards glass con blur entry. |
-| 3 | **Puzzle 4×4** | `Puzzle.jsx` | **16 piezas** deslizantes. Board `glass-deep` con bevel interno + spotlight que sigue el mouse. Tiles con specular highlight y sombra de profundidad. Hueco frosted con shimmer. Desbloquea el resto. |
-| 4 | **Paseo de recuerdos** | `MemoryLane.jsx` | Carrusel swipeable (`drag x` + threshold offset 80 / velocity 400), lightbox glass con backdrop-blur. |
-| 5 | **Carta** | `Letter.jsx` | Sobre glass que rota en Y (`rotateY 90→0`) al abrir. Texto stagger por párrafo con `filter:blur`. |
-| 6 | **Collage** | `Collage.jsx` | Masonry 2/3/4 columnas, tiles glass con hover lift + zoom overlay. Lightbox fullscreen. |
-| 7 | **Playlist** | `Playlist.jsx` | Player glass con visualizer animado (`useAnimation`), lista con estado activo + heart. |
+---
 
-Navegación centralizada en `App.jsx:12` con `AnimatePresence mode="wait"`.
+## Arquitectura — Patrón Container/Wrapper (Reflect spacious)
+
+Tres niveles, responsive sin perder proporción:
+
+```html
+<section class="main-wrapper">  <!-- 1. WRAPPER: 100% ancho, fondo, flex center -->
+  <div class="container">        <!-- 2. CONTAINER: max-width 1200px, margin auto, padding 20→16 -->
+    <div class="cards-grid">    <!-- 3. GRID: repeat(auto-fit, minmax(280px,1fr)), gap 24 -->
+      <div class="card">...</div>
+    </div>
+  </div>
+</section>
+```
+
+- `src/index.css:241` → `.main-wrapper`, `.container` (1200), `.container-lg` (1280), `.container-sm` (880), `.cards-grid`, `.section-wrapper` (py 80→48 móvil)
+- Cada sección envuelta así → más aire en desktop, sin desbordar en móvil
 
 ---
 
 ## Qué se hizo
 
-- [x] **Vite + React** scaffolding + Tailwind 4 (`@tailwindcss/vite`) + alias `motion`/`framer-motion`
-- [x] **Sistema Liquid Glass** (`src/index.css:8`) — `backdrop-filter: blur(16-40px) saturate(1.4-1.8)`, `glass`/`glass-prominent`/`glass-deep`, refracción prismática con `conic-gradient` rotando 20s, `bg-liquid` radial, sombras de profundidad, `interact-lift/glow/press`
-- [x] **Motion tokens** (`src/lib/motion-tokens.js:1`) — `springs.gentle/bouncy/snappy/stiff` y `motionTokens.duration/scale/easing` centralizados (skill `motion-advanced`)
-- [x] **Iconos custom** (`src/components/Icons.jsx:1`) — `BatIcon` + `FlowerIcon` SVG (Lucide no exporta `Bat`), usados en todos los headers
-- [x] **Puzzle 4×4 premium** (`src/components/Puzzle.jsx:7`) — board `glass-deep` con spotlight `useMotionValue+useSpring`, tiles con specular `from-white/12`, borde `white/10`, shimmer en hueco, preview thumbnail toggle, stats glass, trophy animado
-- [x] **Foto principal** (`public/puzzle-main.jpg`) — imagen de ustedes (piratas) usada como textura del puzzle, placeholder para recuerdos/collage
-- [x] **Datos editables** (`src/data/memories.js`, `photos.js`, `songs.js`) — arrays simples para reemplazar contenido sin tocar componentes
-- [x] **Build verificado** — `npm run build` ✓ 2219 módulos, 37kB CSS / 369kB JS gzip 113kB
-- [x] **Fixes runtime** — `FlowerIcon` import restaurado en `Countdown.jsx:4`, `useInViewOnce` huérfano eliminado en `Puzzle.jsx:49`, hook custom `src/hooks/useInViewOnce.js`
+- [x] Scaffold Vite+React + Tailwind 4 (`@theme` `src/index.css:3` con 4 dorados)
+- [x] **Liquid Glass** (`src/index.css:48`) — `blur 16-40px saturate 1.4-1.8`, `glass`/`prominent`/`deep`, `glass-refraction` con `conic-gradient` 20s, `interact-lift/glow`
+- [x] **Fondo animado (no imagen)** `src/components/AnimatedBackground.jsx:1` — 3 orbs `blur 90-110px` drifting 18-26s (crimson 0.45, dorado 0.5, rose 0.15) + vignette + dot pattern
+- [x] **Intro lluvia estrellas** `src/components/Intro.jsx` — 80 estrellas `twinkle` + `translate --transform`, `StarField` + `HeartPulse` con `FlowerIcon`/`BatIcon` caracterizados
+- [x] **Tokens** `src/lib/motion-tokens.js:1` — `springs.gentle/bouncy/snappy`, `motionTokens`
+- [x] **Iconos** `src/components/Icons.jsx:1` — `BatIcon` (alas amplias, ojos) + `FlowerIcon` (8 pétalos dorados, centro `gold-dark/light`)
+- [x] **Puzzle 4×4 premium** con spotlight mouse + preview + fix solvabilidad `src/components/Puzzle.jsx:14`
+- [x] `public/puzzle-main.jpg` como textura
+- [x] Datos editables `src/data/*`
+- [x] Build ✓ `pnpm build` 46kB CSS / 371kB JS
+- [x] Fix `@theme` warning VS Code (`.vscode/settings.json` `css.lint.unknownAtRules: ignore`)
 
-## Qué se va a hacer / Pendiente (personalizable por ti)
+## Qué se va a hacer / Pendiente tuyo
 
-- [ ] Reemplazar placeholder de `src/components/Letter.jsx:106` con tu carta real
-- [ ] Cambiar fecha en `src/components/Countdown.jsx:8` si el aniversario es otro día
-- [ ] Llenar `src/data/memories.js` con fotos/videos reales (rutas `public/` o URLs)
-- [ ] Llenar `src/data/photos.js` (máx 40 recomendado) para el collage masonry
-- [ ] Llenar `src/data/songs.js` con `src` de `.mp3` o URLs de YouTube/Spotify
-- [ ] Ajustar `showPreview` o quitarlo si no quieres pista del puzzle
-- [ ] Opcional: añadir música autoplay con interacción (navegadores bloquean sin gesto)
-- [ ] Opcional: aplicar mismo nivel premium del puzzle a collage/playlist (a pedido)
-- [ ] Deploy en Vercel (ver abajo) y compartir URL
+- [ ] Cambiar carta en `Letter.jsx:106`, fecha `Countdown.jsx:8`, fotos `memories.js`/`photos.js`, canciones `songs.js`
+- [ ] Ajustar intensidad lluvia/orbs si quieres más sutil
+- [ ] Deploy Vercel ya activo (`aniversary` main) — `reflect/spacious-glass` es preview
 
 ---
 
@@ -56,71 +67,54 @@ Navegación centralizada en `App.jsx:12` con `AnimatePresence mode="wait"`.
 
 ```
 anniversary-app/
-├── public/
-│   └── puzzle-main.jpg
+├── public/puzzle-main.jpg
 ├── src/
 │   ├── components/
-│   │   ├── Icons.jsx          # BatIcon + FlowerIcon
-│   │   ├── Intro.jsx
+│   │   ├── AnimatedBackground.jsx
+│   │   ├── Icons.jsx
+│   │   ├── Intro.jsx          # star rain
 │   │   ├── Countdown.jsx
-│   │   ├── Puzzle.jsx         # 4×4 premium
+│   │   ├── Puzzle.jsx         # 4×4
 │   │   ├── MemoryLane.jsx
 │   │   ├── Letter.jsx
 │   │   ├── Collage.jsx
 │   │   └── Playlist.jsx
-│   ├── data/
-│   │   ├── memories.js
-│   │   ├── photos.js
-│   │   └── songs.js
-│   ├── hooks/
-│   │   └── useInViewOnce.js
-│   ├── lib/
-│   │   └── motion-tokens.js
-│   ├── App.jsx
-│   ├── index.css              # liquid glass system
-│   └── main.jsx
-├── index.html
-├── vite.config.js
+│   ├── data/memories.js photos.js songs.js
+│   ├── lib/motion-tokens.js
+│   ├── hooks/useInViewOnce.js
+│   ├── index.css              # glass + container/wrapper + gold
+│   └── App.jsx
 └── package.json
 ```
 
 ---
 
-## Desarrollo local
+## Local
 
 ```powershell
 cd "C:\Users\PC_03\OneDrive\Desktop\Steven Araque Castro\agente\Template\anniversary-app"
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # build producción
-npm run preview  # previsualizar build
+git checkout main                      # estable
+git checkout reflect/spacious-glass    # spacious con estrellas
+npm install; npm run dev               # http://localhost:5173
+npm run build
 ```
 
-## Deploy gratis (Vercel)
+## Deploy
 
-1. Haz push de `anniversary-app/` a este repo (ya configurado).
-2. En https://vercel.com → Add New → Project → Import `stevenaraque/2-a-os-mi-canelita`
-3. Framework: **Vite** (detecta automático), Build: `npm run build`, Output: `dist`
-4. Deploy → URL `https://2-a-os-mi-canelita.vercel.app`
-
-Alternativa Netlify: arrastra `dist/` o conecta el repo.
+Vercel → Import `stevenaraque/aniversary` (main). Reflect branch preview: Vercel → Add Project → mismo repo → Branch `reflect/spacious-glass`.
 
 ---
 
-## Personalización rápida
+## Personalización
 
 | Qué | Dónde |
 |-----|-------|
-| Carta | `src/components/Letter.jsx:106` |
-| Fecha | `src/components/Countdown.jsx:8` |
-| Recuerdos | `src/data/memories.js` |
-| Collage | `src/data/photos.js` |
-| Canciones | `src/data/songs.js` |
-| Colores | `src/index.css:3` (`@theme`) + `src/lib/motion-tokens.js` |
+| Carta | `Letter.jsx:106` |
+| Fecha | `Countdown.jsx:8` |
+| Recuerdos | `memories.js` |
+| Collage | `photos.js` |
+| Canciones | `songs.js` |
+| Colores | `index.css:3` + `AnimatedBackground.jsx:8` |
+| Estrellas | `Intro.jsx` `StarField` count/duration |
 
----
-
-## Créditos
-
-Hecho con amor por **Steven** para su canelita — 2 años juntos.  
-Diseño: Liquid Glass (blur/refracción/profundidad) + Motion Advanced (springs, `useMotionValue`, `useTransform`, shimmer, drag).
+Hecho con amor por **Steven** — 2 años juntos. Diseño: Liquid Glass + Motion + Reflect spacious.
