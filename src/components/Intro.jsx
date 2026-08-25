@@ -188,9 +188,9 @@ export default function Intro({ onNext }) {
               <span className="text-white/20 text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2"><Skull className="w-3 h-3"/> 26 DE AGOSTO <Skull className="w-3 h-3"/></span>
             </motion.div>
           </div>
-          <motion.div initial={{opacity:0,scale:0.97,filter:'blur(8px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0">
+          <motion.div initial={{opacity:0,scale:0.97,filter:'blur(8px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-hidden">
             <style>{`
-              .gothic-prism{position:relative;width:100%;max-width:575px;--crimson:#dc2626;--gold:#d4af37;--bone:#e8dcc8;--obsidian:#0a0a0f}
+              .gothic-prism{position:relative;width:100%;max-width:575px;--crimson:#dc2626;--gold:#d4af37;--bone:#e8dcc8;--obsidian:#0a0a0f; margin:0 auto}
               @property --prism{syntax:'<angle>';initial-value:0deg;inherits:false}
               .prism-border{position:absolute;inset:-3px;border-radius:4px;background:conic-gradient(from var(--prism),rgba(220,38,38,0.5) 0%,rgba(127,29,29,0.3) 8%,transparent 16%,rgba(212,175,55,0.4) 28%,rgba(139,105,20,0.2) 36%,transparent 44%,rgba(232,220,200,0.15) 52%,transparent 60%,rgba(220,38,38,0.45) 72%,rgba(127,29,29,0.25) 80%,transparent 88%,rgba(212,175,55,0.35) 96%,rgba(220,38,38,0.5) 100%);animation:prismSpin 12s linear infinite;filter:blur(0.5px)}
               @keyframes prismSpin{to{--prism:360deg}}
@@ -215,7 +215,7 @@ export default function Intro({ onNext }) {
               .frame-caption-prism{position:absolute;bottom:12px;left:12px;right:12px;z-index:10;text-align:center;pointer-events:none;background:linear-gradient(to top,rgba(10,10,15,0.65),transparent);padding:10px 0 4px;border-radius:0 0 2px 2px}
               .frame-caption-prism .line-prism{width:40px;height:1px;margin:0 auto 8px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent)}
               .frame-caption-prism span{font-family:'Cinzel Decorative',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(232,220,200,0.45)}
-              @media(max-width:640px){.gothic-prism{max-width:340px}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{inset:14px}}
+              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px}}
             `}</style>
             <div className="gothic-prism">
               <div className="prism-border"></div>
