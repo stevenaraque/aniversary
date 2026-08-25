@@ -199,7 +199,7 @@ export default function CosmosBackground() {
       ctx.globalAlpha = 1
     }
 
-    let spawnTimer = 0, nextSpawn = rand(4, 14), frame = 0
+    let spawnTimer = 0, nextSpawn = rand(2, 8), frame = 0
     function loop() {
       frame++
       ctx.drawImage(staticCanvas, 0, 0)
@@ -207,9 +207,9 @@ export default function CosmosBackground() {
       spawnTimer++
       if (spawnTimer >= nextSpawn) {
         if (comets.length < MAX_COMETS) { const c = createComet(); comets.push(c); addFlash(c.x, c.y) }
-        if (Math.random() < 0.3 && comets.length < MAX_COMETS) comets.push(createComet())
-        if (Math.random() < 0.1 && comets.length < MAX_COMETS) comets.push(createComet())
-        spawnTimer = 0; nextSpawn = rand(4, 14)
+        if (Math.random() < 0.5 && comets.length < MAX_COMETS) comets.push(createComet())
+        if (Math.random() < 0.25 && comets.length < MAX_COMETS) comets.push(createComet())
+        spawnTimer = 0; nextSpawn = rand(2, 8)
       }
       updateAndDrawParticles()
       for (let i = comets.length - 1; i >= 0; i--) { updateComet(comets[i]); if (!comets[i].alive) comets.splice(i, 1) }
