@@ -101,12 +101,13 @@ export default function Puzzle({ onNext }) {
   const progress = ((TOTAL_TILES - board.reduce((acc, t, i) => acc + (t === i ? 1 : 0), 0) + 1) / TOTAL_TILES) * 100
 
   return (
-    <motion.div className="min-h-screen flex flex-col items-center justify-center relative px-4 py-10 bg-liquid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div className="main-wrapper min-h-screen bg-liquid relative overflow-hidden py-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       {/* ambient */}
       <motion.div className="absolute top-16 left-10" animate={{ opacity: 0.08, x: [0, 12, -6, -12, 0], y: [0, -10, -18, -6, 0] }} transition={{ duration: 7, repeat: Infinity }}><BatIcon className="w-7 h-7 text-crimson" /></motion.div>
       <motion.div className="absolute bottom-20 right-10" animate={{ opacity: 0.06, x: [0, -10, 6, 8, 0], y: [0, -8, -12, -4, 0] }} transition={{ duration: 8, repeat: Infinity, delay: 1 }}><FlowerIcon className="w-6 h-6 text-sunflower" /></motion.div>
 
-      <div className="relative z-10 w-full max-w-xl flex flex-col items-center">
+      {/* 2. CONTAINER */}
+      <div className="container flex flex-col items-center relative z-10">
         {/* header */}
         <motion.div initial={{ y: -20, opacity: 0, filter: 'blur(8px)' }} animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }} transition={springs.gentle} className="text-center mb-6">
           <div className="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full mb-3">

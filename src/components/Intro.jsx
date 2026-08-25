@@ -125,7 +125,7 @@ export default function Intro({ onNext }) {
   return (
     <motion.div
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-liquid"
+      className="main-wrapper min-h-screen bg-liquid relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -144,7 +144,8 @@ export default function Intro({ onNext }) {
         />
       ))}
 
-      <div className="relative z-10 text-center px-6 max-w-2xl">
+      {/* 2. CONTAINER: ancho controlado y centrado */}
+      <div className="container flex flex-col items-center justify-center min-h-screen py-20 text-center relative z-10">
         <motion.div className="mb-8">
           <HeartPulse />
         </motion.div>
@@ -169,7 +170,7 @@ export default function Intro({ onNext }) {
         </motion.div>
 
         <motion.p
-          className="text-white/30 mb-12 max-w-md mx-auto text-base leading-relaxed"
+          className="text-white/30 mb-12 max-w-2xl mx-auto text-base leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: motionTokens.duration.slow }}

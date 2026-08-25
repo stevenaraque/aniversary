@@ -9,7 +9,7 @@ export default function Letter({ onNext }) {
 
   return (
     <motion.div
-      className="min-h-screen flex flex-col items-center justify-center relative px-4 bg-liquid"
+      className="main-wrapper min-h-screen relative overflow-hidden bg-liquid"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -29,7 +29,7 @@ export default function Letter({ onNext }) {
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </motion.div>
 
-      <div className="relative z-10 w-full max-w-2xl text-center">
+      <div className="container-sm relative z-10 text-center">
         <motion.div
           initial={{ y: -20, opacity: 0, filter: 'blur(8px)' }}
           animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}

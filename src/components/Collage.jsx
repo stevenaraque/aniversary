@@ -16,7 +16,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
 
   return (
     <motion.div
-      className="min-h-screen flex flex-col items-center justify-center relative px-4 py-12 bg-liquid"
+      className="main-wrapper min-h-screen relative overflow-hidden py-12 bg-liquid"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -36,7 +36,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </motion.div>
 
-      <div className="relative z-10 w-full max-w-5xl">
+      <div className="container-lg relative z-10">
         <motion.div
           className="mb-10 text-center"
           initial={{ y: -20, opacity: 0, filter: 'blur(8px)' }}
