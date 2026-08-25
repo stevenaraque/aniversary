@@ -22,10 +22,39 @@
 }
 
 body {
-  font-family: 'Georgia', serif;
+  font-family: 'Sora', sans-serif;
+  font-weight: 200;
   background: #050505;
-  color: #fff;
+  color: #ffeaa7;
   overflow-x: hidden;
+}
+
+/* === Combo 2 — Cormorant Garamond + Sora === */
+h1, h2 {
+  font-family: 'Cormorant Garamond', serif;
+}
+h1 {
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: #ffd700;
+}
+h2 {
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: #ffd700;
+}
+h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #ffeaa7;
+}
+p {
+  font-family: 'Sora', sans-serif;
+  font-weight: 200;
+  color: rgba(255,234,167,0.5);
 }
 
 ::selection {
