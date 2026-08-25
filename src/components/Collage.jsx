@@ -72,7 +72,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
                 className="w-full h-auto object-cover"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                   <span className="text-white/70 text-sm">Recuerdo {i + 1}</span>
                   <ZoomIn className="w-5 h-5 text-crimson" />

@@ -63,7 +63,7 @@ export default function Letter({ onNext }) {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <div className="absolute inset-0 bg-gradient-to-b from-crimson/3 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-b from-crimson/3 to-transparent" />
               <Mail className="w-20 h-20 text-crimson/40 mb-6 relative z-10" />
               <p className="text-white/30 text-sm relative z-10">Toca para abrir</p>
               <motion.span

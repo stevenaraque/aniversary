@@ -105,7 +105,7 @@ export default function Playlist({ songs = PLACEHOLDER_SONGS }) {
           transition={{ ...springs.gentle, delay: 0.2 }}
         >
           <div className="w-48 h-48 mx-auto mb-6 rounded-2xl glass flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-crimson/5 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-b from-crimson/5 to-transparent" />
             <motion.div
               animate={playing ? { rotate: 360 } : {}}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}

@@ -183,7 +183,7 @@ export default function Puzzle({ onNext }) {
                       >
                         {isEmpty ? (
                           <div className="w-full h-full rounded-[14px] glass border border-dashed border-white/10 flex items-center justify-center relative overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent" />
+                            <div className="absolute inset-0 bg-linear-to-br from-white/[0.04] to-transparent" />
                             <motion.div
                               className="absolute inset-0"
                               animate={{ x: ['-100%', '100%'] }}
@@ -203,10 +203,10 @@ export default function Puzzle({ onNext }) {
                               }}
                             />
                             {/* glass specularity */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/12 via-transparent to-black/20 opacity-60 group-hover:opacity-80 transition-opacity" />
+                            <div className="absolute inset-0 bg-linear-to-b from-white/12 via-transparent to-black/20 opacity-60 group-hover:opacity-80 transition-opacity" />
                             <div className="absolute inset-0 rounded-[14px] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.4)] pointer-events-none" />
                             {/* inner highlight line */}
-                            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                            <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
                           </div>
                         )}
                       </motion.div>

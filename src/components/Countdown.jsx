@@ -33,7 +33,7 @@ function TimeBlock({ value, label, delay }) {
       transition={{ ...springs.gentle, delay }}
     >
       <div className="glass glass-refraction w-20 h-20 md:w-28 md:h-28 rounded-2xl flex items-center justify-center mb-3 relative overflow-hidden interact-lift">
-        <div className="absolute inset-0 bg-gradient-to-b from-crimson/5 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-b from-crimson/5 to-transparent" />
         <span className="text-3xl md:text-5xl font-bold text-white tabular-nums relative z-10">
           <AnimatedNumber value={value} delay={delay + 0.2} />
         </span>
@@ -122,14 +122,14 @@ export default function Countdown({ onNext }) {
           animate={{ opacity: 1, scaleX: 1 }}
           transition={{ ...springs.gentle, delay: 0.5 }}
         >
-          <div className="h-px w-16 bg-gradient-to-r from-transparent to-crimson/20" />
+          <div className="h-px w-16 bg-linear-to-r from-transparent to-crimson/20" />
           <motion.div
             animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.8, 0.4] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             <Heart className="w-4 h-4 text-crimson" fill="currentColor" />
           </motion.div>
-          <div className="h-px w-16 bg-gradient-to-l from-transparent to-crimson/20" />
+          <div className="h-px w-16 bg-linear-to-l from-transparent to-crimson/20" />
         </motion.div>
 
         <motion.p

@@ -161,9 +161,9 @@ export default function Intro({ onNext }) {
           </p>
           <div className="flex items-center justify-center gap-3 text-sm text-white/25 mb-10">
             <BatIcon className="w-4 h-4" />
-            <span className="w-8 h-px bg-gradient-to-r from-transparent via-crimson/30 to-transparent" />
+            <span className="w-8 h-px bg-linear-to-r from-transparent via-crimson/30 to-transparent" />
             <span className="tracking-[0.3em] uppercase">24.08.2024</span>
-            <span className="w-8 h-px bg-gradient-to-r from-transparent via-crimson/30 to-transparent" />
+            <span className="w-8 h-px bg-linear-to-r from-transparent via-crimson/30 to-transparent" />
             <BatIcon className="w-4 h-4" />
           </div>
         </motion.div>
@@ -198,7 +198,7 @@ export default function Intro({ onNext }) {
             </motion.span>
           </span>
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-crimson/0 via-crimson/10 to-crimson/0"
+            className="absolute inset-0 bg-linear-to-r from-crimson/0 via-crimson/10 to-crimson/0"
             animate={{ x: ['-100%', '100%'] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
           />
