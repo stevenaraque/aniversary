@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Clock, Heart } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 const ANIVERSARY_DATE = new Date('2024-08-24T00:00:00')
@@ -56,7 +55,6 @@ export default function Countdown({ onNext }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <AnimatedBackground />
       <motion.div className="absolute top-16 right-20" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 0.12, x: 0 }} transition={springs.gentle}>
         <BatIcon className="w-6 h-6 text-crimson" />
       </motion.div>

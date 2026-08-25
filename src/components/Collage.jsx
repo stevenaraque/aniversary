@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, ZoomIn, Grid3X3 } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 const PLACEHOLDER_PHOTOS = [
@@ -22,7 +21,6 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <AnimatedBackground />
       <motion.div
         className="absolute top-20 right-16"
         animate={{ opacity: 0.1, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}

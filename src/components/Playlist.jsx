@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'motion/react'
 import { Play, Pause, SkipBack, SkipForward, Music, Heart, ListMusic } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 const PLACEHOLDER_SONGS = [
@@ -66,7 +65,6 @@ export default function Playlist({ songs = PLACEHOLDER_SONGS }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <AnimatedBackground />
       <motion.div
         className="absolute top-20 left-16"
         animate={{ opacity: 0.1, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}

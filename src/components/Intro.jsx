@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
 import { Heart, Skull, Sparkles } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import AnimatedBackground from './AnimatedBackground'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 function CursorFollower() {
@@ -176,7 +175,6 @@ export default function Intro({ onNext }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <AnimatedBackground />
       <StarRain />
       <CursorFollower />
 

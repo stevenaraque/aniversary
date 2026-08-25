@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
+import CosmosBackground from './components/CosmosBackground'
 import Intro from './components/Intro'
 import Countdown from './components/Countdown'
 import Puzzle from './components/Puzzle'
@@ -25,7 +26,9 @@ export default function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen relative">
+      <CosmosBackground />
+      <div className="relative z-10">
       <AnimatePresence mode="wait">
         {section === 'intro' && <Intro key="intro" onNext={goNext} />}
         {section === 'countdown' && <Countdown key="countdown" onNext={goNext} />}
@@ -35,6 +38,7 @@ export default function App() {
         {section === 'collage' && <Collage key="collage" photos={photos} onNext={goNext} />}
         {section === 'playlist' && <Playlist key="playlist" songs={songs} />}
       </AnimatePresence>
+      </div>
     </div>
   )
 }
