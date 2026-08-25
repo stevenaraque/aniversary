@@ -16,7 +16,10 @@ function isSolvable(board) {
   const flat = board.filter(t => t !== TOTAL_TILES - 1)
   for (let i = 0; i < flat.length; i++) for (let j = i + 1; j < flat.length; j++) if (flat[i] > flat[j]) inversions++
   const emptyRow = Math.floor(board.indexOf(TOTAL_TILES - 1) / GRID_SIZE)
-  return (inversions + (GRID_SIZE - emptyRow)) % 2 === 0
+  const rowFromBottom = GRID_SIZE - emptyRow
+  // 4x4 (par) → solvable si (inversiones + filaDesdeAbajo) es impar; impar → inversiones par
+  if (GRID_SIZE % 2 === 1) return inversions % 2 === 0
+  return (inversions + rowFromBottom) % 2 === 1
 }
 
 function shuffleBoard() {
