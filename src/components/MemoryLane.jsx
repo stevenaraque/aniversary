@@ -31,13 +31,27 @@ function SwipeableCard({ children, onSwipeLeft, onSwipeRight }) {
   )
 }
 
+const LS_KEY = 'aniversary:memoryLane:read'
 export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) {
   const [current, setCurrent] = useState(0)
   const [showLightbox, setShowLightbox] = useState(false)
   const [showDesc, setShowDesc] = useState(false)
-  const [readSet, setReadSet] = useState(() => new Set())
+  const [readSet, setReadSet] = useState(() => {
+    try {
+      const raw = localStorage.getItem(LS_KEY)
+      if (raw) {
+        const arr = JSON.parse(raw)
+        if (Array.isArray(arr)) return new Set(arr.filter(n => typeof n === 'number' && n >= 0 && n < memories.length))
+      }
+    } catch {}
+    return new Set()
+  })
   const isAllRead = readSet.size >= memories.length
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify([...readSet])) } catch {}
+  }, [readSet])
   const handleShowDesc = () => { setReadSet(prev => { const n = new Set(prev); n.add(current); return n }); setShowDesc(true) }
+  const handleResetProgress = () => { setReadSet(new Set()); try { localStorage.removeItem(LS_KEY) } catch {} }
 
   const next = () => { setCurrent((c) => (c + 1) % memories.length); setShowDesc(false) }
   const prev = () => { setCurrent((c) => (c - 1 + memories.length) % memories.length); setShowDesc(false) }
@@ -76,6 +90,9 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
                 {isAllRead ? <Mail className="w-4 h-4 text-white/80" /> : null}
               </button>
               {!isAllRead && <p className="text-white/30 text-[11px] tracking-wide text-center -mt-1">Lee todas las historias para desbloquear</p>}
+              {readSet.size > 0 && (
+                <button onClick={handleResetProgress} className="text-white/25 text-[10px] tracking-widest uppercase hover:text-white/50 transition-colors" style={{fontFamily:'Cinzel,serif'}}>Reiniciar progreso</button>
+              )}
             </div>
           </div>
 

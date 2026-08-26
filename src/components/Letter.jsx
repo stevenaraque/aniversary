@@ -97,15 +97,17 @@ export default function Letter({ onNext, onPrev }) {
     let trailAccum = 0
     const spawnTrail = (x, y) => {
       const el = document.createElement('div')
-      const sz = 1.6 + Math.random() * 2.2
-      const isDot = Math.random() > 0.5
+      const sz = 1.4 + Math.random() * 2.8
+      const isDot = Math.random() > 0.35
       el.className = 'bf-trail'
       el.style.width = sz + 'px'
       el.style.height = sz + 'px'
       el.style.borderRadius = isDot ? '50%' : '1px'
+      // polvo de estrellas dorado-neon
       el.style.background = isDot
-        ? 'radial-gradient(circle,rgba(34,211,238,0.42) 0%,transparent 70%)'
-        : `rgba(34,211,238,${0.20 + Math.random() * 0.12})`
+        ? 'radial-gradient(circle,rgba(249,224,118,0.88) 0%,rgba(212,175,55,0.45) 36%,transparent 72%)'
+        : `rgba(212,175,55,${0.18 + Math.random() * 0.14})`
+      el.style.boxShadow = isDot ? '0 0 5px rgba(212,175,55,0.55),0 0 9px rgba(220,20,60,0.22)' : 'none'
       // usar translate3d desde el inicio para GPU
       el.style.transform = `translate3d(${x}px,${y}px,0)`
       host.appendChild(el)
@@ -155,7 +157,7 @@ export default function Letter({ onNext, onPrev }) {
     let curAngle = 0
     const T_IN = 380, T_SET = 580, T_OUT = 660, T_SP = 240
 
-    // estado inicial sin layout thrash
+    // estado inicial sin layout thrash — RESETEA ALETEO (fix vuelo 2 en adelante)
     bf.style.opacity = '0'
     light.style.opacity = '0'
     bf.style.willChange = 'transform,opacity'
@@ -164,6 +166,13 @@ export default function Letter({ onNext, onPrev }) {
     light.style.transition = 'opacity 0.42s ease'
     bfInner.style.transformOrigin = 'center center'
     bfInner.style.transform = `scale(${sc}) rotate(0deg)`
+    // reset alas a animar (estaban en pausa tras vuelo anterior)
+    wingL.className = 'animar-ala-izq preservar-3d absolute left-0 top-0 w-1/2 h-full origin-right'
+    wingR.className = 'animar-ala-der preservar-3d absolute right-0 top-0 w-1/2 h-full origin-left'
+    wingL.style.animationDuration = '0.044s'
+    wingR.style.animationDuration = '0.044s'
+    wingL.style.animationPlayState = 'running'
+    wingR.style.animationPlayState = 'running'
     smoothPosRef.current = { x: null, y: null }
     angleRef.current = 0
     curAngle = 0
@@ -198,12 +207,11 @@ export default function Letter({ onNext, onPrev }) {
           const bank = Math.max(-13, Math.min(13, dx * 0.55))
           const pitch = Math.max(-5, Math.min(5, -dy * 0.22))
           bfInner.style.transform = `scale(${sc}) rotate(${curAngle}deg) rotateZ(${bank * 0.28}deg) rotateX(${pitch}deg)`
-          // aleteo ligado a dy
+          // aleteo +50% más — solo alas, recorrido intacto (0.036-0.049s)
           const vyNorm = Math.max(-1, Math.min(1, dy * 0.16))
-          const flapTarget = vyNorm < -0.15 ? 0.10 : vyNorm > 0.35 ? 0.20 : 0.14
-          // lerp suave sin parse cada frame
-          const curFlap = parseFloat(wingL.style.animationDuration) || 0.14
-          const flap = lerp(curFlap, flapTarget, 0.055)
+          const flapTarget = vyNorm < -0.12 ? 0.036 : vyNorm > 0.32 ? 0.049 : 0.044
+          const curFlap = parseFloat(wingL.style.animationDuration) || 0.044
+          const flap = lerp(curFlap, flapTarget, 0.07)
           const fd = flap.toFixed(3) + 's'
           wingL.style.animationDuration = fd
           wingR.style.animationDuration = fd
@@ -267,10 +275,10 @@ export default function Letter({ onNext, onPrev }) {
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@600;700&display=swap');
         .perspectiva{perspective:800px}
         .preservar-3d{transform-style:preserve-3d}
-        @keyframes aleteo-izq{0%{transform:rotateY(18deg) rotateX(8deg)}100%{transform:rotateY(64deg) rotateX(10deg)}}
-        @keyframes aleteo-der{0%{transform:rotateY(-18deg) rotateX(8deg)}100%{transform:rotateY(-64deg) rotateX(10deg)}}
-        .animar-ala-izq{animation:aleteo-izq 0.14s infinite alternate ease-in-out}
-        .animar-ala-der{animation:aleteo-der 0.14s infinite alternate ease-in-out}
+         @keyframes aleteo-izq{0%{transform:rotateY(14deg) rotateX(8deg)}100%{transform:rotateY(68deg) rotateX(10deg)}}
+        @keyframes aleteo-der{0%{transform:rotateY(-14deg) rotateX(8deg)}100%{transform:rotateY(-68deg) rotateX(10deg)}}
+        .animar-ala-izq{animation:aleteo-izq 0.044s infinite alternate ease-in-out}
+        .animar-ala-der{animation:aleteo-der 0.044s infinite alternate ease-in-out}
         .pausa-ala-izq{animation:none!important;transform:rotateY(20deg) rotateX(10deg)}
         .pausa-ala-der{animation:none!important;transform:rotateY(-20deg) rotateX(10deg)}
         .clip-ala-sup-izq{clip-path:polygon(0 20%,100% 100%,30% 0)}
@@ -280,7 +288,7 @@ export default function Letter({ onNext, onPrev }) {
         .clip-ala-inf-der{clip-path:polygon(70% 100%,0 0,100% 70%)}
         .clip-ala-fondo-der{clip-path:polygon(100% 20%,0 50%,100% 70%)}
         .bf-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:5;will-change:transform,opacity}
-        .bf-sparkle{position:fixed;pointer-events:none;z-index:15;border-radius:9999px;background:radial-gradient(circle,rgba(34,211,238,0.9) 0%,transparent 70%);will-change:transform,opacity}
+        .bf-sparkle{position:fixed;pointer-events:none;z-index:15;border-radius:9999px;background:radial-gradient(circle,rgba(212,175,55,0.95) 0%,rgba(220,20,60,0.65) 45%,transparent 70%);will-change:transform,opacity;box-shadow:0 0 6px rgba(212,175,55,0.6),0 0 12px rgba(220,20,60,0.25)}
         #letterWrap{opacity:0;transform:translate(-50%,-50%) scale(0.88);pointer-events:none;transition:opacity 0.95s ease, transform 1.15s cubic-bezier(0.22,1,0.36,1)}
         #letterWrap.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
         .ltxt{opacity:0;transform:translateY(14px);transition:opacity 0.65s ease, transform 0.65s ease}
@@ -308,23 +316,23 @@ export default function Letter({ onNext, onPrev }) {
       {/* Viñeta ultra sutil — no tapa cometas */}
       <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,0.32) 100%)' }} />
 
-      {/* Luz cyan que sigue mariposa */}
-      <div ref={lightRef} className="fixed pointer-events-none z-[1] rounded-full" style={{ width: 200, height: 200, background: 'radial-gradient(circle,rgba(34,211,238,0.07) 0%,transparent 66%)', filter: 'blur(10px)', opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.45s ease' }} />
+      {/* Luz neon dorado-roja que sigue mariposa */}
+      <div ref={lightRef} className="fixed pointer-events-none z-[1] rounded-full" style={{ width: 220, height: 220, background: 'radial-gradient(circle,rgba(212,175,55,0.10) 0%,rgba(220,20,60,0.06) 38%,transparent 68%)', filter: 'blur(12px)', opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.45s ease' }} />
 
-      {/* ── MARIPOSA 112×112 ── */}
-      <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease' }} aria-hidden>
+      {/* ── MARIPOSA 112×112 — neon negro/rojo/dorado ── */}
+      <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease', filter: phase === 'flying' ? 'drop-shadow(0 0 10px rgba(212,175,55,0.45)) drop-shadow(0 0 18px rgba(220,20,60,0.32))' : 'none' }} aria-hidden>
         <div ref={bfInnerRef} className="perspectiva relative" style={{ width: 112, height: 112 }}>
           <div className="preservar-3d absolute w-full h-full">
-            <div className="absolute left-1/2 top-1/4 w-1.5 h-14 bg-cyan-950 -translate-x-1/2 z-10 shadow-lg" style={{ clipPath: 'polygon(50% 0,100% 10%,100% 90%,50% 100%,0 90%,0 10%)' }} />
+            <div className="absolute left-1/2 top-1/4 w-1.5 h-14 -translate-x-1/2 z-10" style={{ background: 'linear-gradient(180deg,#1a0a0f 0%,#8b0000 55%,#d4af37 100%)', clipPath: 'polygon(50% 0,100% 10%,100% 90%,50% 100%,0 90%,0 10%)', boxShadow: '0 0 8px rgba(212,175,55,0.55),0 0 14px rgba(220,20,60,0.35)' }} />
             <div ref={wingLRef} className="animar-ala-izq preservar-3d absolute left-0 top-0 w-1/2 h-full origin-right">
-              <div className="clip-ala-fondo-izq absolute w-full h-full top-0 bg-cyan-700 opacity-95" />
-              <div className="clip-ala-sup-izq absolute w-full h-1/2 top-0 bg-cyan-400 opacity-95" style={{ boxShadow: 'inset -5px -5px 15px rgba(0,0,0,0.2)' }} />
-              <div className="clip-ala-inf-izq absolute w-full h-1/2 bottom-0 bg-cyan-600 opacity-95" style={{ boxShadow: 'inset -5px 5px 15px rgba(0,0,0,0.2)' }} />
+              <div className="clip-ala-fondo-izq absolute w-full h-full top-0" style={{ background: '#0a0a0f', opacity: 0.98, boxShadow: 'inset 0 0 12px rgba(220,20,60,0.18)' }} />
+              <div className="clip-ala-sup-izq absolute w-full h-1/2 top-0" style={{ background: 'linear-gradient(135deg,#8b0000 0%,#dc143c 55%,#d4af37 100%)', opacity: 0.98, boxShadow: 'inset -5px -5px 14px rgba(0,0,0,0.32),0 0 10px rgba(212,175,55,0.28)' }} />
+              <div className="clip-ala-inf-izq absolute w-full h-1/2 bottom-0" style={{ background: 'linear-gradient(135deg,#4a0e0e 0%,#8b0000 60%,#b8941f 100%)', opacity: 0.98, boxShadow: 'inset -5px 5px 14px rgba(0,0,0,0.32),0 0 8px rgba(220,20,60,0.20)' }} />
             </div>
             <div ref={wingRRef} className="animar-ala-der preservar-3d absolute right-0 top-0 w-1/2 h-full origin-left">
-              <div className="clip-ala-fondo-der absolute w-full h-full top-0 bg-cyan-700 opacity-95" />
-              <div className="clip-ala-sup-der absolute w-full h-1/2 top-0 bg-cyan-400 opacity-95" style={{ boxShadow: 'inset 5px -5px 15px rgba(0,0,0,0.2)' }} />
-              <div className="clip-ala-inf-der absolute w-full h-1/2 bottom-0 bg-cyan-600 opacity-95" style={{ boxShadow: 'inset 5px 5px 15px rgba(0,0,0,0.2)' }} />
+              <div className="clip-ala-fondo-der absolute w-full h-full top-0" style={{ background: '#0a0a0f', opacity: 0.98, boxShadow: 'inset 0 0 12px rgba(220,20,60,0.18)' }} />
+              <div className="clip-ala-sup-der absolute w-full h-1/2 top-0" style={{ background: 'linear-gradient(225deg,#8b0000 0%,#dc143c 55%,#d4af37 100%)', opacity: 0.98, boxShadow: 'inset 5px -5px 14px rgba(0,0,0,0.32),0 0 10px rgba(212,175,55,0.28)' }} />
+              <div className="clip-ala-inf-der absolute w-full h-1/2 bottom-0" style={{ background: 'linear-gradient(225deg,#4a0e0e 0%,#8b0000 60%,#b8941f 100%)', opacity: 0.98, boxShadow: 'inset 5px 5px 14px rgba(0,0,0,0.32),0 0 8px rgba(220,20,60,0.20)' }} />
             </div>
           </div>
         </div>

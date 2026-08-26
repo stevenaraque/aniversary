@@ -162,16 +162,16 @@ export default function CosmosBackground() {
       { head: '#fff0d0', mid: '#e8941a', tail: 'rgba(139,94,15,0)' },
     ]
     function createComet() {
-      const baseAngle = -Math.PI * 0.25, angle = baseAngle + rand(-0.25, 0.25)
-      const speed = rand(14, 28), vx = Math.cos(angle) * speed, vy = Math.sin(angle) * speed
+      const baseAngle = -Math.PI * 0.25, angle = baseAngle + rand(-0.18, 0.18)
+      const speed = rand(3.2, 6.8), vx = Math.cos(angle) * speed, vy = Math.sin(angle) * speed
       const edge = Math.random()
       let x, y
       if (edge < 0.6) { x = rand(-100, W * 0.5); y = H + rand(10, 150) }
       else { x = rand(-150, -10); y = rand(H * 0.3, H + 100) }
       const pal = COMET_PALETTES[(Math.random() * COMET_PALETTES.length) | 0]
-      return { x, y, vx, vy, tailLen: rand(100, 260), w: rand(1.2, 3.2), alive: true, brightness: rand(0.6, 1), sparkTimer: 0, head: pal.head, mid: pal.mid, tail: pal.tail, spriteIdx: (Math.random() * 3) | 0 }
+      return { x, y, vx, vy, tailLen: rand(140, 280), w: rand(1.0, 2.4), alive: true, brightness: rand(0.55, 0.95), sparkTimer: 0, head: pal.head, mid: pal.mid, tail: pal.tail, spriteIdx: (Math.random() * 3) | 0 }
     }
-    function updateComet(c) { c.x += c.vx; c.y += c.vy; c.sparkTimer++; if (c.sparkTimer % 3 === 0) spawnParticle(c.x, c.y); if (c.y < -300 || c.x > W + 300) c.alive = false }
+    function updateComet(c) { c.x += c.vx; c.y += c.vy; c.sparkTimer++; if (c.sparkTimer % 5 === 0) spawnParticle(c.x, c.y); if (c.y < -300 || c.x > W + 300) c.alive = false }
     function drawComet(c) {
       const spd = Math.sqrt(c.vx * c.vx + c.vy * c.vy), dx = -c.vx / spd, dy = -c.vy / spd, tx = c.x + dx * c.tailLen, ty = c.y + dy * c.tailLen
       const gMid = ctx.createLinearGradient(c.x, c.y, tx, ty)
@@ -199,7 +199,7 @@ export default function CosmosBackground() {
       ctx.globalAlpha = 1
     }
 
-    let spawnTimer = 0, nextSpawn = rand(2, 8), frame = 0
+    let spawnTimer = 0, nextSpawn = rand(14, 26), frame = 0
     function loop() {
       frame++
       ctx.drawImage(staticCanvas, 0, 0)
@@ -207,9 +207,8 @@ export default function CosmosBackground() {
       spawnTimer++
       if (spawnTimer >= nextSpawn) {
         if (comets.length < MAX_COMETS) { const c = createComet(); comets.push(c); addFlash(c.x, c.y) }
-        if (Math.random() < 0.5 && comets.length < MAX_COMETS) comets.push(createComet())
-        if (Math.random() < 0.25 && comets.length < MAX_COMETS) comets.push(createComet())
-        spawnTimer = 0; nextSpawn = rand(2, 8)
+        if (Math.random() < 0.35 && comets.length < MAX_COMETS) comets.push(createComet())
+        spawnTimer = 0; nextSpawn = rand(18, 34)
       }
       updateAndDrawParticles()
       for (let i = comets.length - 1; i >= 0; i--) { updateComet(comets[i]); if (!comets[i].alive) comets.splice(i, 1) }

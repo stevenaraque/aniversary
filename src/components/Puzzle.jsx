@@ -136,15 +136,31 @@ export default function Puzzle({ onNext }) {
         </button>
 
         <AnimatePresence>
-          {solved && (
-            <motion.div initial={{scale:0.9,opacity:0,filter:'blur(8px)'}} animate={{scale:1,opacity:1,filter:'blur(0px)'}} exit={{opacity:0}} transition={springs.bouncy} className="text-center glass glass-prominent rounded-2xl p-6 sm:p-7 w-full max-w-[90vw] sm:max-w-sm mx-4 sm:mx-auto my-4 order-3 lg:col-span-2 border border-gold/15">
-              <Trophy className="w-10 h-10 text-gold mx-auto" /><p className="text-white font-bold mt-3">¡Lo logramos juntos!</p><p className="text-white/60 text-sm mt-1">En {moves} movimientos — como todo lo nuestro, con paciencia florece</p>
-              <button onClick={onNext} className="mt-5 w-full px-6 py-3.5 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2" style={{fontFamily:'Cinzel,serif'}}>
-                Seguir celebrando <FlowerIcon className="w-4 h-4 text-white" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+  {solved && (
+    <motion.div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+      {/* Uiverse SouravBandyopadhyay — adaptado gótico */}
+      <motion.div initial={{scale:0.94,opacity:0,y:10}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.96,opacity:0}} transition={springs.bouncy} className="relative w-[88vw] sm:w-[420px] rounded-2xl border-2 border-gold/25 bg-transparent p-7 sm:p-8 text-center shadow-[0_24px_64px_rgba(0,0,0,0.55)]" style={{background:'linear-gradient(160deg,rgba(20,10,10,0.94) 0%,rgba(10,10,15,0.96) 100%)', backdropFilter:'blur(20px) saturate(1.3)', WebkitBackdropFilter:'blur(20px) saturate(1.3)'}}>
+        <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{background:'conic-gradient(from 0deg,transparent 0deg,rgba(212,175,55,0.06) 70deg,transparent 140deg,rgba(220,20,60,0.05) 220deg,transparent 320deg)'}} />
+        <div className="relative z-10 flex flex-col items-center">
+          <figure className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-gold-light via-gold to-gold-dark shadow-[0_0_14px_rgba(212,175,55,0.38)]">
+            <Trophy className="w-6 h-6 text-deep-black" />
+          </figure>
+          <h2 className="text-lg font-bold text-white" style={{fontFamily:'Cinzel,serif'}}>Juntos, todo encaja</h2>
+          <p className="mt-1 text-gold-light text-[10px] tracking-[0.18em] uppercase" style={{fontFamily:'Cinzel,serif'}}>¡Ganaste! · {moves} movimientos</p>
+          <p className="mt-3 text-white/70 text-[13px] leading-relaxed" style={{fontFamily:'Cormorant Garamond,serif'}}>
+            Cada meta que sueñan como pareja es un puzzle: parece imposible al inicio, pero pieza a pieza, con amor, paciencia y equipo, la imagen aparece. Hoy resolvieron este; mañana, cada sueño que se propongan.
+          </p>
+          <p className="mt-2 text-white/40 text-[11px]" style={{fontFamily:'Sora,sans-serif'}}>{moves <= 80 ? '¡Equipo imparable!' : moves <= 150 ? '¡Con constancia todo fluye!' : '¡La perseverancia siempre gana!'}</p>
+          <div className="mt-5 flex items-center justify-center gap-3 w-full">
+            <button onClick={handleShuffle} className="rounded-full border border-gold/15 bg-[#0a0a0f] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-gold-light hover:bg-[#1a1a1f] hover:border-gold/25 transition-colors" style={{fontFamily:'Cinzel,serif'}}>Jugar otra vez</button>
+            <button onClick={onNext} className="inline-flex items-center gap-1.5 rounded-full bg-crimson border-b-[3px] border-[#7f1d1d] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_6px_14px_-6px_rgba(220,38,38,0.35)] active:border-b-0 active:translate-y-[3px] transition-all" style={{fontFamily:'Cinzel,serif'}}>Seguir <FlowerIcon className="w-3 h-3 text-white" /></button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
       </div>
     </motion.div>
   )
