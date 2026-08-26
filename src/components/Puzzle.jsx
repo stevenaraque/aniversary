@@ -130,10 +130,18 @@ export default function Puzzle({ onNext }) {
           </div>
         </div>
 
+        {/* Botón saltar para programar */}
+        <button onClick={onNext} className="glass px-4 py-1.5 rounded-full text-white/30 text-[11px] tracking-widest uppercase hover:text-white/60 hover:border-gold/20 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
+          Saltar puzzle → <FlowerIcon className="w-3 h-3 text-gold/30" />
+        </button>
+
         <AnimatePresence>
           {solved && (
-            <motion.div initial={{scale:0.9,opacity:0,filter:'blur(8px)'}} animate={{scale:1,opacity:1,filter:'blur(0px)'}} exit={{opacity:0}} transition={springs.bouncy} className="text-center glass glass-prominent rounded-2xl p-5 w-full max-w-sm order-3 lg:col-span-2 mx-auto">
-              <Trophy className="w-10 h-10 text-gold mx-auto" /><p className="text-white font-bold mt-2">¡Lo logramos juntos!</p><p className="text-white/50 text-sm">En {moves} movimientos — como todo lo nuestro, con paciencia florece</p><button onClick={onNext} className="mt-4 w-full glass px-6 py-3 rounded-xl text-white text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-colors">Seguir celebrando <FlowerIcon className="w-4 h-4 text-gold" /></button>
+            <motion.div initial={{scale:0.9,opacity:0,filter:'blur(8px)'}} animate={{scale:1,opacity:1,filter:'blur(0px)'}} exit={{opacity:0}} transition={springs.bouncy} className="text-center glass glass-prominent rounded-2xl p-6 sm:p-7 w-full max-w-[90vw] sm:max-w-sm mx-4 sm:mx-auto my-4 order-3 lg:col-span-2 border border-gold/15">
+              <Trophy className="w-10 h-10 text-gold mx-auto" /><p className="text-white font-bold mt-3">¡Lo logramos juntos!</p><p className="text-white/60 text-sm mt-1">En {moves} movimientos — como todo lo nuestro, con paciencia florece</p>
+              <button onClick={onNext} className="mt-5 w-full px-6 py-3.5 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2" style={{fontFamily:'Cinzel,serif'}}>
+                Seguir celebrando <FlowerIcon className="w-4 h-4 text-white" />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
