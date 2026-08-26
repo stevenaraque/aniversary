@@ -110,3 +110,7 @@ Vercel → Import `stevenaraque/aniversary` (main).
 | Foto Intro | `public/puzzle-main.jpg` |
 
 Hecho con amor por **Steven** — 2 años juntos. Diseño: Liquid Glass Gótico + UMBRA + Prism.
+
+
+> Update 25-08-2026: MemoryLane responsive + puzzle centrado + margenes invisibles
+

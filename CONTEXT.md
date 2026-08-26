@@ -76,3 +76,9 @@ git log --oneline -5
 2. Verifica rama `git branch --show-current` (debe ser `main`)
 3. Pregunta antes de cambiar paleta/tipografía
 4. Mantén `main` como producción
+
+
+## Update 25-08-2026
+- MemoryLane responsive + puzzle centrado + margenes invisibles estandarizados en todas las secciones
+- Push 09bc618
+
