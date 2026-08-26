@@ -116,7 +116,6 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
               <button onClick={()=>setShowDesc(false)} className="absolute top-3 right-3 w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-white/10"><X className="w-4 h-4 text-white/60" /></button>
               <div className="flex items-center gap-2 mb-4 text-gold/50 text-xs tracking-[0.2em] uppercase"><BookOpen className="w-4 h-4" /> Recuerdo {current+1} de {memories.length} {readSet.has(current) ? '✓' : ''}</div>
               <p className="text-white/90 text-base sm:text-[17px] leading-relaxed text-center" style={{fontFamily:'Cormorant Garamond,serif'}}>{currentMemory.caption}</p>
-              <button onClick={()=>setShowDesc(false)} className="mt-6 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 text-sm transition-colors">Cerrar</button>
             </motion.div>
           </motion.div>
         )}
