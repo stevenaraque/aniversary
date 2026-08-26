@@ -223,7 +223,7 @@ export default function Intro({ onNext }) {
               .frame-caption-prism{position:absolute;bottom:12px;left:12px;right:12px;z-index:10;text-align:center;pointer-events:none;background:linear-gradient(to top,rgba(10,10,15,0.65),transparent);padding:10px 0 4px;border-radius:0 0 2px 2px}
               .frame-caption-prism .line-prism{width:40px;height:1px;margin:0 auto 8px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent)}
               .frame-caption-prism span{font-family:'Cinzel Decorative',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(232,220,200,0.45)}
-              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px;max-height:62dvh}.image-area-prism img{height:auto;max-height:62dvh}}
+              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px;max-height:48dvh}.image-area-prism img{height:auto;max-height:48dvh}}
             `}</style>
             <div className="gothic-prism">
               <div className="prism-border"></div>
