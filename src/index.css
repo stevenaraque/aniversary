@@ -15,6 +15,11 @@
   --color-champagne: #f7e7ce;
 }
 
+html {
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -27,6 +32,7 @@ body {
   background: #050505;
   color: #ffeaa7;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 /* === Combo 2 — Cormorant Garamond + Sora === */
