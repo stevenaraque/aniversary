@@ -82,7 +82,7 @@ export default function Puzzle({ onNext }) {
 
       <div className="container-lg flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] gap-5 lg:gap-10 items-center justify-center relative z-10 w-full max-w-full px-6 sm:px-8 lg:px-8 py-4 mx-auto">
         {/* Texto - primero en celular, derecha en PC - aumentado 10% y centrado perfecto */}
-        <div className="flex flex-col items-center justify-center text-center gap-3 sm:gap-4 w-full max-w-[616px] mx-auto lg:mx-auto order-1 lg:order-2 px-2 sm:px-4 scale-[1.1] origin-center">
+        <div className="flex flex-col items-center justify-center text-center gap-3 sm:gap-4 w-full max-w-[616px] mx-auto lg:mx-auto order-1 lg:order-2 px-2 sm:px-4 pt-8 sm:pt-0 scale-[1.1] origin-center">
           <div className="hidden sm:inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/15">
             <BatIcon className="w-3.5 h-3.5 text-crimson/60" /><span className="text-xs tracking-[0.2em] uppercase text-white/50">Nuestro puzzle</span><FlowerIcon className="w-3.5 h-3.5 text-gold/50" />
           </div>
