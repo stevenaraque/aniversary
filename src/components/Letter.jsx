@@ -9,27 +9,27 @@ export default function Letter({ onNext }) {
 
   return (
     <motion.div
-      className="main-wrapper min-h-screen relative overflow-hidden"
+      className="main-wrapper min-h-[100dvh] relative overflow-hidden flex flex-col items-center justify-center py-6 sm:py-8 bg-transparent"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="absolute top-24 left-16"
-        animate={{ opacity: 0.1, x: [0, 8, -4, -8, 0], y: [0, -6, -12, -4, 0] }}
+        className="absolute top-10 left-6 sm:left-10 hidden sm:block"
+        animate={{ opacity: 0.07, x: [0, 8, -4, -8, 0], y: [0, -6, -12, -4, 0] }}
         transition={{ duration: 6, repeat: Infinity }}
       >
         <BatIcon className="w-5 h-5 text-crimson" />
       </motion.div>
       <motion.div
-        className="absolute bottom-24 right-16"
-        animate={{ opacity: 0.06, rotate: [0, 8, -8, 0] }}
+        className="absolute bottom-10 right-6 sm:right-10 hidden sm:block"
+        animate={{ opacity: 0.05, rotate: [0, 8, -8, 0] }}
         transition={{ duration: 8, repeat: Infinity }}
       >
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </motion.div>
 
-      <div className="container-sm relative z-10 text-center">
+      <div className="container-sm relative z-10 flex flex-col items-center justify-center w-full max-w-full px-4 sm:px-6 text-center overflow-hidden">
         <motion.div
           initial={{ y: -20, opacity: 0, filter: 'blur(8px)' }}
           animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
@@ -44,14 +44,14 @@ export default function Letter({ onNext }) {
 
         {!isOpen ? (
           <motion.div
-            className="cursor-pointer mt-8"
+            className="cursor-pointer mt-6 w-full max-w-[280px] sm:max-w-[320px] mx-auto"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ ...springs.gentle, delay: 0.2 }}
             onClick={() => setIsOpen(true)}
           >
             <motion.div
-              className="glass glass-refraction w-56 h-64 md:w-72 md:h-80 mx-auto rounded-3xl flex flex-col items-center justify-center relative overflow-hidden interact-lift"
+              className="glass glass-refraction w-full aspect-[3/4] max-w-[280px] sm:max-w-[320px] mx-auto rounded-3xl flex flex-col items-center justify-center relative overflow-hidden interact-lift"
               whileHover={{ scale: 1.04, y: -4 }}
               whileTap={{ scale: 0.96 }}
               animate={{
@@ -77,7 +77,7 @@ export default function Letter({ onNext }) {
           </motion.div>
         ) : (
           <motion.div
-            className="glass glass-prominent glass-refraction rounded-3xl p-8 md:p-12 mt-8"
+            className="glass glass-prominent glass-refraction rounded-3xl p-6 sm:p-8 md:p-10 mt-6 w-full max-w-full overflow-hidden"
             initial={{ scale: 0.5, opacity: 0, rotateY: 90, filter: 'blur(10px)' }}
             animate={{ scale: 1, opacity: 1, rotateY: 0, filter: 'blur(0px)' }}
             transition={{ ...springs.gentle, duration: 0.6 }}

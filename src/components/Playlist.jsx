@@ -60,27 +60,27 @@ export default function Playlist({ songs = PLACEHOLDER_SONGS }) {
 
   return (
     <motion.div
-      className="main-wrapper min-h-screen relative overflow-hidden"
+      className="main-wrapper min-h-[100dvh] relative overflow-hidden flex flex-col items-center justify-center py-6 sm:py-8 bg-transparent"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="absolute top-20 left-16"
-        animate={{ opacity: 0.1, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}
+        className="absolute top-10 left-6 sm:left-10 hidden sm:block"
+        animate={{ opacity: 0.07, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}
         transition={{ duration: 6, repeat: Infinity }}
       >
         <BatIcon className="w-5 h-5 text-crimson" />
       </motion.div>
       <motion.div
-        className="absolute bottom-20 right-16"
-        animate={{ opacity: 0.06, rotate: [0, 10, -10, 0] }}
+        className="absolute bottom-10 right-6 sm:right-10 hidden sm:block"
+        animate={{ opacity: 0.05, rotate: [0, 10, -10, 0] }}
         transition={{ duration: 8, repeat: Infinity }}
       >
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </motion.div>
 
-      <div className="container-sm relative z-10 text-center">
+      <div className="container-sm relative z-10 flex flex-col items-center justify-center w-full max-w-full px-4 sm:px-6 text-center overflow-hidden">
         <motion.div
           initial={{ y: -20, opacity: 0, filter: 'blur(8px)' }}
           animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
