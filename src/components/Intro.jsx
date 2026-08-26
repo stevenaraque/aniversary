@@ -188,7 +188,7 @@ export default function Intro({ onNext }) {
               <span className="text-white/20 text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2"><Skull className="w-3 h-3"/> 26 DE AGOSTO <Skull className="w-3 h-3"/></span>
             </motion.div>
           </div>
-          <motion.div initial={{opacity:0,scale:0.97,filter:'blur(8px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-hidden">
+          <motion.div initial={{opacity:0,scale:0.97,filter:'blur(8px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-visible">
             <style>{`
               .gothic-prism{position:relative;width:100%;max-width:575px;--crimson:#dc2626;--gold:#d4af37;--bone:#e8dcc8;--obsidian:#0a0a0f; margin:0 auto}
               @property --prism{syntax:'<angle>';initial-value:0deg;inherits:false}
@@ -207,6 +207,14 @@ export default function Intro({ onNext }) {
               .gothic-arch{position:absolute;top:-1px;left:-1px;right:-1px;height:60px;z-index:7;pointer-events:none;overflow:hidden}
               .gothic-arch svg{width:100%;height:100%;opacity:0.4;filter:drop-shadow(0 0 8px rgba(220,38,38,0.15))}
               .top-cross-prism{position:absolute;top:-28px;left:50%;transform:translateX(-50%);z-index:12;pointer-events:none;filter:drop-shadow(0 0 10px rgba(212,175,55,0.35));animation:cornerGlow 3s ease infinite}
+              .cross-orn{position:absolute;z-index:11;pointer-events:none;filter:drop-shadow(0 0 8px rgba(212,175,55,0.28));animation:cornerGlow 3.5s ease infinite}
+              .cross-left{left:10px;top:50%;transform:translateY(-50%)}
+              .cross-right{right:10px;top:50%;transform:translateY(-50%);animation-delay:1s}
+              .cross-bottom{bottom:10px;left:50%;transform:translateX(-50%);animation-delay:2s}
+              .cross-ring{position:absolute;inset:-22px;pointer-events:none;z-index:9}
+              .cross-ring-item{position:absolute;filter:drop-shadow(0 0 6px rgba(212,175,55,0.2));animation:cornerGlow 4s ease infinite}
+              .cross-ring-item:nth-child(3),.cross-ring-item:nth-child(8){animation-delay:1s}
+              @media(max-width:640px){.cross-left{left:8px}.cross-right{right:8px}.cross-bottom{bottom:8px}.top-cross-prism{top:-22px}.cross-ring{inset:-16px}.cross-ring .cross-side{display:none}}
               .image-area-prism{position:relative;margin:20px;border-radius:2px;overflow:hidden;z-index:3;border:1px solid rgba(255,255,255,0.03);line-height:0}
               .image-area-prism img{width:100%;height:auto;display:block;filter:saturate(0.85) contrast(1.05) brightness(0.92);transition:filter 0.6s,transform 0.8s}
               .gothic-prism:hover .image-area-prism img{filter:saturate(0.98) contrast(1.08) brightness(0.96);transform:scale(1.015)}
@@ -234,6 +242,29 @@ export default function Intro({ onNext }) {
               <div className="edge-orn edge-top"><svg viewBox="0 0 340 18" fill="none" preserveAspectRatio="none"><line x1="0" y1="9" x2="340" y2="9" stroke="rgba(212,175,55,0.12)" strokeWidth="0.5"/><circle cx="170" cy="9" r="1.5" fill="none" stroke="rgba(220,38,38,0.32)" strokeWidth="0.5"/><circle cx="170" cy="9" r="0.5" fill="rgba(220,38,38,0.5)"/></svg></div>
               <div className="edge-orn edge-bottom"><svg viewBox="0 0 340 18" fill="none" preserveAspectRatio="none"><line x1="0" y1="9" x2="340" y2="9" stroke="rgba(212,175,55,0.12)" strokeWidth="0.5"/><circle cx="170" cy="9" r="1.5" fill="none" stroke="rgba(220,38,38,0.32)" strokeWidth="0.5"/><circle cx="170" cy="9" r="0.5" fill="rgba(220,38,38,0.5)"/></svg></div>
               <div className="top-cross-prism"><svg width="18" height="26" viewBox="0 0 20 30" fill="none"><rect x="8" y="2" width="4" height="26" rx="1" fill="rgba(212,175,55,0.5)"/><rect x="3" y="8" width="14" height="3" rx="1" fill="rgba(212,175,55,0.5)"/><circle cx="10" cy="5" r="1" fill="rgba(220,38,38,0.6)"/></svg></div>
+              {/* Cruces laterales internas */}
+              <div className="cross-orn cross-left"><svg width="16" height="22" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="3" height="18" rx="1" fill="rgba(212,175,55,0.45)"/><rect x="2" y="6" width="12" height="2.5" rx="1" fill="rgba(212,175,55,0.45)"/><circle cx="8" cy="4.5" r="0.8" fill="rgba(220,38,38,0.55)"/></svg></div>
+              <div className="cross-orn cross-right"><svg width="16" height="22" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="3" height="18" rx="1" fill="rgba(212,175,55,0.45)"/><rect x="2" y="6" width="12" height="2.5" rx="1" fill="rgba(212,175,55,0.45)"/><circle cx="8" cy="4.5" r="0.8" fill="rgba(220,38,38,0.55)"/></svg></div>
+              <div className="cross-orn cross-bottom"><svg width="16" height="22" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="3" height="18" rx="1" fill="rgba(212,175,55,0.45)"/><rect x="2" y="6" width="12" height="2.5" rx="1" fill="rgba(212,175,55,0.45)"/><circle cx="8" cy="4.5" r="0.8" fill="rgba(220,38,38,0.55)"/></svg></div>
+              {/* Anillo exterior de cruces - rodea todo el cuadro, container responsive */}
+              <div className="cross-ring" aria-hidden="true">
+                <span className="cross-ring-item" style={{left:'8%',top:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.38)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.38)"/></svg></span>
+                <span className="cross-ring-item" style={{left:'28%',top:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.38)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.38)"/></svg></span>
+                <span className="cross-ring-item" style={{left:'50%',top:'-18px',transform:'translateX(-50%)'}}><svg width="12" height="16" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.8" height="14" rx="1" fill="rgba(212,175,55,0.5)"/><rect x="2.5" y="6" width="11" height="2.2" rx="1" fill="rgba(212,175,55,0.5)"/></svg></span>
+                <span className="cross-ring-item" style={{right:'28%',top:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.38)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.38)"/></svg></span>
+                <span className="cross-ring-item" style={{right:'8%',top:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.38)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.38)"/></svg></span>
+                <span className="cross-ring-item" style={{left:'8%',bottom:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(220,38,38,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(220,38,38,0.32)"/></svg></span>
+                <span className="cross-ring-item" style={{left:'28%',bottom:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(220,38,38,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(220,38,38,0.32)"/></svg></span>
+                <span className="cross-ring-item" style={{left:'50%',bottom:'-18px',transform:'translateX(-50%)'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(220,38,38,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(220,38,38,0.32)"/></svg></span>
+                <span className="cross-ring-item" style={{right:'28%',bottom:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(220,38,38,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(220,38,38,0.32)"/></svg></span>
+                <span className="cross-ring-item" style={{right:'8%',bottom:'-18px'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(220,38,38,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(220,38,38,0.32)"/></svg></span>
+                <span className="cross-ring-item cross-side" style={{left:'-18px',top:'18%'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.32)"/></svg></span>
+                <span className="cross-ring-item cross-side" style={{left:'-18px',top:'50%',transform:'translateY(-50%)'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.32)"/></svg></span>
+                <span className="cross-ring-item cross-side" style={{left:'-18px',bottom:'18%'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.32)"/></svg></span>
+                <span className="cross-ring-item cross-side" style={{right:'-18px',top:'18%'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.32)"/></svg></span>
+                <span className="cross-ring-item cross-side" style={{right:'-18px',top:'50%',transform:'translateY(-50%)'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.32)"/></svg></span>
+                <span className="cross-ring-item cross-side" style={{right:'-18px',bottom:'18%'}}><svg width="10" height="14" viewBox="0 0 16 22" fill="none"><rect x="6.5" y="2" width="2.5" height="12" rx="1" fill="rgba(212,175,55,0.32)"/><rect x="3" y="5" width="10" height="2" rx="1" fill="rgba(212,175,55,0.32)"/></svg></span>
+              </div>
             </div>
           </motion.div>
         </div>
