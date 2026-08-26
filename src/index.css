@@ -339,6 +339,8 @@ p {
 }
 
 @media (max-width: 768px) {
-  .section-wrapper { padding: 48px 0; }
-  .container, .container-lg, .container-sm { padding: 0 16px; }
+  .section-wrapper { padding: 48px 5vw; }
+  .container, .container-lg, .container-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
+  .main-wrapper { padding-left: 5vw !important; padding-right: 5vw !important; }
+  .main-wrapper .container, .main-wrapper .container-lg, .main-wrapper .container-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
 }

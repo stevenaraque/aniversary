@@ -190,7 +190,7 @@ export default function Intro({ onNext }) {
           </div>
           <motion.div initial={{opacity:0,scale:0.97,filter:'blur(8px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-visible">
             <style>{`
-              .gothic-prism{position:relative;width:100%;max-width:575px;--crimson:#dc2626;--gold:#d4af37;--bone:#e8dcc8;--obsidian:#0a0a0f; margin:0 auto}
+              .gothic-prism{position:relative;width:100%;max-width:420px;--crimson:#dc2626;--gold:#d4af37;--bone:#e8dcc8;--obsidian:#0a0a0f; margin:0 auto}
               @property --prism{syntax:'<angle>';initial-value:0deg;inherits:false}
               .prism-border{position:absolute;inset:-3px;border-radius:4px;background:conic-gradient(from var(--prism),rgba(220,38,38,0.5) 0%,rgba(127,29,29,0.3) 8%,transparent 16%,rgba(212,175,55,0.4) 28%,rgba(139,105,20,0.2) 36%,transparent 44%,rgba(232,220,200,0.15) 52%,transparent 60%,rgba(220,38,38,0.45) 72%,rgba(127,29,29,0.25) 80%,transparent 88%,rgba(212,175,55,0.35) 96%,rgba(220,38,38,0.5) 100%);animation:prismSpin 12s linear infinite;filter:blur(0.5px)}
               @keyframes prismSpin{to{--prism:360deg}}
@@ -215,21 +215,21 @@ export default function Intro({ onNext }) {
               .cross-ring-item{position:absolute;filter:drop-shadow(0 0 6px rgba(212,175,55,0.2));animation:cornerGlow 4s ease infinite}
               .cross-ring-item:nth-child(3),.cross-ring-item:nth-child(8){animation-delay:1s}
               @media(max-width:640px){.cross-left{left:8px}.cross-right{right:8px}.cross-bottom{bottom:8px}.top-cross-prism{top:-22px}.cross-ring{inset:-16px}.cross-ring .cross-side{display:none}}
-              .image-area-prism{position:relative;margin:20px;border-radius:2px;overflow:hidden;z-index:3;border:1px solid rgba(255,255,255,0.03);line-height:0}
-              .image-area-prism img{width:100%;height:auto;display:block;filter:saturate(0.85) contrast(1.05) brightness(0.92);transition:filter 0.6s,transform 0.8s}
+              .image-area-prism{position:relative;margin:20px;border-radius:2px;overflow:hidden;z-index:3;border:1px solid rgba(255,255,255,0.03);line-height:0;max-height:82dvh}
+              .image-area-prism img{width:100%;height:auto;max-height:82dvh;object-fit:cover;object-position:center bottom;display:block;filter:saturate(0.85) contrast(1.05) brightness(0.92);transition:filter 0.6s,transform 0.8s}
               .gothic-prism:hover .image-area-prism img{filter:saturate(0.98) contrast(1.08) brightness(0.96);transform:scale(1.015)}
               .image-overlay-prism{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,15,0.28) 0%,transparent 32%,transparent 68%,rgba(10,10,15,0.38) 100%),linear-gradient(90deg,rgba(10,10,15,0.14) 0%,transparent 22%,transparent 78%,rgba(10,10,15,0.14) 100%);z-index:4;pointer-events:none}
               .inner-vig-prism{position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 45%,rgba(10,10,15,0.48) 100%);z-index:4;pointer-events:none}
               .frame-caption-prism{position:absolute;bottom:12px;left:12px;right:12px;z-index:10;text-align:center;pointer-events:none;background:linear-gradient(to top,rgba(10,10,15,0.65),transparent);padding:10px 0 4px;border-radius:0 0 2px 2px}
               .frame-caption-prism .line-prism{width:40px;height:1px;margin:0 auto 8px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent)}
               .frame-caption-prism span{font-family:'Cinzel Decorative',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(232,220,200,0.45)}
-              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px}}
+              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px;max-height:62dvh}.image-area-prism img{height:auto;max-height:62dvh}}
             `}</style>
             <div className="gothic-prism">
               <div className="prism-border"></div>
               <div className="crystal-frame">
                 <div className="image-area-prism">
-                  <img src="/puzzle-main.jpg" alt="Nosotros" loading="eager" />
+                  <img src="/intro-main.webp" alt="Nosotros" loading="eager" />
                   <div className="image-overlay-prism"></div>
                   <div className="inner-vig-prism"></div>
                 </div>
