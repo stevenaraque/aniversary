@@ -44,36 +44,32 @@ export default function Letter({ onNext }) {
 
         {!isOpen ? (
           <motion.div
-            className="cursor-pointer mt-6 w-full max-w-[280px] sm:max-w-[320px] mx-auto"
+            className="cursor-pointer mt-6 mx-auto flex justify-center"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ ...springs.gentle, delay: 0.2 }}
             onClick={() => setIsOpen(true)}
           >
-            <motion.div
-              className="glass glass-refraction w-full aspect-[3/4] max-w-[280px] sm:max-w-[320px] mx-auto rounded-3xl flex flex-col items-center justify-center relative overflow-hidden interact-lift"
-              whileHover={{ scale: 1.04, y: -4 }}
-              whileTap={{ scale: 0.96 }}
-              animate={{
-                boxShadow: [
-                  '0 0 20px rgba(139,0,0,0.05), 0 8px 32px rgba(0,0,0,0.3)',
-                  '0 0 40px rgba(220,20,60,0.12), 0 12px 40px rgba(0,0,0,0.4)',
-                  '0 0 20px rgba(139,0,0,0.05), 0 8px 32px rgba(0,0,0,0.3)',
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <div className="absolute inset-0 bg-linear-to-b from-crimson/3 to-transparent" />
-              <Mail className="w-20 h-20 text-crimson/40 mb-6 relative z-10" />
-              <p className="text-white/30 text-sm relative z-10">Toca para abrir</p>
-              <motion.span
-                className="absolute bottom-4"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <FlowerIcon className="w-5 h-5 text-sunflower/40" />
-              </motion.span>
-            </motion.div>
+            <style>{`
+              .letter-card{width:260px;height:360px;background:linear-gradient(145deg,#1a0f0f 0%,#2a1111 50%,#0a0a0f 100%);border:1px solid rgba(212,175,55,0.22);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;transition:0.2s ease-in-out;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.55),0 0 40px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08)}
+              .letter-img{height:32%;position:absolute;transition:0.2s ease-in-out;z-index:1;color:rgba(220,20,60,0.55);filter:drop-shadow(0 0 12px rgba(220,20,60,0.2))}
+              .letter-textBox{opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:0.2s ease-in-out;z-index:2;text-align:center}
+              .letter-textBox .head{font-size:22px;font-weight:700;letter-spacing:0.18em;font-family:'Cinzel',serif;color:#f9e076;text-shadow:0 0 16px rgba(212,175,55,0.3)}
+              .letter-textBox span{font-size:11px;color:rgba(232,220,200,0.65);letter-spacing:0.2em;text-transform:uppercase}
+              .letter-card:hover > .letter-textBox{opacity:1}
+              .letter-card:hover > .letter-img{height:62%;filter:blur(6px);animation:letterAnim 3s infinite}
+              @keyframes letterAnim{0%{transform:translateY(0)}50%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+              .letter-card:hover{transform:scale(1.04) rotate(-1deg);border-color:rgba(212,175,55,0.35);box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 50px rgba(139,0,0,0.18)}
+              .letter-card:active{transform:scale(0.97)}
+              @media(max-width:640px){.letter-card{width:195px;height:285px}.letter-textBox .head{font-size:19px}}
+            `}</style>
+            <div className="letter-card">
+              <Mail className="letter-img w-20 h-20 sm:w-24 sm:h-24" />
+              <div className="letter-textBox">
+                <p className="head">Ábreme</p>
+                <span>con amor ♡</span>
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div
