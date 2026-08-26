@@ -86,13 +86,13 @@ export default function Puzzle({ onNext }) {
           <div className="hidden sm:inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/15">
             <BatIcon className="w-3.5 h-3.5 text-crimson/60" /><span className="text-xs tracking-[0.2em] uppercase text-white/50">Nuestro puzzle</span><FlowerIcon className="w-3.5 h-3.5 text-gold/50" />
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[0.9] w-full" style={{fontFamily:'Cinzel,serif'}}><span className="text-gradient-blood">Pieza</span> <span className="text-white">a pieza</span></h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[0.9] w-full" style={{fontFamily:'Cinzel,serif', textShadow:'0 2px 20px rgba(0,0,0,0.9), 0 0 30px rgba(255,255,255,0.08)'}}><span className="text-gradient-blood">Pieza</span> <span className="text-white">a pieza</span></h2>
           <div className="w-full max-w-[572px] mx-auto flex flex-col gap-2.5 sm:gap-3 text-center">
-            <p className="text-white/90 text-sm sm:text-[15px] leading-relaxed italic font-light" style={{fontFamily:'Cormorant Garamond,serif'}}>Piensa conmigo por un momento...</p>
-            <p className="text-white/90 text-sm sm:text-[15px] leading-relaxed" style={{fontFamily:'Cormorant Garamond,serif'}}>Si juntos podemos tomar estos fragmentos dispersos y, con paciencia y amor, ordenarlos hasta revelar la imagen completa...</p>
-            <p className="text-gold-light text-sm sm:text-[15px] leading-relaxed font-medium" style={{fontFamily:'Cormorant Garamond,serif'}}>dime, ¿por qué juntos no vamos a poder con todo lo demás?</p>
-            <p className="text-white/75 text-xs sm:text-[13px] leading-relaxed italic" style={{fontFamily:'Cormorant Garamond,serif'}}>Cada pieza que encaja es un recuerdo que vuelve a su lugar. Cada movimiento es un paso que damos el uno hacia el otro. No hay desorden que no podamos abrazar, ni distancia que no podamos acortar, cuando lo hacemos tomados de la mano.</p>
-            <div className="flex items-center justify-center gap-2 mt-1 text-gold/50 text-[11px] tracking-[0.2em] uppercase"><span className="w-6 h-px bg-gold/20" /> Juntos, todo encaja <span className="w-6 h-px bg-gold/20" /></div>
+            <p className="text-white/90 text-sm sm:text-[15px] leading-relaxed italic font-light" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 12px rgba(0,0,0,0.85), 0 0 20px rgba(255,255,255,0.07)'}}>Piensa conmigo por un momento...</p>
+            <p className="text-white/90 text-sm sm:text-[15px] leading-relaxed" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 12px rgba(0,0,0,0.85), 0 0 20px rgba(255,255,255,0.07)'}}>Si juntos podemos tomar estos fragmentos dispersos y, con paciencia y amor, ordenarlos hasta revelar la imagen completa...</p>
+            <p className="text-gold-light text-sm sm:text-[15px] leading-relaxed font-medium" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 10px rgba(0,0,0,0.7), 0 0 16px rgba(212,175,55,0.18)'}}>dime, ¿por qué juntos no vamos a poder con todo lo demás?</p>
+            <p className="text-white/75 text-xs sm:text-[13px] leading-relaxed italic" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 10px rgba(0,0,0,0.75), 0 0 18px rgba(255,255,255,0.05)'}}>Cada pieza que encaja es un recuerdo que vuelve a su lugar. Cada movimiento es un paso que damos el uno hacia el otro. No hay desorden que no podamos abrazar, ni distancia que no podamos acortar, cuando lo hacemos tomados de la mano.</p>
+            <div className="flex items-center justify-center gap-2 mt-1 text-gold/50 text-[11px] tracking-[0.2em] uppercase" style={{textShadow:'0 0 12px rgba(212,175,55,0.15)'}}><span className="w-6 h-px bg-gold/20" /> Juntos, todo encaja <span className="w-6 h-px bg-gold/20" /></div>
           </div>
         </div>
 

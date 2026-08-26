@@ -178,8 +178,8 @@ export default function Intro({ onNext }) {
                 <span className="block text-white drop-shadow-[0_0_22px_rgba(212,175,55,0.28)]" style={{fontFamily:'Cinzel,serif'}}>Tiempo</span>
               </h1>
               <div className="filigree my-1 w-full"><div className="filigree-diamond"></div></div>
-              <p className="text-gold-light/85 text-sm md:text-[17px] lg:text-[18px] leading-7 w-full max-w-none font-light italic" style={{fontFamily:'Cormorant Garamond,serif'}}>
-                Dos años de nosotros. Un instante eterno.<br/><span className="text-white/55 text-sm not-italic">Lo que sigue es nuestro recuerdo, guardado en luz y sombra.</span>
+              <p className="text-white text-sm md:text-[17px] lg:text-[18px] leading-7 w-full max-w-none font-light italic" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 14px rgba(0,0,0,0.9), 0 0 22px rgba(255,255,255,0.14)', color:'#ffeec2'}}>
+                Dos años de nosotros. Un instante eterno.<br/><span className="text-sm not-italic" style={{color:'rgba(255,255,255,0.88)', textShadow:'0 1px 10px rgba(0,0,0,0.85), 0 0 18px rgba(255,255,255,0.1)'}}>Lo que sigue es nuestro recuerdo, guardado en luz y sombra.</span>
               </p>
               <span className="text-gold/30 text-[11px] tracking-[0.3em] w-full">⚜ — Aeternitas — ⚜</span>
             </motion.div>
