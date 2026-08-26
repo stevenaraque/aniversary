@@ -9,7 +9,7 @@ export default function Letter({ onNext }) {
 
   return (
     <motion.div
-      className="main-wrapper min-h-[100dvh] relative overflow-hidden flex flex-col items-center justify-center py-6 sm:py-8 bg-transparent"
+      className="main-wrapper min-h-[100dvh] relative overflow-visible flex flex-col items-center justify-center py-6 sm:py-8 bg-transparent"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -29,22 +29,24 @@ export default function Letter({ onNext }) {
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </motion.div>
 
-      <div className="container-sm relative z-10 flex flex-col items-center justify-center w-full max-w-full px-4 sm:px-6 text-center overflow-hidden">
+      <div className="container-sm relative z-10 flex flex-col items-center justify-center w-full max-w-full px-4 sm:px-6 text-center overflow-visible gap-8 sm:gap-10">
         <motion.div
           initial={{ y: -20, opacity: 0, filter: 'blur(8px)' }}
           animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
           transition={springs.gentle}
+          className="flex flex-col items-center gap-3 sm:gap-4 pb-2"
         >
-          <Feather className="w-10 h-10 text-crimson/30 mx-auto mb-4" />
-          <h2 className="text-4xl md:text-6xl font-bold mb-3">
+          <Feather className="w-10 h-10 text-crimson/30 mx-auto" />
+          <h2 className="text-4xl md:text-6xl font-bold leading-tight">
             <span className="text-gradient-blood">Una carta</span>{' '}
             <span className="text-white">para ti</span>
           </h2>
+          <div className="w-12 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent mt-2" />
         </motion.div>
 
         {!isOpen ? (
           <motion.div
-            className="cursor-pointer mt-6 mx-auto flex justify-center"
+            className="cursor-pointer mt-2 mx-auto flex justify-center overflow-visible p-4"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ ...springs.gentle, delay: 0.2 }}
@@ -57,11 +59,11 @@ export default function Letter({ onNext }) {
               .letter-textBox .head{font-size:22px;font-weight:700;letter-spacing:0.18em;font-family:'Cinzel',serif;color:#f9e076;text-shadow:0 0 16px rgba(212,175,55,0.3)}
               .letter-textBox span{font-size:11px;color:rgba(232,220,200,0.65);letter-spacing:0.2em;text-transform:uppercase}
               .letter-card:hover > .letter-textBox{opacity:1}
-              .letter-card:hover > .letter-img{height:62%;filter:blur(6px);animation:letterAnim 3s infinite}
-              @keyframes letterAnim{0%{transform:translateY(0)}50%{transform:translateY(-14px)}100%{transform:translateY(0)}}
-              .letter-card:hover{transform:scale(1.04) rotate(-1deg);border-color:rgba(212,175,55,0.35);box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 50px rgba(139,0,0,0.18)}
-              .letter-card:active{transform:scale(0.97)}
-              @media(max-width:640px){.letter-card{width:195px;height:285px}.letter-textBox .head{font-size:19px}}
+              .letter-card:hover > .letter-img{height:52%;filter:blur(5px);animation:letterAnim 3s infinite}
+              @keyframes letterAnim{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+              .letter-card:hover{transform:scale(1.03) rotate(-0.6deg);border-color:rgba(212,175,55,0.35);box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 50px rgba(139,0,0,0.18)}
+              .letter-card:active{transform:scale(0.98)}
+              @media(max-width:640px){.letter-card{width:195px;height:285px}.letter-textBox .head{font-size:19px}.letter-card:hover > .letter-img{height:58%}}
             `}</style>
             <div className="letter-card">
               <Mail className="letter-img w-20 h-20 sm:w-24 sm:h-24" />
