@@ -25,6 +25,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
+  const goPrev = useCallback(() => {
+    setSection(current => {
+      const idx = SECTIONS.indexOf(current)
+      return SECTIONS[Math.max(idx - 1, 0)]
+    })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
   return (
     <div className="min-h-screen relative">
       <CosmosBackground />
@@ -34,7 +42,7 @@ export default function App() {
         {section === 'countdown' && <Countdown key="countdown" onNext={goNext} />}
         {section === 'puzzle' && <Puzzle key="puzzle" onNext={goNext} />}
         {section === 'memories' && <MemoryLane key="memories" memories={memories} onNext={goNext} />}
-        {section === 'letter' && <Letter key="letter" onNext={goNext} />}
+        {section === 'letter' && <Letter key="letter" onNext={goNext} onPrev={goPrev} />}
         {section === 'collage' && <Collage key="collage" photos={photos} onNext={goNext} />}
         {section === 'playlist' && <Playlist key="playlist" songs={songs} />}
       </AnimatePresence>
