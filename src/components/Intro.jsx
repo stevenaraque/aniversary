@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
-import { Heart, Skull, Crown, Gem } from 'lucide-react'
+import { Heart, Skull, Crown, Gem, Lock, Unlock } from 'lucide-react'
 import { BatIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -101,6 +101,14 @@ function GothicButton({ onClick, children }) {
 }
 
 export default function Intro({ onNext }) {
+  const [code, setCode] = useState('')
+  const [error, setError] = useState('')
+  const [shake, setShake] = useState(false)
+  const CORRECT = '654321'
+  const handleUnlock = () => {
+    if (code === CORRECT) { setError(''); onNext() }
+    else { setError('Clave incorrecta'); setShake(true); setTimeout(()=>setShake(false), 400) }
+  }
   return (
     <motion.div className="main-wrapper min-h-[100dvh] h-[100dvh] relative overflow-hidden flex items-center justify-center bg-transparent" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
       <StarRainCanvas />
@@ -184,7 +192,14 @@ export default function Intro({ onNext }) {
               <span className="text-gold/30 text-[11px] tracking-[0.3em] w-full">⚜ — Aeternitas — ⚜</span>
             </motion.div>
             <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{...springs.gentle,delay:0.8}} className="flex flex-col items-center gap-3 mt-1 w-full">
-              <GothicButton onClick={onNext}>Recordemos</GothicButton>
+              <div className={`flex items-center gap-2 glass px-4 py-2.5 rounded-full border ${error ? 'border-crimson/50' : 'border-gold/20'} transition-colors ${shake ? 'animate-[shake_0.4s_ease]' : ''}`} style={{boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>
+                <Lock className={`w-3.5 h-3.5 ${error ? 'text-crimson' : 'text-gold/60'}`} />
+                <input type="password" inputMode="numeric" maxLength={6} value={code} onChange={e=>{setCode(e.target.value.replace(/\D/g,'')); setError('')}} onKeyDown={e=>e.key==='Enter' && handleUnlock()} placeholder="Clave 6 dígitos" className="bg-transparent outline-none text-white text-sm tracking-[0.3em] placeholder:text-white/25 placeholder:tracking-normal w-32 sm:w-36 text-center" aria-label="Clave" />
+                {code.length===6 && <span className={`w-2 h-2 rounded-full ${code===CORRECT?'bg-emerald-500':'bg-gold/40'}`} />}
+              </div>
+              {error && <span className="text-crimson text-xs tracking-wide -mt-1">{error}</span>}
+              <style>{`@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}`}</style>
+              <GothicButton onClick={handleUnlock}>Recordemos</GothicButton>
               <span className="text-white/20 text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2"><Skull className="w-3 h-3"/> 26 DE AGOSTO <Skull className="w-3 h-3"/></span>
             </motion.div>
           </div>
