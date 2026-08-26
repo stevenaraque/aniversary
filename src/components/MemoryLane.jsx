@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronLeft, ChevronRight, X, Camera, BookOpen, Mail } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Camera, BookOpen, Mail, Lock, Unlock } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -35,6 +35,9 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
   const [current, setCurrent] = useState(0)
   const [showLightbox, setShowLightbox] = useState(false)
   const [showDesc, setShowDesc] = useState(false)
+  const [readSet, setReadSet] = useState(() => new Set())
+  const isAllRead = readSet.size >= memories.length
+  const handleShowDesc = () => { setReadSet(prev => { const n = new Set(prev); n.add(current); return n }); setShowDesc(true) }
 
   const next = () => { setCurrent((c) => (c + 1) % memories.length); setShowDesc(false) }
   const prev = () => { setCurrent((c) => (c - 1 + memories.length) % memories.length); setShowDesc(false) }
@@ -56,26 +59,23 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
           <p className="text-gold/30 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-widest mt-2"><FlowerIcon className="w-3.5 h-3.5" /> {current + 1} / {memories.length} <FlowerIcon className="w-3.5 h-3.5" /></p>
         </motion.div>
 
-        {/* Grid container: izquierda botón/desc, derecha imagen - cada div se adapta */}
-        <div className="w-full max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-6 lg:gap-10 items-center">
-          {/* Izquierda: Título + dos botones agrandados y más separados */}
-          <div className="order-2 lg:order-1 w-full flex flex-col items-center text-center gap-5 px-2 sm:px-4">
-            <h3 className="text-7xl sm:text-8xl font-bold text-white flex items-center gap-3" style={{fontFamily:'Cinzel,serif'}}><BookOpen className="w-10 h-10 sm:w-12 sm:h-12 text-gold/60" /> Historia</h3>
-            <div className="w-full flex flex-col items-center gap-10 sm:gap-14">
-              <button onClick={()=>setShowDesc(true)} className="relative inline-flex items-center justify-center px-30 py-20 overflow-hidden tracking-tighter text-white bg-[#0a0a0f] border border-gold/20 rounded-md group hover:border-gold/30 transition-colors origin-center">
-                <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-gold rounded-full group-hover:w-[22rem] group-hover:h-[22rem] opacity-90"></span>
-                <span className="absolute bottom-0 left-0 h-full -ml-2"><svg xmlns="http://www.w3.org/2000/svg" className="w-auto h-full opacity-10" viewBox="0 0 487 487"><path fill="#FFF" d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"/></svg></span>
-                <span className="absolute top-0 right-0 w-12 h-full -mr-3"><svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-10" viewBox="0 0 487 487"><path fill="#FFF" d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"/></svg></span>
-                <span className="absolute inset-0 w-full h-full -mt-1 rounded-md opacity-20 bg-gradient-to-b from-transparent via-transparent to-white/30"></span>
-                <span className="relative text-base font-semibold tracking-wide flex items-center gap-2" style={{fontFamily:'Cinzel,serif'}}>leer historia <BookOpen className="w-5 h-5" /></span>
+        {/* Grid container: centrado y proporcionado */}
+        <div className="w-full max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-12 items-center justify-items-center">
+          {/* Izquierda: Titulo + botones compactos y espaciados limpio */}
+          <div className="order-2 lg:order-1 w-full max-w-[360px] lg:max-w-[380px] mx-auto flex flex-col items-center text-center gap-6">
+            <h3 className="text-3xl sm:text-4xl font-bold text-white flex items-center gap-2.5" style={{fontFamily:'Cinzel,serif', textShadow:'0 2px 16px rgba(0,0,0,0.6)'}}><BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-gold/60" /> Historia</h3>
+            <p className="text-white/70 text-sm leading-relaxed -mt-2" style={{fontFamily:'Cormorant Garamond,serif'}}>{readSet.size} / {memories.length} historias leídas</p>
+            <div className="w-full flex flex-col items-center gap-4">
+              <button onClick={handleShowDesc} className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0a0a0f] border border-gold/20 rounded-xl text-white font-medium text-sm tracking-wide hover:border-gold/35 hover:bg-[#141414] transition-all duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+                <BookOpen className="w-4 h-4 text-gold/70" /> <span style={{fontFamily:'Cinzel,serif'}}>Leer historia</span>
+                {readSet.has(current) && <span className="ml-1 w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.6)]" title="Leída" />}
               </button>
-              <button onClick={onNext} className="relative inline-flex items-center justify-center px-30 py-20 overflow-hidden tracking-tighter text-white bg-[#0a0a0f] border border-gold/20 rounded-md group hover:border-gold/30 transition-colors origin-center">
-                <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-gold rounded-full group-hover:w-[22rem] group-hover:h-[22rem] opacity-90"></span>
-                <span className="absolute bottom-0 left-0 h-full -ml-2"><svg xmlns="http://www.w3.org/2000/svg" className="w-auto h-full opacity-10" viewBox="0 0 487 487"><path fill="#FFF" d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"/></svg></span>
-                <span className="absolute top-0 right-0 w-12 h-full -mr-3"><svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-10" viewBox="0 0 487 487"><path fill="#FFF" d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"/></svg></span>
-                <span className="absolute inset-0 w-full h-full -mt-1 rounded-md opacity-20 bg-gradient-to-b from-transparent via-transparent to-white/30"></span>
-                <span className="relative text-base font-semibold tracking-wide flex items-center gap-2" style={{fontFamily:'Cinzel,serif'}}>vamos a leer <Mail className="w-5 h-5" /></span>
+              <button onClick={onNext} disabled={!isAllRead} className={`w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-medium text-sm tracking-wide transition-all duration-200 border ${isAllRead ? 'bg-crimson border-crimson/30 text-white hover:bg-[#b91c1c] hover:border-gold/20 shadow-[0_4px_20px_rgba(220,38,38,0.25)] cursor-pointer' : 'bg-[#0a0a0f]/60 border-white/10 text-white/35 cursor-not-allowed backdrop-blur-sm'}`}>
+                {isAllRead ? <Unlock className="w-4 h-4 text-white/90" /> : <Lock className="w-4 h-4 text-white/30" />}
+                <span style={{fontFamily:'Cinzel,serif'}}>{isAllRead ? 'Leer la carta' : `Desbloquea (${readSet.size}/${memories.length})`}</span>
+                {isAllRead ? <Mail className="w-4 h-4 text-white/80" /> : null}
               </button>
+              {!isAllRead && <p className="text-white/30 text-[11px] tracking-wide text-center -mt-1">Lee todas las historias para desbloquear</p>}
             </div>
           </div>
 
@@ -107,15 +107,16 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
         
       </div>
 
-      {/* Sub-ventana descripción */}
+      {/* Sub-ventana descripción — compacta, nunca ancho completo */}
       <AnimatePresence>
         {showDesc && (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setShowDesc(false)}>
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setShowDesc(false)}>
             <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
-            <motion.div className="relative glass glass-prominent rounded-2xl p-6 sm:p-8 max-w-lg w-full max-h-[80vh] overflow-auto" initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} exit={{scale:0.9,opacity:0}} transition={springs.gentle} onClick={e=>e.stopPropagation()}>
+            <motion.div className="relative glass glass-prominent rounded-2xl p-6 sm:p-7 w-[92vw] sm:w-full max-w-[420px] max-h-[75vh] overflow-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)]" initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} exit={{scale:0.9,opacity:0}} transition={springs.gentle} onClick={e=>e.stopPropagation()}>
               <button onClick={()=>setShowDesc(false)} className="absolute top-3 right-3 w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-white/10"><X className="w-4 h-4 text-white/60" /></button>
-              <div className="flex items-center gap-2 mb-4 text-gold/40 text-xs tracking-[0.2em] uppercase"><BookOpen className="w-4 h-4" /> Recuerdo {current+1}</div>
-              <p className="text-white/90 text-base sm:text-lg leading-relaxed text-center" style={{fontFamily:'Cormorant Garamond,serif'}}>{currentMemory.caption}</p>
+              <div className="flex items-center gap-2 mb-4 text-gold/50 text-xs tracking-[0.2em] uppercase"><BookOpen className="w-4 h-4" /> Recuerdo {current+1} de {memories.length} {readSet.has(current) ? '✓' : ''}</div>
+              <p className="text-white/90 text-base sm:text-[17px] leading-relaxed text-center" style={{fontFamily:'Cormorant Garamond,serif'}}>{currentMemory.caption}</p>
+              <button onClick={()=>setShowDesc(false)} className="mt-6 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 text-sm transition-colors">Cerrar</button>
             </motion.div>
           </motion.div>
         )}
