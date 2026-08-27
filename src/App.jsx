@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, MotionConfig } from 'motion/react'
 import CosmosBackground from './components/CosmosBackground'
 import Intro from './components/Intro'
 import Countdown from './components/Countdown'
@@ -34,6 +34,7 @@ export default function App() {
   }, [])
 
   return (
+    <MotionConfig reducedMotion="never">
     <div className="min-h-screen relative">
       <CosmosBackground />
       <div className="relative z-10">
@@ -48,5 +49,6 @@ export default function App() {
       </AnimatePresence>
       </div>
     </div>
+    </MotionConfig>
   )
 }

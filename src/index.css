@@ -379,3 +379,65 @@ h1, h2, h3, span, p, a, li {
   .main-wrapper .container, .main-wrapper .container-lg, .main-wrapper .container-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
   .main-wrapper .umbra-hero { height: auto !important; min-height: 100dvh !important; align-items: flex-start !important; padding-top: 12px; padding-bottom: 12px; }
 }
+
+/* === Botón 3D Nuestra Música === */
+.d3warpper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  transform-style: preserve-3d;
+  perspective: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem auto;
+  cursor: pointer;
+}
+
+.cover {
+  background-color: var(--color-deep-black);
+  height: 64px;
+  width: 75px;
+  border-radius: 10px;
+  transform: rotateX(13deg);
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 11px;
+  box-shadow: 0px 1px 1px 1px var(--color-gold);
+}
+
+.button {
+  cursor: pointer;
+  border: none;
+  border-bottom: 2px solid var(--color-crimson);
+  background-color: var(--color-gold-light);
+  box-shadow: 0px 4px 0px 0.2px var(--color-crimson);
+  height: 60px;
+  width: 70px;
+  border-radius: 8px;
+  transform: rotateX(13deg);
+  z-index: 2;
+  position: absolute;
+  transition: 80ms;
+  color: var(--color-deep-black);
+  font-size: 22px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:active {
+  box-shadow: 0px 4px 0px 0.2px transparent;
+  transform: translateY(4.5px);
+  transition: 80ms;
+}
+
+@media (max-width: 640px) {
+  .d3warpper { width: 64px; height: 64px; }
+  .cover { height: 52px; width: 60px; }
+  .button { height: 48px; width: 56px; font-size: 18px; }
+}
