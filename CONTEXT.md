@@ -30,7 +30,7 @@
 
 ## Flujo App (`src/App.jsx:15`)
 
-`SECTIONS = ['intro','countdown','puzzle','memories','letter','collage','playlist']` con `useState` + `goNext` + `AnimatePresence mode="wait"`. `CosmosBackground` fijo global + `relative z-10`.
+`SECTIONS = ['intro','countdown','puzzle','memories','letter','collage','playlist','final']` 8 secciones con `useState` lazy `sessionStorage` + `goNext`/`goPrev` + `resetProgress` + `AnimatePresence mode="wait"`. `CosmosBackground` fijo global + `relative z-10`. Persistencia: `sessionStorage 'aniversary:section'` sobrevive reloads, se borra al cerrar navegador/pestaña. `Playlist.jsx` `onNext`→`final`, `onReset`→`intro`. `Final.jsx:1` es scrollable con `CosmosBackground` visible.
 
 | Sección | Archivo | Notas |
 |---------|---------|-------|
@@ -39,8 +39,9 @@
 | Puzzle | `Puzzle.jsx:64` | 4×4 premium |
 | MemoryLane | `MemoryLane.jsx:17` | Swipe drag x 80/vel 400 |
 | Letter | `Letter.jsx:8` | Sobre rotateY |
-| Collage | `Collage.jsx:39` | Masonry |
-| Playlist | `Playlist.jsx:14` | Visualizer |
+| Collage | `Collage.jsx:39` | Masonry 13 fotos sin hueco |
+| Playlist | `Playlist.jsx:14` | Visualizer + `onNext`→`final` |
+| Final | `Final.jsx:1` | Hero Elena&Matteo + declaración + timeline 5 + gallery 5 + vow ∞ + lightbox, scroll, Marcellus |
 
 ---
 
@@ -87,5 +88,7 @@ git log --oneline -5
 - **Botón 3D Nuestra música** `index.css:384` `Collage.jsx:253` — pegado al borde. Aplicado CSS Uiverse `chintu_2484`: `.cover` black 64×75 white shadow, `.button` #ddd rgb(221) white border, `box-shadow rgb(116)`, `active translateY(4.5px)`. Fix borde: `.d3warpper` `margin 0.5rem auto 1.5rem` + `scale:1`, `Collage.jsx` `main-wrapper pb-10 sm:pb-14` y contenedor botón `mb-10 pb-6` para respiración y clic sin clipping (overflow visible).
 - **Botón fix 28-08 v2** `Collage.jsx:64` `index.css:434` — pegado en computador + animación no se veía. `main-wrapper pb-16 sm:pb-20` + spacer `h-10 sm:h-14` (~1cm extra scroll) para que no quede pegado al borde y deje hacer scroll. Animación: `handleMusicPress` `Collage.jsx:67` con `isPressing` + `setTimeout 220ms` antes de `onNext`, botón con clase `.pressed` `index.css:434` `rotateX(13deg) translateY(4.5px)` preservando perspectiva, se ve hundirse y luego navega.
 - **Navegación atrás** `App.jsx:42` `Countdown.jsx:52` `Puzzle.jsx:25` `MemoryLane.jsx:35` `Letter.jsx:7` `Collage.jsx:61` `Playlist.jsx:45` — agregado `goPrev` a todas las secciones (excepto `Intro` que es inicio). Botón glass `ArrowLeft` `absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass border-white/10 hover:border-gold/25` consistente en todas las páginas, `Letter.jsx:342` ya tenía y se mantiene. Build OK 62kB CSS / 450kB JS.
+- **Persistencia sessionStorage** `App.jsx:16` `App.jsx:33` `Playlist.jsx:45` — `STORAGE_KEY='aniversary:section'`, `useState` lazy lee `sessionStorage`, `useEffect` guarda cada cambio. Reload mantiene sección. Cerrar navegador/pestaña borra → vuelve a `intro`. `Playlist.jsx` `onReset` limpia storage.
+- **Página Final** `Final.jsx:1` `App.jsx:15` `index.html:11` — convertida de HTML a React con `motion` reveal `whileInView`, `HERO` Elena&Matteo `/ DECLARATION / TIMELINE 5 / GALLERY 5 + lightbox / VOW ∞ / FOOTER`, `Marcellus` agregada `index.html:11`, `SECTIONS` 7→8, `Playlist` ahora `onNext`→`final`, `Final` con `onPrev`/`onReset` + `CosmosBackground` global visible, scroll `100vh` hero + `section` 100px. Build OK 63kB CSS / 466kB JS.
 - Push pendiente
 

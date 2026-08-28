@@ -42,7 +42,7 @@ function Visualizer({ playing }) {
   )
 }
 
-export default function Playlist({ songs = PLACEHOLDER_SONGS, onPrev }) {
+export default function Playlist({ songs = PLACEHOLDER_SONGS, onPrev, onNext, onReset }) {
   const [current, setCurrent] = useState(0)
   const [playing, setPlaying] = useState(false)
   const audioRef = useRef(null)
@@ -239,6 +239,16 @@ export default function Playlist({ songs = PLACEHOLDER_SONGS, onPrev }) {
             <BatIcon className="w-3 h-3" />
             <FlowerIcon className="w-3 h-3" />
           </p>
+          {onNext && (
+            <button onClick={onNext} className="mt-8 w-full max-w-[260px] mx-auto px-6 py-3 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2" style={{ fontFamily: 'Cinzel,serif' }}>
+              Ver frase final <Heart className="w-4 h-4 text-white" fill="currentColor" />
+            </button>
+          )}
+          {onReset && (
+            <button onClick={onReset} className="mt-4 glass px-5 py-2 rounded-full text-white/30 text-[11px] tracking-[0.18em] uppercase hover:text-white/60 hover:border-gold/20 border border-transparent transition-colors" style={{ fontFamily: 'Cinzel,serif' }}>
+              Volver al inicio
+            </button>
+          )}
         </motion.div>
       </div>
     </motion.div>
