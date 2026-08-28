@@ -40,12 +40,12 @@ export default function App() {
       <div className="relative z-10">
       <AnimatePresence mode="wait">
         {section === 'intro' && <Intro key="intro" onNext={goNext} />}
-        {section === 'countdown' && <Countdown key="countdown" onNext={goNext} />}
-        {section === 'puzzle' && <Puzzle key="puzzle" onNext={goNext} />}
-        {section === 'memories' && <MemoryLane key="memories" memories={memories} onNext={goNext} />}
+        {section === 'countdown' && <Countdown key="countdown" onNext={goNext} onPrev={goPrev} />}
+        {section === 'puzzle' && <Puzzle key="puzzle" onNext={goNext} onPrev={goPrev} />}
+        {section === 'memories' && <MemoryLane key="memories" memories={memories} onNext={goNext} onPrev={goPrev} />}
         {section === 'letter' && <Letter key="letter" onNext={goNext} onPrev={goPrev} />}
-        {section === 'collage' && <Collage key="collage" photos={photos} onNext={goNext} />}
-        {section === 'playlist' && <Playlist key="playlist" songs={songs} />}
+        {section === 'collage' && <Collage key="collage" photos={photos} onNext={goNext} onPrev={goPrev} />}
+        {section === 'playlist' && <Playlist key="playlist" songs={songs} onPrev={goPrev} />}
       </AnimatePresence>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Heart, Crown, Gem } from 'lucide-react'
+import { Heart, Crown, Gem, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
@@ -49,12 +49,17 @@ function TimeBlock({ value, label, delay, accent, max }) {
   )
 }
 
-export default function Countdown({ onNext }) {
+export default function Countdown({ onNext, onPrev }) {
   const [time, setTime] = useState(calculateTime())
   useEffect(() => { const t=setInterval(()=>setTime(calculateTime()),1000); return()=>clearInterval(t) }, [])
 
   return (
     <motion.div className="main-wrapper min-h-[100dvh] h-[100dvh] relative overflow-hidden flex items-center justify-center bg-transparent" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+      {onPrev && (
+        <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
       <style>{`
         .countdown-bg{position:absolute;inset:0;pointer-events:none;opacity:0.06}
         .countdown-circle{position:absolute;border:1px solid rgba(212,175,55,0.4);border-radius:50%;animation:countPulse 9s ease infinite;will-change:transform,opacity}

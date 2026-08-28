@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronLeft, ChevronRight, X, Camera, BookOpen, Mail, Lock, Unlock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Camera, BookOpen, Mail, Lock, Unlock, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -32,7 +32,7 @@ function SwipeableCard({ children, onSwipeLeft, onSwipeRight }) {
 }
 
 const LS_KEY = 'aniversary:memoryLane:read'
-export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) {
+export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext, onPrev }) {
   const [current, setCurrent] = useState(0)
   const [showLightbox, setShowLightbox] = useState(false)
   const [showDesc, setShowDesc] = useState(false)
@@ -59,6 +59,11 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext }) 
 
   return (
     <motion.div className="main-wrapper min-h-[100dvh] relative overflow-visible flex flex-col items-center justify-center py-8 sm:py-10 bg-transparent" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+      {onPrev && (
+        <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
       <div className="absolute top-8 left-4 sm:left-8 opacity-[0.05] hidden sm:block pointer-events-none">
         <BatIcon className="w-5 h-5 text-crimson" />
       </div>

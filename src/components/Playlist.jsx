@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'motion/react'
-import { Play, Pause, SkipBack, SkipForward, Music, Heart, ListMusic } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Music, Heart, ListMusic, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
@@ -42,7 +42,7 @@ function Visualizer({ playing }) {
   )
 }
 
-export default function Playlist({ songs = PLACEHOLDER_SONGS }) {
+export default function Playlist({ songs = PLACEHOLDER_SONGS, onPrev }) {
   const [current, setCurrent] = useState(0)
   const [playing, setPlaying] = useState(false)
   const audioRef = useRef(null)
@@ -65,6 +65,11 @@ export default function Playlist({ songs = PLACEHOLDER_SONGS }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      {onPrev && (
+        <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
       <motion.div
         className="absolute top-10 left-6 sm:left-10 hidden sm:block"
         animate={{ opacity: 0.07, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}

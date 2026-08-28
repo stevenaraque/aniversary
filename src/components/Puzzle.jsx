@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Trophy } from 'lucide-react'
+import { Trophy, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -22,7 +22,7 @@ function shuffleBoard() {
 }
 function getPos(i){return{row:Math.floor(i/GRID_SIZE),col:i%GRID_SIZE}}
 
-export default function Puzzle({ onNext }) {
+export default function Puzzle({ onNext, onPrev }) {
   const [board,setBoard]=useState(()=>shuffleBoard())
   const [moves,setMoves]=useState(0)
   const [solved,setSolved]=useState(false)
@@ -60,6 +60,11 @@ export default function Puzzle({ onNext }) {
 
   return (
     <motion.div className="main-wrapper min-h-[100dvh] relative overflow-hidden flex items-center justify-center py-6 sm:py-8" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+      {onPrev && (
+        <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
       <style>{`
         .prism-ring{position:absolute;inset:-2px;border-radius:20px;background:conic-gradient(from var(--prism,0deg),rgba(220,38,38,.45) 0%,rgba(127,29,29,.2) 8%,transparent 16%,rgba(212,175,55,.35) 28%,rgba(139,105,20,.15) 36%,transparent 44%,rgba(232,220,200,.1) 52%,transparent 60%,rgba(220,38,38,.4) 72%,transparent 88%,rgba(212,175,55,.3) 96%,rgba(220,38,38,.45) 100%);animation:prismSpin 10s linear infinite;z-index:0;filter:blur(.5px)}
         @keyframes prismSpin{to{--prism:360deg}}

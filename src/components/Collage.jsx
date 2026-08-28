@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
-import { X, ChevronLeft, ChevronRight, Camera, Music } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Camera, Music, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -23,7 +23,7 @@ const TAG_LABELS = {
 }
 const FILTER_KEYS = ['all', ...TAGS]
 
-// Distribución de spans — el último ahora es 2x2 para llenar sin dejar hueco
+// Distribución de spans — orig estable (13 fotos = sin hueco, 12 = hueco 1 celda al final limpio)
 const SPANS = [
   'span-2x2', 'span-1x1', 'span-1x1', 'span-1x2',
   'span-2x1', 'span-1x1', 'span-1x1', 'span-2x2',
@@ -58,11 +58,21 @@ function buildItems(photos) {
   }))
 }
 
-export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
+export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev }) {
   const items = useMemo(() => buildItems(photos), [photos])
   const [filter, setFilter] = useState('all')
   const [selected, setSelected] = useState(null)
+  const [isPressing, setIsPressing] = useState(false)
   const reduceMotion = useReducedMotion()
+
+  const handleMusicPress = useCallback(() => {
+    if (isPressing) return
+    setIsPressing(true)
+    window.setTimeout(() => {
+      setIsPressing(false)
+      onNext?.()
+    }, 220)
+  }, [isPressing, onNext])
 
   const visible = useMemo(
     () => (filter === 'all' ? items : items.filter((it) => it.tag === filter)),
@@ -97,12 +107,17 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
 
   return (
     <motion.div
-      className="main-wrapper min-h-[100dvh] relative flex flex-col items-center py-6 sm:py-10"
+      className="main-wrapper min-h-[100dvh] relative flex flex-col items-center py-6 sm:py-10 pb-16 sm:pb-20"
       style={{ overflow: 'visible' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      {onPrev && (
+        <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
       <style>{`
         .collage-grid{display:grid;gap:10px;grid-auto-flow:dense;grid-template-columns:repeat(1,minmax(0,1fr))}
         @media(min-width:640px){.collage-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
@@ -250,18 +265,19 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
           </p>
         )}
 
-        <div className="flex flex-col items-center gap-3 mt-12 mb-8">
+        <div className="flex flex-col items-center gap-3 mt-12 mb-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...springs.gentle, delay: 0.5 }}
             className="d3warpper"
-            onClick={onNext}
+            onClick={handleMusicPress}
             role="button"
             aria-label="Escuchar nuestra música"
+            aria-pressed={isPressing}
           >
             <div className="cover">
-              <button className="button" aria-label="Reproducir música">
+              <button className={`button ${isPressing ? 'pressed' : ''}`} aria-label="Reproducir música" tabIndex={-1}>
                 <Music className="w-5 h-5" />
               </button>
             </div>
@@ -270,6 +286,8 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext }) {
             Nuestra música
           </span>
         </div>
+        {/* Spacer 1cm+ para scroll extra y que botón no quede pegado al borde */}
+        <div className="h-10 sm:h-14 w-full shrink-0" aria-hidden="true" />
       </div>
 
       <AnimatePresence>

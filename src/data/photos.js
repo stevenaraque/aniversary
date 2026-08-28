@@ -15,6 +15,7 @@ const photos = [
   '/puzzle-main.jpg',
   '/puzzle-main.jpg',
   '/puzzle-main.jpg',
+  '/puzzle-main.jpg',
 ]
 
 export default photos

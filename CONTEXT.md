@@ -82,3 +82,10 @@ git log --oneline -5
 - MemoryLane responsive + puzzle centrado + margenes invisibles estandarizados en todas las secciones
 - Push 09bc618
 
+## Update 28-08-2026
+- **Collage fix hueco** `Collage.jsx:27` `photos.js:13` — 12 fotos daba `XXX.` 1 celda hueco al final (holes 1 frag 0). Fix inicial `3x1→2x1` + último `2x2→2x1` fragmentó grilla (`XX.X` en medio, holes 4 frag 2, se veía más grande). Revertido a SPANS orig estable. Solución: `photos.js` 12→13 fotos (agregado 1 `'/puzzle-main.jpg'`) → packing denso 4 cols `XXXX` holes 0 frag 0 perfecto sin hueco. 13 es count óptimo con SPANS orig; 12 y 15 dan hueco limpio al final inevitable.
+- **Botón 3D Nuestra música** `index.css:384` `Collage.jsx:253` — pegado al borde. Aplicado CSS Uiverse `chintu_2484`: `.cover` black 64×75 white shadow, `.button` #ddd rgb(221) white border, `box-shadow rgb(116)`, `active translateY(4.5px)`. Fix borde: `.d3warpper` `margin 0.5rem auto 1.5rem` + `scale:1`, `Collage.jsx` `main-wrapper pb-10 sm:pb-14` y contenedor botón `mb-10 pb-6` para respiración y clic sin clipping (overflow visible).
+- **Botón fix 28-08 v2** `Collage.jsx:64` `index.css:434` — pegado en computador + animación no se veía. `main-wrapper pb-16 sm:pb-20` + spacer `h-10 sm:h-14` (~1cm extra scroll) para que no quede pegado al borde y deje hacer scroll. Animación: `handleMusicPress` `Collage.jsx:67` con `isPressing` + `setTimeout 220ms` antes de `onNext`, botón con clase `.pressed` `index.css:434` `rotateX(13deg) translateY(4.5px)` preservando perspectiva, se ve hundirse y luego navega.
+- **Navegación atrás** `App.jsx:42` `Countdown.jsx:52` `Puzzle.jsx:25` `MemoryLane.jsx:35` `Letter.jsx:7` `Collage.jsx:61` `Playlist.jsx:45` — agregado `goPrev` a todas las secciones (excepto `Intro` que es inicio). Botón glass `ArrowLeft` `absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass border-white/10 hover:border-gold/25` consistente en todas las páginas, `Letter.jsx:342` ya tenía y se mantiene. Build OK 62kB CSS / 450kB JS.
+- Push pendiente
+
