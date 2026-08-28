@@ -51,43 +51,43 @@ export default function Final({ onPrev, onReset }) {
         .final-hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; position: relative; }
         .final-pre { font-family: 'Sora', sans-serif; font-weight: 200; font-size: clamp(0.65rem, 1.2vw, 0.8rem); letter-spacing: 0.5em; text-transform: uppercase; color: rgba(255,234,167,0.35); margin-bottom: 32px; }
         .final-names { display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
-        .final-name { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(2.8rem, 8vw, 6rem); color: #ffd700; letter-spacing: 0.04em; line-height: 1.1; text-shadow: 0 0 40px rgba(255,215,0,0.3), 0 0 100px rgba(255,215,0,0.1); }
-        .final-amp { font-family: 'Marcellus', serif; font-size: clamp(1.4rem, 3vw, 2.2rem); color: #c78b1e; letter-spacing: 0.1em; opacity: 0.6; flex-shrink: 0; }
-        .final-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #c78b1e, transparent); margin-bottom: 32px; }
+        .final-name { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(2.8rem, 8vw, 6rem); color: #d4af37; letter-spacing: 0.04em; line-height: 1.1; text-shadow: 0 0 40px rgba(212,175,55,0.3), 0 0 100px rgba(212,175,55,0.1); }
+        .final-amp { font-family: 'Marcellus', serif; font-size: clamp(1.4rem, 3vw, 2.2rem); color: #b8941f; letter-spacing: 0.1em; opacity: 0.6; flex-shrink: 0; }
+        .final-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #b8941f, transparent); margin-bottom: 32px; }
         .final-quote { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1rem, 2vw, 1.3rem); color: rgba(255,234,167,0.7); max-width: 500px; line-height: 1.8; letter-spacing: 0.02em; }
         .final-scroll { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; animation: finalFloat 3s ease-in-out infinite; }
         .final-scroll span { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,234,167,0.35); }
-        .final-scroll-line { width: 1px; height: 30px; background: linear-gradient(to bottom, #c78b1e, transparent); }
+        .final-scroll-line { width: 1px; height: 30px; background: linear-gradient(to bottom, #b8941f, transparent); }
         @keyframes finalFloat { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
         .final-section { padding: 100px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
         .final-label { font-family: 'Sora', sans-serif; font-weight: 200; font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,234,167,0.35); text-align: center; margin-bottom: 48px; }
-        .final-divider { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, #c78b1e, transparent); margin: 0 auto; }
+        .final-divider { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, #b8941f, transparent); margin: 0 auto; }
         .final-declaration { text-align: center; }
         .final-declaration blockquote { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.15rem, 2.5vw, 1.6rem); line-height: 2; color: rgba(255,234,167,0.7); max-width: 620px; margin: 0 auto; position: relative; }
-        .final-declaration blockquote::before { content: ''; display: block; width: 40px; height: 1px; background: #c78b1e; margin: 0 auto 40px; }
-        .final-declaration blockquote::after { content: ''; display: block; width: 40px; height: 1px; background: #c78b1e; margin: 40px auto 0; }
+        .final-declaration blockquote::before { content: ''; display: block; width: 40px; height: 1px; background: #b8941f; margin: 0 auto 40px; }
+        .final-declaration blockquote::after { content: ''; display: block; width: 40px; height: 1px; background: #b8941f; margin: 40px auto 0; }
         .final-timeline { position: relative; padding-left: 40px; }
-        .final-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, #c78b1e 10%, #c78b1e 90%, transparent); }
+        .final-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, #b8941f 10%, #b8941f 90%, transparent); }
         .final-tl-item { position: relative; margin-bottom: 60px; }
         .final-tl-item:last-child { margin-bottom: 0; }
-        .final-tl-dot { position: absolute; left: -40px; top: 6px; width: 15px; height: 15px; border: 1px solid #c78b1e; border-radius: 50%; background: #050510; display: flex; align-items: center; justify-content: center; }
-        .final-tl-dot::after { content: ''; width: 5px; height: 5px; background: #ffd700; border-radius: 50%; }
-        .final-tl-date { font-family: 'Marcellus', serif; font-size: 0.85rem; color: #c78b1e; letter-spacing: 0.15em; margin-bottom: 8px; }
-        .final-tl-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(1.2rem, 2.5vw, 1.6rem); color: #fff8e0; margin-bottom: 10px; letter-spacing: 0.02em; }
+        .final-tl-dot { position: absolute; left: -40px; top: 6px; width: 15px; height: 15px; border: 1px solid #b8941f; border-radius: 50%; background: #050505; display: flex; align-items: center; justify-content: center; }
+        .final-tl-dot::after { content: ''; width: 5px; height: 5px; background: #d4af37; border-radius: 50%; }
+        .final-tl-date { font-family: 'Marcellus', serif; font-size: 0.85rem; color: #b8941f; letter-spacing: 0.15em; margin-bottom: 8px; }
+        .final-tl-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(1.2rem, 2.5vw, 1.6rem); color: #f9e076; margin-bottom: 10px; letter-spacing: 0.02em; }
         .final-tl-text { font-weight: 200; font-size: 0.9rem; color: rgba(255,234,167,0.7); line-height: 1.8; max-width: 550px; }
         .final-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 700px; margin: 0 auto; }
         .final-gallery-item { aspect-ratio: 1; overflow: hidden; border-radius: 2px; position: relative; cursor: pointer; }
         .final-gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
         .final-gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.15) brightness(0.85) contrast(1.05); transition: filter 0.6s, transform 0.8s cubic-bezier(0.22,1,0.36,1); }
         .final-gallery-item:hover img { filter: sepia(0) brightness(0.95) contrast(1.1); transform: scale(1.05); }
-        .final-gallery-item::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(255,215,0,0.08); border-radius: 2px; pointer-events: none; transition: border-color 0.4s; }
-        .final-gallery-item:hover::after { border-color: rgba(255,215,0,0.2); }
+        .final-gallery-item::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(212,175,55,0.08); border-radius: 2px; pointer-events: none; transition: border-color 0.4s; }
+        .final-gallery-item:hover::after { border-color: rgba(212,175,55,0.2); }
         .final-vow { text-align: center; padding: 120px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .final-vow-text { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 2; color: #fff8e0; max-width: 600px; margin: 0 auto; letter-spacing: 0.01em; text-shadow: 0 0 30px rgba(255,215,0,0.15); }
-        .final-vow-sig { margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1.1rem; color: #c78b1e; letter-spacing: 0.08em; }
-        .final-infinity { display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #c78b1e; font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; opacity: 0.25; letter-spacing: 0.3em; user-select: none; }
+        .final-vow-text { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 2; color: #f9e076; max-width: 600px; margin: 0 auto; letter-spacing: 0.01em; text-shadow: 0 0 30px rgba(212,175,55,0.15); }
+        .final-vow-sig { margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1.1rem; color: #b8941f; letter-spacing: 0.08em; }
+        .final-infinity { display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #b8941f; font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; opacity: 0.25; letter-spacing: 0.3em; user-select: none; }
         .final-footer { text-align: center; padding: 60px 24px 80px; position: relative; max-width: 800px; margin: 0 auto; width: 100%; }
-        .final-footer::before { content: ''; display: block; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #c78b1e, transparent); margin: 0 auto 40px; }
+        .final-footer::before { content: ''; display: block; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #b8941f, transparent); margin: 0 auto 40px; }
         .final-footer-text { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; color: rgba(255,234,167,0.35); letter-spacing: 0.05em; }
         @media (max-width: 600px) {
           .final-gallery { grid-template-columns: repeat(2, 1fr); }
@@ -182,7 +182,7 @@ export default function Final({ onPrev, onReset }) {
 
       <AnimatePresence>
         {lightbox && (
-          <motion.div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#020208]/90 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} role="dialog" aria-label="Imagen ampliada">
+          <motion.div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} role="dialog" aria-label="Imagen ampliada">
             <span className="absolute top-7 right-9 text-white/40 text-xs tracking-[0.2em] uppercase cursor-pointer hover:text-gold transition-colors" onClick={() => setLightbox(null)}>Cerrar</span>
             <motion.img src={lightbox} alt="Imagen ampliada" className="max-w-[85vw] max-h-[85vh] object-contain rounded-sm" initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} transition={springs.gentle} onClick={e => e.stopPropagation()} />
           </motion.div>
