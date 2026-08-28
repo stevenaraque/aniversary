@@ -40,7 +40,7 @@ export default function Final({ onPrev, onReset }) {
       exit={{ opacity: 0 }}
     >
       {onPrev && (
-        <button onClick={onPrev} aria-label="Volver" className="fixed top-4 left-4 sm:top-6 sm:left-6 z-30 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+        <button onClick={onPrev} aria-label="Volver" className="fixed top-4 left-4 sm:top-6 sm:left-6 z-30 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-crimson/30 hover:text-crimson text-white/60 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
       )}
@@ -49,46 +49,46 @@ export default function Final({ onPrev, onReset }) {
         @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
         .final-page { position: relative; z-index: 1; width: 100%; }
         .final-hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; position: relative; }
-        .final-pre { font-family: 'Sora', sans-serif; font-weight: 200; font-size: clamp(0.65rem, 1.2vw, 0.8rem); letter-spacing: 0.5em; text-transform: uppercase; color: rgba(255,234,167,0.35); margin-bottom: 32px; }
+        .final-pre { font-family: 'Sora', sans-serif; font-weight: 200; font-size: clamp(0.65rem, 1.2vw, 0.8rem); letter-spacing: 0.5em; text-transform: uppercase; color: rgba(255,234,167,0.32); margin-bottom: 32px; }
         .final-names { display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
-        .final-name { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(2.8rem, 8vw, 6rem); color: #d4af37; letter-spacing: 0.04em; line-height: 1.1; text-shadow: 0 0 40px rgba(212,175,55,0.3), 0 0 100px rgba(212,175,55,0.1); }
-        .final-amp { font-family: 'Marcellus', serif; font-size: clamp(1.4rem, 3vw, 2.2rem); color: #b8941f; letter-spacing: 0.1em; opacity: 0.6; flex-shrink: 0; }
-        .final-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #b8941f, transparent); margin-bottom: 32px; }
-        .final-quote { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1rem, 2vw, 1.3rem); color: rgba(255,234,167,0.7); max-width: 500px; line-height: 1.8; letter-spacing: 0.02em; }
+        .final-name { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(2.8rem, 8vw, 6rem); letter-spacing: 0.04em; line-height: 1.1; background: linear-gradient(135deg, #dc143c 0%, #8b0000 55%, #4a0e0e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 24px rgba(220,20,60,0.35)) drop-shadow(0 0 60px rgba(139,0,0,0.18)); }
+        .final-amp { font-family: 'Marcellus', serif; font-size: clamp(1.4rem, 3vw, 2.2rem); color: #d4af37; letter-spacing: 0.1em; opacity: 0.55; flex-shrink: 0; text-shadow: 0 0 12px rgba(212,175,55,0.25); }
+        .final-line { width: 72px; height: 1px; background: linear-gradient(90deg, transparent, #dc143c 35%, #d4af37 65%, transparent); margin-bottom: 32px; }
+        .final-quote { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1rem, 2vw, 1.3rem); color: rgba(232,220,200,0.72); max-width: 520px; line-height: 1.8; letter-spacing: 0.02em; text-shadow: 0 1px 12px rgba(0,0,0,0.6); }
         .final-scroll { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; animation: finalFloat 3s ease-in-out infinite; }
-        .final-scroll span { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,234,167,0.35); }
-        .final-scroll-line { width: 1px; height: 30px; background: linear-gradient(to bottom, #b8941f, transparent); }
+        .final-scroll span { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,234,167,0.28); }
+        .final-scroll-line { width: 1px; height: 30px; background: linear-gradient(to bottom, #8b0000, transparent); }
         @keyframes finalFloat { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
         .final-section { padding: 100px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .final-label { font-family: 'Sora', sans-serif; font-weight: 200; font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,234,167,0.35); text-align: center; margin-bottom: 48px; }
-        .final-divider { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, #b8941f, transparent); margin: 0 auto; }
+        .final-label { font-family: 'Sora', sans-serif; font-weight: 200; font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(220,20,60,0.45); text-align: center; margin-bottom: 48px; }
+        .final-divider { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, #8b0000 20%, #dc143c 50%, #b8941f 80%, transparent); margin: 0 auto; }
         .final-declaration { text-align: center; }
-        .final-declaration blockquote { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.15rem, 2.5vw, 1.6rem); line-height: 2; color: rgba(255,234,167,0.7); max-width: 620px; margin: 0 auto; position: relative; }
-        .final-declaration blockquote::before { content: ''; display: block; width: 40px; height: 1px; background: #b8941f; margin: 0 auto 40px; }
-        .final-declaration blockquote::after { content: ''; display: block; width: 40px; height: 1px; background: #b8941f; margin: 40px auto 0; }
+        .final-declaration blockquote { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(1.15rem, 2.5vw, 1.6rem); line-height: 2; color: rgba(232,220,200,0.78); max-width: 620px; margin: 0 auto; position: relative; text-shadow: 0 1px 10px rgba(0,0,0,0.5); }
+        .final-declaration blockquote::before { content: ''; display: block; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #8b0000, #d4af37, transparent); margin: 0 auto 40px; }
+        .final-declaration blockquote::after { content: ''; display: block; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #d4af37, #8b0000, transparent); margin: 40px auto 0; }
         .final-timeline { position: relative; padding-left: 40px; }
-        .final-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, #b8941f 10%, #b8941f 90%, transparent); }
+        .final-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, #8b0000 8%, #dc143c 45%, #b8941f 88%, transparent); }
         .final-tl-item { position: relative; margin-bottom: 60px; }
         .final-tl-item:last-child { margin-bottom: 0; }
-        .final-tl-dot { position: absolute; left: -40px; top: 6px; width: 15px; height: 15px; border: 1px solid #b8941f; border-radius: 50%; background: #050505; display: flex; align-items: center; justify-content: center; }
-        .final-tl-dot::after { content: ''; width: 5px; height: 5px; background: #d4af37; border-radius: 50%; }
-        .final-tl-date { font-family: 'Marcellus', serif; font-size: 0.85rem; color: #b8941f; letter-spacing: 0.15em; margin-bottom: 8px; }
-        .final-tl-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(1.2rem, 2.5vw, 1.6rem); color: #f9e076; margin-bottom: 10px; letter-spacing: 0.02em; }
-        .final-tl-text { font-weight: 200; font-size: 0.9rem; color: rgba(255,234,167,0.7); line-height: 1.8; max-width: 550px; }
+        .final-tl-dot { position: absolute; left: -40px; top: 6px; width: 15px; height: 15px; border: 1px solid rgba(220,20,60,0.45); border-radius: 50%; background: #050505; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(220,20,60,0.18), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .final-tl-dot::after { content: ''; width: 5px; height: 5px; background: #d4af37; border-radius: 50%; box-shadow: 0 0 6px rgba(212,175,55,0.45); }
+        .final-tl-date { font-family: 'Marcellus', serif; font-size: 0.85rem; color: #dc143c; letter-spacing: 0.15em; margin-bottom: 8px; }
+        .final-tl-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(1.2rem, 2.5vw, 1.6rem); color: #f9e076; margin-bottom: 10px; letter-spacing: 0.02em; text-shadow: 0 1px 8px rgba(0,0,0,0.5); }
+        .final-tl-text { font-weight: 200; font-size: 0.9rem; color: rgba(232,220,200,0.68); line-height: 1.8; max-width: 550px; }
         .final-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 700px; margin: 0 auto; }
-        .final-gallery-item { aspect-ratio: 1; overflow: hidden; border-radius: 2px; position: relative; cursor: pointer; }
+        .final-gallery-item { aspect-ratio: 1; overflow: hidden; border-radius: 2px; position: relative; cursor: pointer; border: 1px solid rgba(212,175,55,0.06); }
         .final-gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
-        .final-gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.15) brightness(0.85) contrast(1.05); transition: filter 0.6s, transform 0.8s cubic-bezier(0.22,1,0.36,1); }
-        .final-gallery-item:hover img { filter: sepia(0) brightness(0.95) contrast(1.1); transform: scale(1.05); }
-        .final-gallery-item::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(212,175,55,0.08); border-radius: 2px; pointer-events: none; transition: border-color 0.4s; }
-        .final-gallery-item:hover::after { border-color: rgba(212,175,55,0.2); }
+        .final-gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.12) brightness(0.88) contrast(1.04) saturate(0.9); transition: filter 0.6s, transform 0.8s cubic-bezier(0.22,1,0.36,1); }
+        .final-gallery-item:hover img { filter: sepia(0) brightness(0.98) contrast(1.08); transform: scale(1.04); }
+        .final-gallery-item::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(220,20,60,0.08); border-radius: 2px; pointer-events: none; transition: border-color 0.4s, box-shadow 0.4s; }
+        .final-gallery-item:hover::after { border-color: rgba(220,20,60,0.22); box-shadow: inset 0 0 12px rgba(220,20,60,0.06); }
         .final-vow { text-align: center; padding: 120px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .final-vow-text { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 2; color: #f9e076; max-width: 600px; margin: 0 auto; letter-spacing: 0.01em; text-shadow: 0 0 30px rgba(212,175,55,0.15); }
-        .final-vow-sig { margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1.1rem; color: #b8941f; letter-spacing: 0.08em; }
-        .final-infinity { display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #b8941f; font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; opacity: 0.25; letter-spacing: 0.3em; user-select: none; }
+        .final-vow-text { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 2; color: #e8dcc8; max-width: 600px; margin: 0 auto; letter-spacing: 0.01em; text-shadow: 0 0 24px rgba(220,20,60,0.18), 0 1px 10px rgba(0,0,0,0.6); }
+        .final-vow-sig { margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1.1rem; color: #dc143c; letter-spacing: 0.08em; text-shadow: 0 0 12px rgba(220,20,60,0.25); }
+        .final-infinity { display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #8b0000; font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; opacity: 0.35; letter-spacing: 0.3em; user-select: none; text-shadow: 0 0 16px rgba(220,20,60,0.25); }
         .final-footer { text-align: center; padding: 60px 24px 80px; position: relative; max-width: 800px; margin: 0 auto; width: 100%; }
-        .final-footer::before { content: ''; display: block; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #b8941f, transparent); margin: 0 auto 40px; }
-        .final-footer-text { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; color: rgba(255,234,167,0.35); letter-spacing: 0.05em; }
+        .final-footer::before { content: ''; display: block; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #8b0000, #d4af37, transparent); margin: 0 auto 40px; }
+        .final-footer-text { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 0.95rem; color: rgba(232,220,200,0.32); letter-spacing: 0.05em; }
         @media (max-width: 600px) {
           .final-gallery { grid-template-columns: repeat(2, 1fr); }
           .final-gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; aspect-ratio: 16/10; }
@@ -173,7 +173,7 @@ export default function Final({ onPrev, onReset }) {
             <BatIcon className="w-4 h-4 text-crimson/40" />
           </div>
           {onReset && (
-            <motion.button initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5 }} onClick={onReset} className="mt-10 glass px-6 py-3 rounded-full text-white/60 text-xs tracking-[0.2em] uppercase hover:text-white hover:border-gold/30 border border-white/10 transition-colors" style={{ fontFamily: 'Cinzel,serif' }}>
+            <motion.button initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5 }} onClick={onReset} className="mt-10 glass px-6 py-3 rounded-full text-white/60 text-xs tracking-[0.2em] uppercase hover:text-white hover:border-crimson/30 border border-white/10 transition-colors" style={{ fontFamily: 'Cinzel,serif' }}>
               Volver al inicio ♡
             </motion.button>
           )}
@@ -183,7 +183,7 @@ export default function Final({ onPrev, onReset }) {
       <AnimatePresence>
         {lightbox && (
           <motion.div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} role="dialog" aria-label="Imagen ampliada">
-            <span className="absolute top-7 right-9 text-white/40 text-xs tracking-[0.2em] uppercase cursor-pointer hover:text-gold transition-colors" onClick={() => setLightbox(null)}>Cerrar</span>
+            <span className="absolute top-7 right-9 text-white/40 text-xs tracking-[0.2em] uppercase cursor-pointer hover:text-crimson transition-colors" onClick={() => setLightbox(null)}>Cerrar</span>
             <motion.img src={lightbox} alt="Imagen ampliada" className="max-w-[85vw] max-h-[85vh] object-contain rounded-sm" initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} transition={springs.gentle} onClick={e => e.stopPropagation()} />
           </motion.div>
         )}
