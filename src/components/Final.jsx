@@ -173,7 +173,7 @@ export default function Final({ onPrev, onReset }) {
             <BatIcon className="w-4 h-4 text-crimson/40" />
           </div>
           {onReset && (
-            <motion.button initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5 }} onClick={onReset} className="mt-10 glass px-6 py-3 rounded-full text-white/60 text-xs tracking-[0.2em] uppercase hover:text-white hover:border-crimson/30 border border-white/10 transition-colors" style={{ fontFamily: 'Cinzel,serif' }}>
+            <motion.button initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5 }} onClick={onReset} className="mt-10 glass px-6 py-3 rounded-full text-white/60 text-xs tracking-[0.2em] uppercase hover:text-white hover:border-crimson/30 border border-white/10 transition-colors" style={{ fontFamily: 'Cormorant Garamond,serif' }}>
               Volver al inicio ♡
             </motion.button>
           )}

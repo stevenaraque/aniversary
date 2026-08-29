@@ -16,9 +16,13 @@ export default function CosmosBackground() {
 
     function rand(a, b) { return Math.random() * (b - a) + a }
 
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    const STAR_COUNT = isMobile ? 140 : 300
+    const MAX_COMETS = isMobile ? 8 : 26
+    const MAX_P = isMobile ? 160 : 500
+
     const staticCanvas = document.createElement('canvas')
     const sCtx = staticCanvas.getContext('2d')
-    const STAR_COUNT = 300
     const starData = []
 
     function initStars() {
@@ -86,7 +90,6 @@ export default function CosmosBackground() {
     }
 
     const particles = []
-    const MAX_P = 500
 
     function spawnParticle(x, y) {
       if (particles.length >= MAX_P) {
@@ -154,7 +157,6 @@ export default function CosmosBackground() {
     for (let i = 0; i < 3; i++) starSprites.push(createStarSprite(6 + i * 3, (6 + i * 3) * 3))
 
     const comets = []
-    const MAX_COMETS = 18
     const COMET_PALETTES = [
       { head: '#fff8e0', mid: '#ffd700', tail: 'rgba(199,139,30,0)' },
       { head: '#fffbe6', mid: '#f5a623', tail: 'rgba(160,101,26,0)' },
@@ -162,25 +164,30 @@ export default function CosmosBackground() {
       { head: '#fff0d0', mid: '#e8941a', tail: 'rgba(139,94,15,0)' },
     ]
     function createComet() {
-      const baseAngle = -Math.PI * 0.25, angle = baseAngle + rand(-0.18, 0.18)
-      const speed = rand(3.2, 6.8), vx = Math.cos(angle) * speed, vy = Math.sin(angle) * speed
+      const baseAngle = -Math.PI * 0.22, angle = baseAngle + rand(-0.16, 0.16)
+      const speed = rand(4, 8), vx = Math.cos(angle) * speed, vy = Math.sin(angle) * speed
       const edge = Math.random()
       let x, y
-      if (edge < 0.6) { x = rand(-100, W * 0.5); y = H + rand(10, 150) }
-      else { x = rand(-150, -10); y = rand(H * 0.3, H + 100) }
+      if (edge < 0.5) { x = rand(-150, W); y = -rand(0, H * 0.4) }
+      else if (edge < 0.75) { x = rand(-150, W * 0.6); y = H + rand(10, 200) }
+      else { x = rand(-200, -10); y = rand(H * 0.1, H + 150) }
       const pal = COMET_PALETTES[(Math.random() * COMET_PALETTES.length) | 0]
-      return { x, y, vx, vy, tailLen: rand(140, 280), w: rand(1.0, 2.4), alive: true, brightness: rand(0.55, 0.95), sparkTimer: 0, head: pal.head, mid: pal.mid, tail: pal.tail, spriteIdx: (Math.random() * 3) | 0 }
+      return { x, y, vx, vy, tailLen: rand(240, 420), w: rand(1.2, 2.8), alive: true, brightness: rand(0.6, 1), sparkTimer: 0, head: pal.head, mid: pal.mid, tail: pal.tail, spriteIdx: (Math.random() * 3) | 0 }
     }
     function updateComet(c) { c.x += c.vx; c.y += c.vy; c.sparkTimer++; if (c.sparkTimer % 5 === 0) spawnParticle(c.x, c.y); if (c.y < -300 || c.x > W + 300) c.alive = false }
     function drawComet(c) {
       const spd = Math.sqrt(c.vx * c.vx + c.vy * c.vy), dx = -c.vx / spd, dy = -c.vy / spd, tx = c.x + dx * c.tailLen, ty = c.y + dy * c.tailLen
+      const gHalo = ctx.createLinearGradient(c.x, c.y, tx, ty)
+      gHalo.addColorStop(0, c.mid); gHalo.addColorStop(0.3, 'rgba(212,175,55,0.22)'); gHalo.addColorStop(1, c.tail)
+      ctx.globalAlpha = c.brightness * 0.32; ctx.strokeStyle = gHalo; ctx.lineWidth = c.w * 7; ctx.lineCap = 'round'
+      ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke()
       const gMid = ctx.createLinearGradient(c.x, c.y, tx, ty)
-      gMid.addColorStop(0, c.mid); gMid.addColorStop(0.35, 'rgba(199,139,30,0.4)'); gMid.addColorStop(1, c.tail)
-      ctx.globalAlpha = c.brightness * 0.55; ctx.strokeStyle = gMid; ctx.lineWidth = c.w * 3; ctx.lineCap = 'round'
+      gMid.addColorStop(0, c.mid); gMid.addColorStop(0.35, 'rgba(199,139,30,0.45)'); gMid.addColorStop(1, c.tail)
+      ctx.globalAlpha = c.brightness * 0.6; ctx.strokeStyle = gMid; ctx.lineWidth = c.w * 2.6; ctx.lineCap = 'round'
       ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke()
       const gCore = ctx.createLinearGradient(c.x, c.y, tx, ty)
-      gCore.addColorStop(0, c.head); gCore.addColorStop(0.2, c.mid); gCore.addColorStop(1, c.tail)
-      ctx.globalAlpha = c.brightness; ctx.strokeStyle = gCore; ctx.lineWidth = c.w
+      gCore.addColorStop(0, c.head); gCore.addColorStop(0.15, c.mid); gCore.addColorStop(1, c.tail)
+      ctx.globalAlpha = c.brightness; ctx.strokeStyle = gCore; ctx.lineWidth = c.w; ctx.lineCap = 'round'
       ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke()
       ctx.globalAlpha = 1
       const sprite = starSprites[c.spriteIdx], sz = sprite.width / 2
@@ -199,16 +206,17 @@ export default function CosmosBackground() {
       ctx.globalAlpha = 1
     }
 
-    let spawnTimer = 0, nextSpawn = rand(14, 26), frame = 0
+    // Spawn denso en desktop (cascada continua), espaciado en móvil
+    let spawnTimer = 0, nextSpawn = isMobile ? rand(20, 34) : rand(3, 7), frame = 0
     function loop() {
       frame++
       ctx.drawImage(staticCanvas, 0, 0)
       drawStars(frame)
       spawnTimer++
       if (spawnTimer >= nextSpawn) {
-        if (comets.length < MAX_COMETS) { const c = createComet(); comets.push(c); addFlash(c.x, c.y) }
-        if (Math.random() < 0.35 && comets.length < MAX_COMETS) comets.push(createComet())
-        spawnTimer = 0; nextSpawn = rand(18, 34)
+        if (comets.length < MAX_COMETS) { const c = createComet(); comets.push(c); if (comets.length < MAX_COMETS * 0.5) addFlash(c.x, c.y) }
+        if (!isMobile && Math.random() < 0.5 && comets.length < MAX_COMETS) comets.push(createComet())
+        spawnTimer = 0; nextSpawn = isMobile ? rand(20, 32) : rand(2, 5)
       }
       updateAndDrawParticles()
       for (let i = comets.length - 1; i >= 0; i--) { updateComet(comets[i]); if (!comets[i].alive) comets.splice(i, 1) }

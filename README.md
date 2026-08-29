@@ -20,7 +20,7 @@
 | 4 | **MemoryLane** | `MemoryLane.jsx:17` | Carrusel swipe `drag x` |
 | 5 | **Letter** | `Letter.jsx:8` | Sobre `rotateY` |
 | 6 | **Collage** | `Collage.jsx:39` | Masonry `columns` |
-| 7 | **Playlist** | `Playlist.jsx:14` | Player `glass-prominent` + visualizer |
+| 7 | **Playlist** | `Playlist.jsx:153` | Reproductor gótico: disco giratorio + lista panel + shuffle/repeat + visualizer |
 
 ---
 
@@ -37,7 +37,7 @@
 
 - `src/index.css:280` → `.main-wrapper`, `.container` 1200, `.container-lg` 1280, `.container-sm` 880, `px 20→16` móvil
 - Fondo global `CosmosBackground.jsx:1` `fixed inset-0` 300★ + 18☄ `spawn 2-8` visible detrás (`bg-transparent` en secciones)
-- Intro/Coundown `100dvh` sin scroll, centrado, `Cinzel` + `Cormorant`, `will-change` GPU
+- Intro/Coundown `100dvh` sin scroll, centrado, `Cormorant Garamond` (delicada), `will-change` GPU
 
 ---
 

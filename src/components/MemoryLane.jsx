@@ -13,7 +13,6 @@ const PLACEHOLDER_MEMORIES = [
 ]
 
 function SwipeableCard({ children, onSwipeLeft, onSwipeRight }) {
-  const x = { get: () => 0, set: () => {} }
   // Usamos motion.div con drag para swipe - simplificado sin useMotionValue para no romper container
   return (
     <motion.div
@@ -74,7 +73,7 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext, on
       <div className="container-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8 overflow-visible">
         <motion.div className="text-center w-full max-w-3xl mx-auto" initial={{y:-14,opacity:0,filter:'blur(6px)'}} animate={{y:0,opacity:1,filter:'blur(0px)'}} transition={springs.gentle}>
           <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-crimson/25 mx-auto mb-3" />
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold" style={{fontFamily:'Cinzel,serif'}}><span className="text-gradient-blood">Paseo de</span> <span className="text-white">recuerdos</span></h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold" style={{fontFamily:'Cormorant Garamond,serif'}}><span className="text-gradient-blood">Paseo de</span> <span className="text-white">recuerdos</span></h2>
           <p className="text-gold/30 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-widest mt-2"><FlowerIcon className="w-3.5 h-3.5" /> {current + 1} / {memories.length} <FlowerIcon className="w-3.5 h-3.5" /></p>
         </motion.div>
 
@@ -82,21 +81,21 @@ export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext, on
         <div className="w-full max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-12 items-center justify-items-center">
           {/* Izquierda: Titulo + botones compactos y espaciados limpio */}
           <div className="order-2 lg:order-1 w-full max-w-[360px] lg:max-w-[380px] mx-auto flex flex-col items-center text-center gap-6">
-            <h3 className="text-3xl sm:text-4xl font-bold text-white flex items-center gap-2.5" style={{fontFamily:'Cinzel,serif', textShadow:'0 2px 16px rgba(0,0,0,0.6)'}}><BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-gold/60" /> Historia</h3>
+            <h3 className="text-3xl sm:text-4xl font-bold text-white flex items-center gap-2.5" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 2px 16px rgba(0,0,0,0.6)'}}><BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-gold/60" /> Historia</h3>
             <p className="text-white/70 text-sm leading-relaxed -mt-2" style={{fontFamily:'Cormorant Garamond,serif'}}>{readSet.size} / {memories.length} historias leídas</p>
             <div className="w-full flex flex-col items-center gap-4">
               <button onClick={handleShowDesc} className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0a0a0f] border border-gold/20 rounded-xl text-white font-medium text-sm tracking-wide hover:border-gold/35 hover:bg-[#141414] transition-all duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-                <BookOpen className="w-4 h-4 text-gold/70" /> <span style={{fontFamily:'Cinzel,serif'}}>Leer historia</span>
+                <BookOpen className="w-4 h-4 text-gold/70" /> <span style={{fontFamily:'Cormorant Garamond,serif'}}>Leer historia</span>
                 {readSet.has(current) && <span className="ml-1 w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.6)]" title="Leída" />}
               </button>
               <button onClick={onNext} disabled={!isAllRead} className={`w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-medium text-sm tracking-wide transition-all duration-200 border ${isAllRead ? 'bg-crimson border-crimson/30 text-white hover:bg-[#b91c1c] hover:border-gold/20 shadow-[0_4px_20px_rgba(220,38,38,0.25)] cursor-pointer' : 'bg-[#0a0a0f]/60 border-white/10 text-white/35 cursor-not-allowed backdrop-blur-sm'}`}>
                 {isAllRead ? <Unlock className="w-4 h-4 text-white/90" /> : <Lock className="w-4 h-4 text-white/30" />}
-                <span style={{fontFamily:'Cinzel,serif'}}>{isAllRead ? 'Leer la carta' : `Desbloquea (${readSet.size}/${memories.length})`}</span>
+                <span style={{fontFamily:'Cormorant Garamond,serif'}}>{isAllRead ? 'Leer la carta' : `Desbloquea (${readSet.size}/${memories.length})`}</span>
                 {isAllRead ? <Mail className="w-4 h-4 text-white/80" /> : null}
               </button>
               {!isAllRead && <p className="text-white/30 text-[11px] tracking-wide text-center -mt-1">Lee todas las historias para desbloquear</p>}
               {readSet.size > 0 && (
-                <button onClick={handleResetProgress} className="text-white/25 text-[10px] tracking-widest uppercase hover:text-white/50 transition-colors" style={{fontFamily:'Cinzel,serif'}}>Reiniciar progreso</button>
+                <button onClick={handleResetProgress} className="text-white/25 text-[10px] tracking-widest uppercase hover:text-white/50 transition-colors" style={{fontFamily:'Cormorant Garamond,serif'}}>Reiniciar progreso</button>
               )}
             </div>
           </div>

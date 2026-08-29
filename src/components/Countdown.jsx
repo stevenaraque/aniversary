@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Heart, Crown, Gem, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import { springs, motionTokens } from '../lib/motion-tokens'
+import { springs } from '../lib/motion-tokens'
 
 const ANIVERSARY_DATE = new Date('2024-08-26T00:00:00')
 
@@ -41,7 +41,7 @@ function TimeBlock({ value, label, delay, accent, max }) {
           <circle cx="50" cy="50" r="42" fill="none" stroke={accent==='gold'?'rgba(212,175,55,0.5)':'rgba(220,38,38,0.45)'} strokeWidth="1.5" strokeLinecap="round" strokeDasharray={`${dash} ${circ - dash}`} style={{filter:'drop-shadow(0 0 4px rgba(212,175,55,0.25))'}} />
         </svg>
         <div className="absolute inset-[3px] rounded-[1.1rem] sm:rounded-[14px] border border-white/[0.04] pointer-events-none" />
-        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tabular-nums relative z-10" style={{fontFamily:'Cinzel,serif'}}><AnimatedNumber value={value} /></span>
+        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tabular-nums relative z-10" style={{fontFamily:'Cormorant Garamond,serif'}}><AnimatedNumber value={value} /></span>
         <span className="text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-white/30 mt-0.5 relative z-10">{label}</span>
         <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-gold/30 blur-[1px] pointer-events-none hidden sm:block" />
       </div>
@@ -67,7 +67,7 @@ export default function Countdown({ onNext, onPrev }) {
         .countdown-circle:nth-child(2){width:580px;height:580px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:3s;border-color:rgba(220,20,60,0.28)}
         @keyframes countPulse{0%,100%{opacity:0.06;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.1;transform:translate(-50%,-50%) scale(1.03)}}
         .countdown-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 40%,rgba(0,0,0,0.5) 100%);pointer-events:none}
-        .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-48%);font-family:'Cinzel',serif;font-weight:700;font-size:min(38vw,420px);line-height:1;color:rgba(212,175,55,0.035);letter-spacing:0.08em;pointer-events:none;user-select:none;filter:blur(0.5px)}
+        .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-48%);font-family:'Cormorant Garamond',serif;font-weight:700;font-size:min(38vw,420px);line-height:1;color:rgba(212,175,55,0.035);letter-spacing:0.08em;pointer-events:none;user-select:none;filter:blur(0.5px)}
         .filigree-count{width:100%;max-width:320px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.3) 20%,rgba(212,175,55,0.5) 50%,rgba(220,20,60,0.25) 80%,transparent);position:relative;display:flex;align-items:center;justify-content:center}
         .filigree-count::before,.filigree-count::after{content:'◆';position:absolute;top:50%;transform:translateY(-55%);font-size:8px;color:rgba(212,175,55,0.5)}
         .filigree-count::before{left:-8px}.filigree-count::after{right:-8px;color:rgba(220,38,38,0.4)}
@@ -88,7 +88,7 @@ export default function Countdown({ onNext, onPrev }) {
           <div className="flex items-center justify-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/15">
             <Crown className="w-3 h-3 text-gold/70" /><span className="text-[10px] tracking-[0.22em] uppercase text-gold-light/80">Mi Canelita</span><Gem className="w-3 h-3 text-crimson/60" />
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-none" style={{fontFamily:'Cinzel,serif', letterSpacing:'0.08em'}}><span className="text-gradient-blood">Tiempo</span> <span className="text-white">juntos</span></h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-none" style={{fontFamily:'Cormorant Garamond,serif', letterSpacing:'0.08em'}}><span className="text-gradient-blood">Tiempo</span> <span className="text-white">juntos</span></h2>
           <div className="flex items-center justify-center gap-2 text-gold/25 text-[11px] tracking-[0.25em] uppercase">
             <span className="hidden sm:block w-8 h-px bg-gradient-to-r from-transparent to-gold/20" /><BatIcon className="w-3.5 h-3.5 text-crimson/30" /><span>Desde el 26 de agosto de 2024</span><FlowerIcon className="w-3.5 h-3.5 text-gold/30" /><span className="hidden sm:block w-8 h-px bg-gradient-to-l from-transparent to-crimson/20" />
           </div>
@@ -121,7 +121,7 @@ export default function Countdown({ onNext, onPrev }) {
           <style>{`
             .pebble-button{position:relative;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 14px 22px;min-width:280px;max-width:100%;background:rgba(10,10,15,0.55);border:1px solid rgba(212,175,55,0.18);border-radius:50px;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,0.5),0 2px 8px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease;overflow:hidden;will-change:transform;transform:translateZ(0)}
             .pebble-button::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.1) 50%,transparent 100%);transition:left 0.6s ease;pointer-events:none}
-            .pebble-text{font-size:15px;font-weight:600;color:#f9e076;letter-spacing:0.04em;z-index:1;transition:letter-spacing 0.3s ease;text-shadow:0 1px 8px rgba(212,175,55,0.2);font-family:'Cinzel',serif;white-space:nowrap}
+            .pebble-text{font-size:15px;font-weight:600;color:#f9e076;letter-spacing:0.04em;z-index:1;transition:letter-spacing 0.3s ease;text-shadow:0 1px 8px rgba(212,175,55,0.2);font-family:'Cormorant Garamond',serif;white-space:nowrap}
             .pebble-icon{position:relative;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#8b0000 0%,#dc143c 45%,#b8941f 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,175,55,0.2);transition:transform 0.3s ease;z-index:1;flex-shrink:0;border:1px solid rgba(212,175,55,0.18);will-change:transform}
             .pebble-button:hover{transform:translateY(-2px) translateZ(0);box-shadow:0 12px 36px rgba(0,0,0,0.55),0 4px 12px rgba(139,0,0,0.15);border-color:rgba(212,175,55,0.28)}
             .pebble-button:hover::before{left:100%}

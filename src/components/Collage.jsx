@@ -130,9 +130,9 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
         .collage-item:hover .overlay{opacity:1}
         .collage-item .corner{position:absolute;top:10px;right:10px;width:24px;height:24px;border-top:1px solid rgba(212,175,55,.45);border-right:1px solid rgba(212,175,55,.45);opacity:0;transition:opacity .3s ease;z-index:2}
         .collage-item:hover .corner{opacity:1}
-        .collage-item .num{position:absolute;top:11px;left:13px;font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,.45);z-index:2;letter-spacing:.12em;opacity:0;transition:opacity .3s ease}
+        .collage-item .num{position:absolute;top:11px;left:13px;font-family:'Cormorant Garamond',serif;font-size:11px;color:rgba(255,255,255,.45);z-index:2;letter-spacing:.12em;opacity:0;transition:opacity .3s ease}
         .collage-item:hover .num{opacity:1}
-        .collage-item .t{font-family:'Cinzel',serif;font-size:15px;font-weight:600;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.85);margin-bottom:4px;letter-spacing:.04em}
+        .collage-item .t{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.85);margin-bottom:4px;letter-spacing:.04em}
         .collage-item .tg{font-family:'Sora',sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#d4af37;display:inline-flex;align-items:center;gap:6px}
         .collage-item .tg::before{content:'';width:10px;height:1px;background:rgba(212,175,55,.5)}
         @media(max-width:1023px){
@@ -190,7 +190,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
           transition={springs.gentle}
         >
           <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-crimson/30 mx-auto mb-3" />
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight" style={{ fontFamily: 'Cinzel,serif' }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight" style={{ fontFamily: 'Cormorant Garamond,serif' }}>
             <span className="text-gradient-blood">Nuestro</span> <span className="text-white">collage</span>
           </h2>
           <p className="text-crimson/40 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-widest mt-2">
@@ -218,7 +218,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
                     ? 'bg-gold/15 border-gold/55 text-gold-light shadow-[0_0_18px_rgba(212,175,55,0.18)]'
                     : 'glass border-white/8 text-white/55 hover:border-gold/25 hover:text-white/85'
                 }`}
-                style={{ fontFamily: 'Cinzel,serif' }}
+                style={{ fontFamily: 'Cormorant Garamond,serif' }}
                 aria-pressed={active}
               >
                 {TAG_LABELS[key]}
@@ -282,7 +282,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
               </button>
             </div>
           </motion.div>
-          <span className="text-xs tracking-[0.3em] uppercase text-gold-light" style={{ fontFamily: 'Cinzel,serif' }}>
+          <span className="text-xs tracking-[0.3em] uppercase text-gold-light" style={{ fontFamily: 'Cormorant Garamond,serif' }}>
             Nuestra música
           </span>
         </div>
@@ -347,10 +347,10 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
                 className="max-w-full max-h-[72vh] object-contain rounded-xl border border-gold/20 shadow-[0_24px_80px_rgba(0,0,0,0.6),0_0_60px_rgba(139,0,0,0.15)]"
               />
               <div className="mt-4 text-center">
-                <p className="text-white/95 text-base sm:text-lg" style={{ fontFamily: 'Cinzel,serif', letterSpacing: '0.04em' }}>
+                <p className="text-white/95 text-base sm:text-lg" style={{ fontFamily: 'Cormorant Garamond,serif', letterSpacing: '0.04em' }}>
                   {visible[selected].title}
                 </p>
-                <p className="text-gold-light text-[10px] sm:text-xs tracking-[0.22em] uppercase mt-1" style={{ fontFamily: 'Cinzel,serif' }}>
+                <p className="text-gold-light text-[10px] sm:text-xs tracking-[0.22em] uppercase mt-1" style={{ fontFamily: 'Cormorant Garamond,serif' }}>
                   <FlowerIcon className="w-3 h-3 inline-block mr-1.5 -mt-0.5" />
                   {TAG_LABELS[visible[selected].tag] || visible[selected].tag}
                   <span className="text-white/30 ml-2">· {selected + 1} / {visible.length}</span>

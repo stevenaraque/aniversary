@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
-import { Heart, Skull, Crown, Gem, Lock, Unlock } from 'lucide-react'
+import { Skull, Crown, Gem, Lock } from 'lucide-react'
 import { BatIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -181,9 +181,9 @@ export default function Intro({ onNext }) {
             {/* EXTENDIDO: max-w-3xl para no quede vacío centro */}
             <motion.div initial={{opacity:0,y:20,filter:'blur(6px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.45}} className="flex flex-col items-center gap-4 w-full max-w-full px-0 py-4 text-center">
               <span className="text-[10px] tracking-[0.45em] uppercase text-white/25 w-full">Mi Canelita ❋</span>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6rem] font-bold leading-[0.88] tracking-tight w-full" style={{fontFamily:'Cinzel,serif', letterSpacing:'0.12em'}}>
-                <span className="block text-gradient-blood" style={{fontFamily:'Cinzel,serif'}}>Nuestro</span>
-                <span className="block text-white drop-shadow-[0_0_22px_rgba(212,175,55,0.28)]" style={{fontFamily:'Cinzel,serif'}}>Tiempo</span>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6rem] font-bold leading-[0.88] tracking-tight w-full" style={{fontFamily:'Cormorant Garamond,serif', letterSpacing:'0.12em'}}>
+                <span className="block text-gradient-blood" style={{fontFamily:'Cormorant Garamond,serif'}}>Nuestro</span>
+                <span className="block text-white drop-shadow-[0_0_22px_rgba(212,175,55,0.28)]" style={{fontFamily:'Cormorant Garamond,serif'}}>Tiempo</span>
               </h1>
               <div className="filigree my-1 w-full"><div className="filigree-diamond"></div></div>
               <p className="text-white text-sm md:text-[17px] lg:text-[18px] leading-7 w-full max-w-none font-light italic" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 14px rgba(0,0,0,0.9), 0 0 22px rgba(255,255,255,0.14)', color:'#ffeec2'}}>
@@ -237,7 +237,7 @@ export default function Intro({ onNext }) {
               .inner-vig-prism{position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 45%,rgba(10,10,15,0.48) 100%);z-index:4;pointer-events:none}
               .frame-caption-prism{position:absolute;bottom:12px;left:12px;right:12px;z-index:10;text-align:center;pointer-events:none;background:linear-gradient(to top,rgba(10,10,15,0.65),transparent);padding:10px 0 4px;border-radius:0 0 2px 2px}
               .frame-caption-prism .line-prism{width:40px;height:1px;margin:0 auto 8px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent)}
-              .frame-caption-prism span{font-family:'Cinzel Decorative',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(232,220,200,0.45)}
+              .frame-caption-prism span{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(232,220,200,0.45)}
               @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px;max-height:48dvh}.image-area-prism img{height:auto;max-height:48dvh}}
             `}</style>
             <div className="gothic-prism">

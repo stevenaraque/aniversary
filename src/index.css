@@ -27,8 +27,8 @@ html {
 }
 
 body {
-  font-family: 'Sora', sans-serif;
-  font-weight: 200;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
   background: #050505;
   color: #ffeaa7;
   overflow-x: hidden;
@@ -58,8 +58,8 @@ h3 {
   color: #ffeaa7;
 }
 p {
-  font-family: 'Sora', sans-serif;
-  font-weight: 200;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
   color: rgba(255,234,167,0.78);
   text-shadow: 0 1px 12px rgba(0,0,0,0.75), 0 0 18px rgba(255,255,255,0.06);
 }
