@@ -31,7 +31,8 @@ function SwipeableCard({ children, onSwipeLeft, onSwipeRight }) {
 }
 
 const LS_KEY = 'aniversary:memoryLane:read'
-export default function MemoryLane({ memories = PLACEHOLDER_MEMORIES, onNext, onPrev }) {
+export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES, onNext, onPrev }) {
+  const memories = Array.isArray(_memories) && _memories.length ? _memories : PLACEHOLDER_MEMORIES
   const [current, setCurrent] = useState(0)
   const [showLightbox, setShowLightbox] = useState(false)
   const [showDesc, setShowDesc] = useState(false)

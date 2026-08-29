@@ -18,7 +18,7 @@ export default function CosmosBackground() {
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches
     const STAR_COUNT = isMobile ? 140 : 300
-    const MAX_COMETS = isMobile ? 8 : 26
+    const MAX_COMETS = isMobile ? 10 : 31
     const MAX_P = isMobile ? 160 : 500
 
     const staticCanvas = document.createElement('canvas')
@@ -207,7 +207,7 @@ export default function CosmosBackground() {
     }
 
     // Spawn denso en desktop (cascada continua), espaciado en móvil
-    let spawnTimer = 0, nextSpawn = isMobile ? rand(20, 34) : rand(3, 7), frame = 0
+    let spawnTimer = 0, nextSpawn = isMobile ? rand(16, 27) : rand(2.4, 5.6), frame = 0
     function loop() {
       frame++
       ctx.drawImage(staticCanvas, 0, 0)
@@ -215,8 +215,8 @@ export default function CosmosBackground() {
       spawnTimer++
       if (spawnTimer >= nextSpawn) {
         if (comets.length < MAX_COMETS) { const c = createComet(); comets.push(c); if (comets.length < MAX_COMETS * 0.5) addFlash(c.x, c.y) }
-        if (!isMobile && Math.random() < 0.5 && comets.length < MAX_COMETS) comets.push(createComet())
-        spawnTimer = 0; nextSpawn = isMobile ? rand(20, 32) : rand(2, 5)
+        if (!isMobile && Math.random() < 0.6 && comets.length < MAX_COMETS) comets.push(createComet())
+        spawnTimer = 0; nextSpawn = isMobile ? rand(16, 25) : rand(1.6, 4)
       }
       updateAndDrawParticles()
       for (let i = comets.length - 1; i >= 0; i--) { updateComet(comets[i]); if (!comets[i].alive) comets.splice(i, 1) }
