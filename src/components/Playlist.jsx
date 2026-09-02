@@ -131,6 +131,7 @@ const PLAYER_CSS = `
 .goth-footer{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px auto 0;flex-wrap:wrap;flex-shrink:0}
 
 .goth-particles-canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
+@media (prefers-reduced-motion: reduce) { .goth-particles-canvas{ display:none !important; } }
 .goth-vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(5,2,2,0.75) 100%)}
 
 .goth-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(18,8,8,0.95);border:1px solid rgba(184,134,11,0.25);color:var(--dorado-medio);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;padding:10px 24px;border-radius:3px;opacity:0;pointer-events:none;transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.23,1,0.32,1);z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
