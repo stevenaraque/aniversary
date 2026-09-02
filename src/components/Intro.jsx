@@ -1,25 +1,30 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, useMotionValue, useSpring } from 'motion/react'
+import { motion, useMotionValue, useSpring, useReducedMotion } from 'motion/react'
 import { Skull, Crown, Gem, Lock } from 'lucide-react'
 import { BatIcon } from './Icons'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 function CursorFollower() {
+  const reduce = useReducedMotion()
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
   const sx = useSpring(x, springs.gentle)
   const sy = useSpring(y, springs.gentle)
   useEffect(() => {
+    if (reduce) return
     const move = (e) => { x.set(e.clientX); y.set(e.clientY) }
     window.addEventListener('mousemove', move)
     return () => window.removeEventListener('mousemove', move)
-  }, [x, y])
+  }, [x, y, reduce])
+  if (reduce) return null
   return <motion.div className="hidden lg:block fixed top-0 left-0 w-32 h-32 rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 z-50 will-change-transform" style={{ x: sx, y: sy, background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(220,20,60,0.06) 50%, transparent 70%)', filter: 'blur(40px)' }} />
 }
 
 function StarRainCanvas() {
+  const reduce = useReducedMotion()
   const canvasRef = useRef(null)
   useEffect(() => {
+    if (reduce) return
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d', { alpha: true })
@@ -34,13 +39,15 @@ function StarRainCanvas() {
     const onVis=()=>{if(document.hidden)cancelAnimationFrame(raf);else requestAnimationFrame(tick)}
     document.addEventListener('visibilitychange',onVis);raf=requestAnimationFrame(tick)
     return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVis)}
-  },[])
+  },[reduce])
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />
 }
 
 function FrostCanvas() {
+  const reduce = useReducedMotion()
   const ref=useRef(null)
   useEffect(()=>{
+    if (reduce) return
     const isMobile=window.matchMedia('(max-width:768px)').matches
     if(isMobile) return // desactiva en móvil para rendimiento
     const canvas=ref.current
@@ -67,7 +74,7 @@ function FrostCanvas() {
     const onVis=()=>{if(document.hidden) cancelAnimationFrame(raf); else raf=requestAnimationFrame(loop)}
     window.addEventListener('resize',onResize); document.addEventListener('visibilitychange',onVis); raf=requestAnimationFrame(loop)
     return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',onResize);document.removeEventListener('visibilitychange',onVis)}
-  },[])
+  },[reduce])
   return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none opacity-50 hidden md:block" aria-hidden="true" />
 }
 
