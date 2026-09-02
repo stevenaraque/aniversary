@@ -117,14 +117,12 @@ git log --oneline -5
 - Build OK. Push pendiente.
 
 
-## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop)
+## Rama refine/taste-skills â€” pasada por emilkowalski/skills + taste-skill (anti-slop) â€” 2 commits
 
-Aplicadas en rama nueva (NUNCA main). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del código mostró que ya cumplía la mayoría de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint/build/test headless 0 errores):
+Aplicadas en rama nueva (NUNCA main). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint/build 0 errores) â€” 2 commits:
 
-- **Accesibilidad reduce-motion**: App.jsx MotionConfig reducedMotion="never"?"user" (respeta prefers-reduced-motion del SO).
-- **dvh móvil**: Final.jsx .final-hero min-height:100vh?100dvh (evita salto de layout iOS).
-- **Focus-visible (a11y)**: regla global en index.css con anillo táctil dorado, solo teclado.
-- **reduced-transparency**: fallback opaco para .glass/.glass-prominent/.glass-deep en @media(prefers-reduced-transparency:reduce).
-- **Tokens de easing fuertes**: añadidas curvas recomendadas (easeOut 0.23,1,0.32,1 / easeInOut 0.77,0,0.175,1 / drawer 0.32,0.72,0,1) a motionTokens.easing (regla "extend don't fork").
+- **Commit 89f73bc polish(a11y) â€” invisible**: App.jsx `MotionConfig reducedMotion="never"â†’"user"`; Final.jsx `.final-hero min-height:100vhâ†’100dvh`; index.css regla global `:focus-visible` anillo dorado + fallback `@media (prefers-reduced-transparency:reduce)` opaco para `.glass`; motion-tokens.js curvas fuertes `easeOut [0.23,1,0.32,1]` / `easeInOut [0.77,0,0.175,1]` / `drawer [0.32,0.72,0,1]` (extend don't fork).
 
-Pendiente: decidir si iterar más (typography/iconos/layout) en siguientes commits de la misma rama.
+- **Commit 6e0432c feat(motion) â€” visible**: transicion de pagina emilkowalski (fade+blur+scale) en wrappers raiz de 7 secciones â€” `Intro.jsx:113`, `Countdown.jsx:57`, `Puzzle.jsx:61`, `MemoryLane.jsx:61`, `Collage.jsx:109`, `Final.jsx:35`, `Playlist.jsx:398` â€” `initial={{opacity:0,scale:0.985,filter:'blur(6px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} exit={{opacity:0,scale:1.005,filter:'blur(5px)'}} transition={{duration:0.4,ease:motionTokens.easing.easeOut}}`. Playlist no importaba motion-tokens â†’ agregado `import { motionTokens }`. Sin scale(0), sin transition:all. Verificado lint 0/0 + build OK (2221 modules, 59kB CSS / 488kB JS).
+
+Pendiente en esta rama: decidir si iterar mas (typography/iconos/layout) o hacer push a origin como feature branch (no main).
