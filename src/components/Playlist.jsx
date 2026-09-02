@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
+import { motionTokens } from '../lib/motion-tokens'
 import {
   ArrowLeft, Shuffle, SkipBack, SkipForward, Play, Pause, Repeat,
 } from 'lucide-react'
@@ -397,9 +398,10 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
   return (
     <motion.div
       className="goth-player main-wrapper h-[100dvh] min-h-[100dvh] relative overflow-hidden flex flex-col items-stretch bg-transparent"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, scale: 0.985, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, scale: 1.005, filter: 'blur(5px)' }}
+      transition={{ duration: 0.4, ease: motionTokens.easing.easeOut }}
     >
       <style>{PLAYER_CSS}</style>
 

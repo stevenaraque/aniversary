@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Heart, Crown, Gem, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import { springs } from '../lib/motion-tokens'
+import { springs, motionTokens } from '../lib/motion-tokens'
 
 const ANIVERSARY_DATE = new Date('2024-08-26T00:00:00')
 
@@ -54,7 +54,7 @@ export default function Countdown({ onNext, onPrev }) {
   useEffect(() => { const t=setInterval(()=>setTime(calculateTime()),1000); return()=>clearInterval(t) }, [])
 
   return (
-    <motion.div className="main-wrapper min-h-[100dvh] h-[100dvh] relative overflow-hidden flex items-center justify-center bg-transparent" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+    <motion.div className="main-wrapper min-h-[100dvh] h-[100dvh] relative overflow-hidden flex items-center justify-center bg-transparent" initial={{opacity:0, scale:0.985, filter:'blur(6px)'}} animate={{opacity:1, scale:1, filter:'blur(0px)'}} exit={{opacity:0, scale:1.005, filter:'blur(5px)'}} transition={{ duration:0.4, ease: motionTokens.easing.easeOut }}>
       {onPrev && (
         <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
           <ArrowLeft className="w-5 h-5" />

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ArrowLeft, Heart } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import { springs } from '../lib/motion-tokens'
+import { springs, motionTokens } from '../lib/motion-tokens'
 
 // Editable data — cambia aquí tus nombres/textos
 const HERO = {
@@ -35,9 +35,10 @@ export default function Final({ onPrev, onReset }) {
     <motion.div
       className="main-wrapper relative flex flex-col items-center bg-transparent"
       style={{ minHeight: '100dvh', overflow: 'visible' }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, scale: 0.985, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, scale: 1.005, filter: 'blur(5px)' }}
+      transition={{ duration: 0.4, ease: motionTokens.easing.easeOut }}
     >
       {onPrev && (
         <button onClick={onPrev} aria-label="Volver" className="fixed top-4 left-4 sm:top-6 sm:left-6 z-30 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-crimson/30 hover:text-crimson text-white/60 transition-colors">

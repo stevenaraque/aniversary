@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
 import { Skull, Crown, Gem, Lock } from 'lucide-react'
 import { BatIcon } from './Icons'
-import { springs } from '../lib/motion-tokens'
+import { springs, motionTokens } from '../lib/motion-tokens'
 
 function CursorFollower() {
   const x = useMotionValue(-100)
@@ -110,7 +110,7 @@ export default function Intro({ onNext }) {
     else { setError('Clave incorrecta'); setShake(true); setTimeout(()=>setShake(false), 400) }
   }
   return (
-    <motion.div className="main-wrapper min-h-[100dvh] h-[100dvh] relative overflow-hidden flex items-center justify-center bg-transparent" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+    <motion.div className="main-wrapper min-h-[100dvh] h-[100dvh] relative overflow-hidden flex items-center justify-center bg-transparent" initial={{opacity:0, scale:0.985, filter:'blur(6px)'}} animate={{opacity:1, scale:1, filter:'blur(0px)'}} exit={{opacity:0, scale:1.005, filter:'blur(5px)'}} transition={{ duration:0.4, ease: motionTokens.easing.easeOut }}>
       <StarRainCanvas />
       <FrostCanvas />
       <CursorFollower />

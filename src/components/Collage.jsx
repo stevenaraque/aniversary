@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { X, ChevronLeft, ChevronRight, Camera, Music, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
-import { springs } from '../lib/motion-tokens'
+import { springs, motionTokens } from '../lib/motion-tokens'
 
 const PLACEHOLDER_PHOTOS = [
   '/puzzle-main.jpg', '/puzzle-main.jpg', '/puzzle-main.jpg',
@@ -109,9 +109,10 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
     <motion.div
       className="main-wrapper min-h-[100dvh] relative flex flex-col items-center py-6 sm:py-10 pb-16 sm:pb-20"
       style={{ overflow: 'visible' }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, scale: 0.985, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, scale: 1.005, filter: 'blur(5px)' }}
+      transition={{ duration: 0.4, ease: motionTokens.easing.easeOut }}
     >
       {onPrev && (
         <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
