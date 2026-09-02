@@ -116,3 +116,15 @@ git log --oneline -5
 - **Reescrito con metodolog√≠a de encapsulaci√≥n flex-wrap (sin breakpoints de layout)** `Playlist.jsx`: `.goth-layout{display:flex;flex-wrap:wrap}`, `.goth-left{flex:1 1 340px;min-width:0;max-width:100%}`, `.goth-right{flex:0 1 440px;min-width:0;max-width:100%}`. El div interno se adapta al contenedor padre: en ancho <780px los paneles **se apilan** (lista arriba, player abajo); en ‚â•780px quedan lado a lado. Se elimin√≥ el `flex-direction:column` del media 900 (ya lo hace flex-wrap). `.goth-player{width:100%;max-width:100vw;overflow-x:hidden!important}`. **Verificado en Chrome headless en 9 tama√±os: `scrollW==clientW` y `horizOverflow:false` en todos** (cero scroll horizontal), con apilamiento correcto en celular/tablet y lado a lado en laptop/desktop.
 - Build OK. Push pendiente.
 
+
+## Rama refine/taste-skills ó pasada por emilkowalski/skills + taste-skill (anti-slop)
+
+Aplicadas en rama nueva (NUNCA main). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del cÛdigo mostrÛ que ya cumplÌa la mayorÌa de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint/build/test headless 0 errores):
+
+- **Accesibilidad reduce-motion**: App.jsx MotionConfig reducedMotion="never"?"user" (respeta prefers-reduced-motion del SO).
+- **dvh mÛvil**: Final.jsx .final-hero min-height:100vh?100dvh (evita salto de layout iOS).
+- **Focus-visible (a11y)**: regla global en index.css con anillo t·ctil dorado, solo teclado.
+- **reduced-transparency**: fallback opaco para .glass/.glass-prominent/.glass-deep en @media(prefers-reduced-transparency:reduce).
+- **Tokens de easing fuertes**: aÒadidas curvas recomendadas (easeOut 0.23,1,0.32,1 / easeInOut 0.77,0,0.175,1 / drawer 0.32,0.72,0,1) a motionTokens.easing (regla "extend don't fork").
+
+Pendiente: decidir si iterar m·s (typography/iconos/layout) en siguientes commits de la misma rama.

@@ -35,6 +35,13 @@ body {
   overscroll-behavior: none;
 }
 
+/* === Focus visibility (a11y) — anillo táctil acorde a la paleta, solo teclado === */
+:where(button, a, [role="button"], input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.85);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* === Combo 2 — Cormorant Garamond + Sora === */
 h1, h2 {
   font-family: 'Cormorant Garamond', serif;
@@ -138,11 +145,21 @@ h1, h2, h3, span, p, a, li {
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
+/* Fallback opaco para usuarios con reduce-transparency (a11y) */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-prominent,
+  .glass-deep {
+    background: rgba(8, 8, 8, 0.97);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 .glass-refraction {
   position: relative;
   overflow: hidden;
 }
-
 .glass-refraction::before {
   content: '';
   position: absolute;

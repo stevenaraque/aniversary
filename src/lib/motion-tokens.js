@@ -27,6 +27,10 @@ export const motionTokens = {
     snappy: [0.2, 0, 0, 1],
     elastic: [0.68, -0.55, 0.27, 1.55],
     bounce: [0.34, 1.56, 0.64, 1],
+    // Strong custom curves (emilkowalski/skills) — built-in CSS easings are too weak
+    easeOut: [0.23, 1, 0.32, 1],      // strong ease-out for UI enters/exits
+    easeInOut: [0.77, 0, 0.175, 1],   // strong ease-in-out for on-screen movement
+    drawer: [0.32, 0.72, 0, 1],       // iOS-like drawer curve (Ionic)
   },
 }
 
