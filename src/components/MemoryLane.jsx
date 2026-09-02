@@ -114,7 +114,7 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
                       <div className="w-16 h-16 rounded-full bg-crimson/10 flex items-center justify-center"><Camera className="w-8 h-8 text-crimson/30" /></div>
                     </div>
                   ) : (
-                    <img src={currentMemory.src} alt={currentMemory.caption} className="w-full h-auto object-contain max-h-[65vh] sm:max-h-[60vh]" />
+                    <img src={currentMemory.src} alt={currentMemory.caption} className="w-full h-auto object-contain max-h-[65vh] sm:max-h-[60vh]" loading="eager" decoding="async" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 </motion.div>

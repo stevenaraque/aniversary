@@ -188,7 +188,7 @@ export default function Final({ onPrev, onReset }) {
         {lightbox && (
           <motion.div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} role="dialog" aria-label="Imagen ampliada">
             <span className="absolute top-7 right-9 text-white/40 text-xs tracking-[0.2em] uppercase cursor-pointer hover:text-crimson transition-colors" onClick={() => setLightbox(null)}>Cerrar</span>
-            <motion.img src={lightbox} alt="Imagen ampliada" className="max-w-[85vw] max-h-[85vh] object-contain rounded-sm" initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} transition={springs.gentle} onClick={e => e.stopPropagation()} />
+            <motion.img src={lightbox} alt="Imagen ampliada" className="max-w-[85vw] max-h-[85vh] object-contain rounded-sm" initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} transition={springs.gentle} onClick={e => e.stopPropagation()} decoding="async" />
           </motion.div>
         )}
       </AnimatePresence>

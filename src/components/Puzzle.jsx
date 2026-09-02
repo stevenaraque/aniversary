@@ -122,7 +122,7 @@ export default function Puzzle({ onNext, onPrev }) {
                   )
                 })}
               </div>
-              {showPreview && (<div className="absolute inset-[5px] rounded-[13px] overflow-hidden z-20 pointer-events-none"><img src="/puzzle-main.jpg" alt="preview" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-black/20" /></div>)}
+              {showPreview && (<div className="absolute inset-[5px] rounded-[13px] overflow-hidden z-20 pointer-events-none"><img src="/puzzle-main.jpg" alt="preview" className="w-full h-full object-cover" decoding="async" /><div className="absolute inset-0 bg-black/20" /></div>)}
             </div>
             <div className="g-corner tl"><svg viewBox="0 0 36 36" fill="none"><path d="M2 34V6Q2 2 6 2H16" stroke="rgba(212,175,55,.5)" strokeWidth="1" strokeLinecap="round"/><path d="M2 34H30Q34 34 34 30V22" stroke="rgba(212,175,55,.5)" strokeWidth="1" strokeLinecap="round"/></svg></div>
             <div className="g-corner tr"><svg viewBox="0 0 36 36" fill="none"><path d="M2 34V6Q2 2 6 2H16" stroke="rgba(212,175,55,.5)" strokeWidth="1" strokeLinecap="round"/><path d="M2 34H30Q34 34 34 30V22" stroke="rgba(212,175,55,.5)" strokeWidth="1" strokeLinecap="round"/></svg></div>

@@ -356,6 +356,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
                 src={visible[selected].src}
                 alt={visible[selected].title}
                 className="max-w-full max-h-[72vh] object-contain rounded-xl border border-gold/20 shadow-[0_24px_80px_rgba(0,0,0,0.6),0_0_60px_rgba(139,0,0,0.15)]"
+                loading="eager" decoding="async"
               />
               <div className="mt-4 text-center">
                 <p className="text-white/95 text-base sm:text-lg" style={{ fontFamily: 'Cormorant Garamond,serif', letterSpacing: '0.04em' }}>
