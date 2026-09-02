@@ -100,8 +100,8 @@ const PLAYER_CSS = `
 .goth-progress-bar{position:relative;width:100%;height:3px;background:rgba(184,134,11,0.08);border-radius:2px;cursor:pointer;transition:height 0.2s ease}
 .goth-progress-bar:hover{height:5px}
 .goth-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--rojo-sangre),var(--rojo-vivo),var(--dorado-antiguo));border-radius:2px;position:relative;transition:width 0.1s linear}
-.goth-progress-fill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%) scale(0);width:12px;height:12px;background:var(--dorado-medio);border-radius:50%;box-shadow:0 0 10px rgba(212,168,67,0.5);transition:transform 0.2s ease}
-.goth-progress-bar:hover .goth-progress-fill::after{transform:translateY(-50%) scale(1)}
+.goth-progress-fill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%) scale(0.7);width:12px;height:12px;background:var(--dorado-medio);border-radius:50%;box-shadow:0 0 10px rgba(212,168,67,0.5);opacity:0;transition:transform 0.2s cubic-bezier(0.23,1,0.32,1), opacity 0.2s ease}
+.goth-progress-bar:hover .goth-progress-fill::after{transform:translateY(-50%) scale(1);opacity:1}
 .goth-progress-times{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;letter-spacing:2px;color:rgba(212,197,176,0.3);font-family:'Cinzel',serif}
 .goth-controls{display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 32px 22px}
 .goth-ctrl{background:none;border:none;color:rgba(212,197,176,0.35);cursor:pointer;transition:color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;padding:8px;display:flex;align-items:center;justify-content:center}
