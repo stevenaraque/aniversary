@@ -224,7 +224,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-medium border transition-all duration-300 ${
+                className={`px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-medium border transition-colors duration-300 ${
                   active
                     ? 'bg-gold/15 border-gold/55 text-gold-light shadow-[0_0_18px_rgba(212,175,55,0.18)]'
                     : 'glass border-white/8 text-white/55 hover:border-gold/25 hover:text-white/85'

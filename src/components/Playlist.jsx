@@ -559,7 +559,7 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
         {onNext && (
           <button
             onClick={onNext}
-            className="px-6 py-2 font-bold text-white uppercase tracking-wider text-xs rounded-xl bg-crimson border-b-[4px] border-[#7f1d1d] active:border-b-0 active:translate-y-[4px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)]"
+            className="px-6 py-2 font-bold text-white uppercase tracking-wider text-xs rounded-xl bg-crimson border-b-[4px] border-[#7f1d1d] active:border-b-0 active:translate-y-[4px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)]"
             style={{ fontFamily: 'Cormorant Garamond,serif' }}
           >
             Ver frase final
