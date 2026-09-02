@@ -117,9 +117,9 @@ git log --oneline -5
 - Build OK. Push pendiente.
 
 
-## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 12 commits code (+3 docs) — main intacto 080d43a
+## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 13 commits code (+4 docs) — main intacto 080d43a
 
-Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 12 commits code + 3 docs, `main` nunca tocado:
+Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 13 commits code + 4 docs, `main` nunca tocado:
 
 - **Commit 89f73bc polish(a11y) — invisible**: App.jsx `MotionConfig reducedMotion="never"→"user"`; Final.jsx `.final-hero min-height:100vh→100dvh`; index.css regla global `:focus-visible` anillo dorado + fallback `@media (prefers-reduced-transparency:reduce)` opaco para `.glass`; motion-tokens.js curvas fuertes `easeOut [0.23,1,0.32,1]` / `easeInOut [0.77,0,0.175,1]` / `drawer [0.32,0.72,0,1]` (extend don't fork).
 
@@ -134,5 +134,6 @@ Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas:
 - **Commit 29d44ea perf(taste)**: `index.html:10` preload LCP `intro-main.webp` `fetchpriority="high"` (LCP <2.5s).
 - **Commit fad9ea8 a11y(taste)**: `src/index.css:282` reduced-motion collapse loops `animate-bat/shimmer/pulse/float/rotate` + gothic ornaments.
 - **Commit bfb02cd style(taste)**: `Collage.jsx:7` placeholder `13× puzzle-main.jpg → picsum descriptive seeds` (real image strategy).
+- **Commit 599fdf9 a11y(motion)**: `Countdown.jsx:53,83,84,113` + `Collage.jsx:181` + `Final.jsx:62` gate loops infinitos (`Heart pulse`, `Crown/Gem float`, `countPulse`, `Bat/Flower`, `finalFloat`) con `useReducedMotion` / `@media (prefers-reduced-motion:reduce)`.
 
-Pendiente: LOW opcionales (button contrast ya auditado `crimson 4.99:1`/`obsidian-gold 15:1` OK, copy self-audit). Abrir PR desde `refine/taste-skills` cuando quieras — `main` 080d43a intacto.
+Pendiente: LOW opcionales ya auditados (button contrast `crimson 4.99:1` PASS, copy self-audit sin hallazgos, `main` 080d43a nunca tocado). Listo para PR desde `refine/taste-skills`.
