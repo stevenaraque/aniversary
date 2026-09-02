@@ -117,12 +117,14 @@ git log --oneline -5
 - Build OK. Push pendiente.
 
 
-## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 2 commits
+## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 4 commits (+1 docs)
 
-Aplicadas en rama nueva (NUNCA main). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint/build 0 errores) — 2 commits:
+Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 4 commits code + 1 docs:
 
 - **Commit 89f73bc polish(a11y) — invisible**: App.jsx `MotionConfig reducedMotion="never"→"user"`; Final.jsx `.final-hero min-height:100vh→100dvh`; index.css regla global `:focus-visible` anillo dorado + fallback `@media (prefers-reduced-transparency:reduce)` opaco para `.glass`; motion-tokens.js curvas fuertes `easeOut [0.23,1,0.32,1]` / `easeInOut [0.77,0,0.175,1]` / `drawer [0.32,0.72,0,1]` (extend don't fork).
 
 - **Commit 6e0432c feat(motion) — visible**: transicion de pagina emilkowalski (fade+blur+scale) en wrappers raiz de 7 secciones — `Intro.jsx:113`, `Countdown.jsx:57`, `Puzzle.jsx:61`, `MemoryLane.jsx:61`, `Collage.jsx:109`, `Final.jsx:35`, `Playlist.jsx:398` — `initial={{opacity:0,scale:0.985,filter:'blur(6px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} exit={{opacity:0,scale:1.005,filter:'blur(5px)'}} transition={{duration:0.4,ease:motionTokens.easing.easeOut}}`. Playlist no importaba motion-tokens → agregado `import { motionTokens }`. Sin scale(0), sin transition:all. Verificado lint 0/0 + build OK (2221 modules, 59kB CSS / 488kB JS).
+- **Commit f9f426a fix(motion/a11y)**: `Playlist.jsx:39,63,107,110,123` `transition:all→propiedades especificas` (review-animations NEVER all); `Letter.jsx:297,299` `scale(0)→scale(0.85)`; `App.jsx:60` + `Puzzle.jsx:144` `min-h-screen→min-h-[100dvh]` (taste viewport stability).
+- **Commit c3bac42 fix(motion)**: `Playlist.jsx:103` progress knob `scale(0)→scale(0.7)+opacity` (never scale(0)) + strong easing.
 
-Pendiente en esta rama: decidir si iterar mas (typography/iconos/layout) o hacer push a origin como feature branch (no main).
+Pendiente en esta rama: seguir iterando taste/motion (hover gating, stagger fino, forma) o abrir PR desde `refine/taste-skills` — `main` intacto en `080d43a`.
