@@ -180,15 +180,15 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
 
       <motion.div
         className="absolute top-10 right-6 sm:right-10 hidden sm:block"
-        animate={{ opacity: 0.06, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}
-        transition={{ duration: 6, repeat: Infinity }}
+        animate={reduceMotion ? { opacity: 0.06 } : { opacity: 0.06, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 6, repeat: Infinity }}
       >
         <BatIcon className="w-5 h-5 text-crimson" />
       </motion.div>
       <motion.div
         className="absolute bottom-24 left-6 sm:left-10 hidden sm:block"
-        animate={{ opacity: 0.05, rotate: [0, 10, -10, 0] }}
-        transition={{ duration: 8, repeat: Infinity }}
+        animate={reduceMotion ? { opacity: 0.05 } : { opacity: 0.05, rotate: [0, 10, -10, 0] }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity }}
       >
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </motion.div>

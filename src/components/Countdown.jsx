@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { Heart, Crown, Gem, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs, motionTokens } from '../lib/motion-tokens'
@@ -51,6 +51,7 @@ function TimeBlock({ value, label, delay, accent, max }) {
 
 export default function Countdown({ onNext, onPrev }) {
   const [time, setTime] = useState(calculateTime())
+  const reduceMotion = useReducedMotion()
   useEffect(() => { const t=setInterval(()=>setTime(calculateTime()),1000); return()=>clearInterval(t) }, [])
 
   return (
@@ -66,6 +67,7 @@ export default function Countdown({ onNext, onPrev }) {
         .countdown-circle:nth-child(1){width:380px;height:380px;top:50%;left:50%;transform:translate(-50%,-50%)}
         .countdown-circle:nth-child(2){width:580px;height:580px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:3s;border-color:rgba(220,20,60,0.28)}
         @keyframes countPulse{0%,100%{opacity:0.06;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.1;transform:translate(-50%,-50%) scale(1.03)}}
+        @media(prefers-reduced-motion:reduce){.countdown-circle{animation:none!important}}
         .countdown-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 40%,rgba(0,0,0,0.5) 100%);pointer-events:none}
         .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-48%);font-family:'Cormorant Garamond',serif;font-weight:700;font-size:min(38vw,420px);line-height:1;color:rgba(212,175,55,0.035);letter-spacing:0.08em;pointer-events:none;user-select:none;filter:blur(0.5px)}
         .filigree-count{width:100%;max-width:320px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.3) 20%,rgba(212,175,55,0.5) 50%,rgba(220,20,60,0.25) 80%,transparent);position:relative;display:flex;align-items:center;justify-content:center}
@@ -80,8 +82,8 @@ export default function Countdown({ onNext, onPrev }) {
 
       <motion.div className="absolute top-8 right-6 sm:right-10 lg:right-14 opacity-[0.08] hidden sm:block" initial={{opacity:0, x:12}} animate={{opacity:0.08, x:0}} transition={{...springs.gentle, delay:0.6}}><BatIcon className="w-10 h-10 lg:w-12 lg:h-12 text-crimson" /></motion.div>
       <motion.div className="absolute bottom-8 left-6 sm:left-10 lg:left-14 opacity-[0.07] hidden sm:block" initial={{opacity:0, x:-12}} animate={{opacity:0.07, x:0}} transition={{...springs.gentle, delay:0.7}}><FlowerIcon className="w-9 h-9 lg:w-11 lg:h-11 text-gold" /></motion.div>
-      <motion.div className="absolute top-[18%] left-[6%] opacity-[0.03] hidden lg:block" animate={{y:[0,-8,0]}} transition={{duration:7, repeat:Infinity}}><Crown className="w-5 h-5 text-gold" /></motion.div>
-      <motion.div className="absolute bottom-[18%] right-[6%] opacity-[0.03] hidden lg:block" animate={{y:[0,8,0]}} transition={{duration:8, repeat:Infinity}}><Gem className="w-5 h-5 text-crimson" /></motion.div>
+      <motion.div className="absolute top-[18%] left-[6%] opacity-[0.03] hidden lg:block" animate={reduceMotion ? { y: 0 } : { y: [0,-8,0] }} transition={reduceMotion ? { duration: 0 } : { duration:7, repeat:Infinity }}><Crown className="w-5 h-5 text-gold" /></motion.div>
+      <motion.div className="absolute bottom-[18%] right-[6%] opacity-[0.03] hidden lg:block" animate={reduceMotion ? { y: 0 } : { y: [0,8,0] }} transition={reduceMotion ? { duration: 0 } : { duration:8, repeat:Infinity }}><Gem className="w-5 h-5 text-crimson" /></motion.div>
 
       <div className="container relative z-10 flex flex-col items-center justify-center min-h-[100dvh] h-[100dvh] py-5 sm:py-6 text-center gap-4 sm:gap-5 px-4 overflow-hidden">
         <motion.div initial={{y:-14, opacity:0, filter:'blur(6px)'}} animate={{y:0, opacity:1, filter:'blur(0px)'}} transition={springs.gentle} className="flex flex-col items-center gap-3 w-full">
@@ -109,7 +111,7 @@ export default function Countdown({ onNext, onPrev }) {
 
         <motion.div className="flex items-center justify-center gap-3" initial={{opacity:0, scaleX:0.8}} animate={{opacity:1, scaleX:1}} transition={{...springs.gentle, delay:0.5}}>
           <div className="h-px w-12 sm:w-16 bg-gradient-to-r from-transparent to-gold/15" />
-          <motion.div animate={{scale:[1,1.2,1], opacity:[0.5,0.9,0.5]}} transition={{duration:2, repeat:Infinity}}><Heart className="w-4 h-4 text-crimson" fill="currentColor" /></motion.div>
+          <motion.div animate={reduceMotion ? { scale: 1, opacity: 0.6 } : { scale:[1,1.2,1], opacity:[0.5,0.9,0.5] }} transition={reduceMotion ? { duration: 0 } : { duration:2, repeat:Infinity }}><Heart className="w-4 h-4 text-crimson" fill="currentColor" /></motion.div>
           <div className="h-px w-12 sm:w-16 bg-gradient-to-l from-transparent to-gold/15" />
         </motion.div>
 

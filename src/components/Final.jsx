@@ -60,6 +60,7 @@ export default function Final({ onPrev, onReset }) {
         .final-scroll span { font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,234,167,0.28); }
         .final-scroll-line { width: 1px; height: 30px; background: linear-gradient(to bottom, #8b0000, transparent); }
         @keyframes finalFloat { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+        @media(prefers-reduced-motion:reduce){ .final-scroll{animation:none!important} }
         .final-section { padding: 100px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
         .final-label { font-family: 'Sora', sans-serif; font-weight: 200; font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(220,20,60,0.45); text-align: center; margin-bottom: 48px; }
         .final-divider { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, #8b0000 20%, #dc143c 50%, #b8941f 80%, transparent); margin: 0 auto; }
