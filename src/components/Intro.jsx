@@ -76,15 +76,23 @@ function GothicButton({ onClick, children }) {
     <>
       <style>{`
         .gothic-btn{cursor:pointer;width:17.5em;height:5em;border-radius:1.5em;border:1px solid rgba(212,175,55,0.32);display:flex;justify-content:right;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,0.6),0 0 22px rgba(139,0,0,0.18),inset 0 1px 0 rgba(212,175,55,0.08);position:relative;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#050505 100%);transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease;will-change:transform}
-        .gothic-btn:hover{border-color:rgba(212,175,55,0.55);box-shadow:0 12px 40px rgba(0,0,0,0.7),0 0 30px rgba(212,175,55,0.18);transform:translateY(-1px)}
+        @media (hover: hover) and (pointer: fine) {
+          .gothic-btn:hover{border-color:rgba(212,175,55,0.55);box-shadow:0 12px 40px rgba(0,0,0,0.7),0 0 30px rgba(212,175,55,0.18);transform:translateY(-1px)}
+        }
         .gothic-p{font-size:1.1rem;font-weight:700;letter-spacing:0.07em;color:#f9e076;position:absolute;top:50%;left:1.3em;transform:translateY(-50%);transition:transform 0.5s ease,opacity 0.5s ease;white-space:nowrap;font-family:'Cormorant Garamond',serif;text-shadow:0 0 10px rgba(212,175,55,0.3)}
         .gothic-glow{width:4em;height:3.5em;background:linear-gradient(135deg,#8b0000 0%,#dc143c 50%,#4a0e0e 100%);border-radius:1em;position:relative;box-shadow:0 0 0.5em rgba(0,0,0,0.4),inset 0.2em 0 0.3em rgba(212,175,55,0.4);overflow:hidden;margin-right:0.75em;transition:width 0.5s ease;flex-shrink:0;border:1px solid rgba(212,175,55,0.18)}
         .gothic-sign{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;color:#f9e076}
         .gothic-white{width:100%;background:rgba(212,175,55,0.06);height:2.5em;position:absolute;top:0;filter:blur(0.5em);pointer-events:none}
         .gothic-blob{position:absolute;top:50%;left:50%;filter:blur(0.3em);transition:filter 0.5s ease;opacity:0.95;will-change:filter}
         #g-red{transform:translate(-50%,-50%) scale(4);animation:g-rotar 5s linear infinite;color:#dc143c}#g-gold{transform:translate(-95%,-55%) scale(2.5);animation:g-rotar 6s linear infinite;color:#d4af37}#g-crimson{transform:translate(-75%,-5%) scale(2);animation:g-rotar 7s linear infinite;color:#8b0000}
-        @keyframes g-rotar{0%{rotate:0deg}100%{rotate:360deg}}.gothic-btn:hover .gothic-p{transform:translate(-25%,-50%);opacity:0}.gothic-btn:hover .gothic-glow{width:16em}.gothic-btn:hover .gothic-blob{filter:blur(0.7em)}.gothic-btn:active{transform:scale(0.96)}
-        @media(max-width:640px){.gothic-btn{width:15em;height:4.2em;border-radius:1.2em}.gothic-p{font-size:0.95rem;left:1em}.gothic-glow{width:3.4em;height:3em}.gothic-btn:hover .gothic-glow{width:13.5em}}
+        @keyframes g-rotar{0%{rotate:0deg}100%{rotate:360deg}}.gothic-btn:active{transform:scale(0.96)}
+        @media (hover: hover) and (pointer: fine) {
+          .gothic-btn:hover .gothic-p{transform:translate(-25%,-50%);opacity:0}
+          .gothic-btn:hover .gothic-glow{width:16em}
+          .gothic-btn:hover .gothic-blob{filter:blur(0.7em)}
+        }
+        @media(max-width:640px){.gothic-btn{width:15em;height:4.2em;border-radius:1.2em}.gothic-p{font-size:0.95rem;left:1em}.gothic-glow{width:3.4em;height:3em}}
+        @media(max-width:640px) and (hover: hover) and (pointer: fine){.gothic-btn:hover .gothic-glow{width:13.5em}}
       `}</style>
       <button className="gothic-btn" onClick={onClick} aria-label={children}>
         <p className="gothic-p">{children}</p>
@@ -232,7 +240,9 @@ export default function Intro({ onNext }) {
               @media(max-width:640px){.cross-left{left:8px}.cross-right{right:8px}.cross-bottom{bottom:8px}.top-cross-prism{top:-22px}.cross-ring{inset:-16px}.cross-ring .cross-side{display:none}}
               .image-area-prism{position:relative;margin:20px;border-radius:2px;overflow:hidden;z-index:3;border:1px solid rgba(255,255,255,0.03);line-height:0;max-height:82dvh}
               .image-area-prism img{width:100%;height:auto;max-height:82dvh;object-fit:cover;object-position:center bottom;display:block;filter:saturate(0.85) contrast(1.05) brightness(0.92);transition:filter 0.6s,transform 0.8s}
-              .gothic-prism:hover .image-area-prism img{filter:saturate(0.98) contrast(1.08) brightness(0.96);transform:scale(1.015)}
+              @media (hover: hover) and (pointer: fine) {
+                .gothic-prism:hover .image-area-prism img{filter:saturate(0.98) contrast(1.08) brightness(0.96);transform:scale(1.015)}
+              }
               .image-overlay-prism{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,15,0.28) 0%,transparent 32%,transparent 68%,rgba(10,10,15,0.38) 100%),linear-gradient(90deg,rgba(10,10,15,0.14) 0%,transparent 22%,transparent 78%,rgba(10,10,15,0.14) 100%);z-index:4;pointer-events:none}
               .inner-vig-prism{position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 45%,rgba(10,10,15,0.48) 100%);z-index:4;pointer-events:none}
               .frame-caption-prism{position:absolute;bottom:12px;left:12px;right:12px;z-index:10;text-align:center;pointer-events:none;background:linear-gradient(to top,rgba(10,10,15,0.65),transparent);padding:10px 0 4px;border-radius:0 0 2px 2px}

@@ -73,7 +73,9 @@ export default function Puzzle({ onNext, onPrev }) {
         .tile{aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);position:relative;touch-action:manipulation;cursor:default;transition:border-color .25s,box-shadow .25s,transform .25s cubic-bezier(.16,1,.3,1);will-change:transform;background-color:rgba(0,0,0,.4);outline:none;display:flex;align-items:center;justify-content:center}
         .tile:focus-visible{box-shadow:0 0 0 2px #d4af37}
         .tile.movable{border-color:rgba(220,38,38,.22);box-shadow:0 0 14px rgba(220,38,38,.08);cursor:pointer}
-        .tile.movable:hover{border-color:rgba(220,38,38,.4);box-shadow:0 0 24px rgba(220,38,38,.14);transform:scale(1.02)}
+        @media (hover: hover) and (pointer: fine) {
+          .tile.movable:hover{border-color:rgba(220,38,38,.4);box-shadow:0 0 24px rgba(220,38,38,.14);transform:scale(1.02)}
+        }
         .tile.empty{background:rgba(255,255,255,.015);border:1px dashed rgba(212,175,55,.18);cursor:default}
         .puzzle-grid.solved .tile{border-radius:0!important;border-color:transparent!important;box-shadow:none!important}
         .g-corner{position:absolute;width:36px;height:36px;z-index:10;pointer-events:none}
