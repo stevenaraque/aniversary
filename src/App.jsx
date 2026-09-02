@@ -57,7 +57,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="min-h-screen relative">
+    <div className="min-h-[100dvh] relative">
       <CosmosBackground />
       <div className="relative z-10">
       <AnimatePresence mode="wait">

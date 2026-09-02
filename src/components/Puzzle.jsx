@@ -141,7 +141,7 @@ export default function Puzzle({ onNext, onPrev }) {
 
         <AnimatePresence>
   {solved && (
-    <motion.div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+    <motion.div className="fixed inset-0 z-50 flex min-h-[100dvh] items-center justify-center p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
       {/* Uiverse SouravBandyopadhyay — adaptado gótico */}
       <motion.div initial={{scale:0.94,opacity:0,y:10}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.96,opacity:0}} transition={springs.bouncy} className="relative w-[88vw] sm:w-[420px] rounded-2xl border-2 border-gold/25 bg-transparent p-7 sm:p-8 text-center shadow-[0_24px_64px_rgba(0,0,0,0.55)]" style={{background:'linear-gradient(160deg,rgba(20,10,10,0.94) 0%,rgba(10,10,15,0.96) 100%)', backdropFilter:'blur(20px) saturate(1.3)', WebkitBackdropFilter:'blur(20px) saturate(1.3)'}}>

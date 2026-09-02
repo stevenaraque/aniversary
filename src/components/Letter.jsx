@@ -294,9 +294,9 @@ export default function Letter({ onNext, onPrev }) {
         .ltxt{opacity:0;transform:translateY(14px);transition:opacity 0.65s ease, transform 0.65s ease}
         #letterWrap.show .ltxt{opacity:1;transform:translateY(0)}
         #lGreet{transition-delay:0.42s} #lBody{transition-delay:0.76s} #lSign{transition-delay:1.08s}
-        #seal{opacity:0;transform:scale(0);transition:opacity 0.48s ease 1.48s, transform 0.58s cubic-bezier(0.34,1.56,0.64,1) 1.48s}
+        #seal{opacity:0;transform:scale(0.85);transition:opacity 0.48s ease 1.48s, transform 0.58s cubic-bezier(0.34,1.56,0.64,1) 1.48s}
         #letterWrap.show #seal{opacity:1;transform:scale(1)}
-        #miniBf{opacity:0;transform:scale(0) rotate(-15deg);transition:opacity 0.55s ease 1.78s, transform 0.68s cubic-bezier(0.34,1.56,0.64,1) 1.78s}
+        #miniBf{opacity:0;transform:scale(0.85) rotate(-15deg);transition:opacity 0.55s ease 1.78s, transform 0.68s cubic-bezier(0.34,1.56,0.64,1) 1.78s}
         #letterWrap.show #miniBf{opacity:1;transform:scale(1) rotate(-15deg)}
         /* ── Carta cerrada: tu diseño sobre (260×360) + hover Uiverse JohnnyCSilva ── */
         .letter-card{width:260px;height:360px;background:linear-gradient(145deg,#1a0f0f 0%,#2a1111 50%,#0a0a0f 100%);border:1px solid rgba(212,175,55,0.22);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;transition:0.2s ease-in-out;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 20px 60px rgba(0,0,0,0.55),0 0 40px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08)}

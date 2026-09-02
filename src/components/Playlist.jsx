@@ -36,7 +36,7 @@ const PLAYER_CSS = `
 .goth-song-wrapper::-webkit-scrollbar-track{background:transparent}
 .goth-song-wrapper::-webkit-scrollbar-thumb{background:rgba(184,134,11,0.15);border-radius:2px}
 .goth-song-list{display:flex;flex-direction:column;gap:2px}
-.goth-song-item{display:flex;align-items:center;padding:14px 20px;border-radius:4px;cursor:pointer;transition:all 0.3s ease;position:relative;overflow:hidden;font-family:'Cinzel',serif;background:none;border:none;width:100%;text-align:left;color:var(--texto)}
+.goth-song-item{display:flex;align-items:center;padding:14px 20px;border-radius:4px;cursor:pointer;transition:background-color 0.3s ease, opacity 0.3s ease;position:relative;overflow:hidden;font-family:'Cinzel',serif;background:none;border:none;width:100%;text-align:left;color:var(--texto)}
 .goth-song-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(139,26,26,0.06),transparent 80%);opacity:0;transition:opacity 0.3s ease}
 .goth-song-item:hover::before{opacity:1}
 .goth-song-item:hover{background:rgba(139,26,26,0.05)}
@@ -60,7 +60,7 @@ const PLAYER_CSS = `
 .goth-si-title{font-size:13px;color:var(--texto);letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color 0.3s ease;font-family:'Cinzel',serif}
 .goth-si-artist{font-family:'Philosopher',serif;font-style:italic;font-size:11px;color:rgba(212,197,176,0.25);margin-top:3px;transition:color 0.3s ease}
 .goth-si-duration{font-size:11px;color:rgba(212,197,176,0.18);letter-spacing:1px;flex-shrink:0;margin-left:16px;font-family:'Cinzel',serif}
-.goth-hover-play{width:28px;height:28px;border-radius:50%;background:rgba(184,134,11,0.15);display:flex;align-items:center;justify-content:center;color:var(--dorado-medio);opacity:0;transform:scale(0.8);transition:all 0.25s ease;flex-shrink:0;margin-left:12px}
+.goth-hover-play{width:28px;height:28px;border-radius:50%;background:rgba(184,134,11,0.15);display:flex;align-items:center;justify-content:center;color:var(--dorado-medio);opacity:0;transform:scale(0.8);transition:opacity 0.25s ease, transform 0.25s cubic-bezier(0.23,1,0.32,1);flex-shrink:0;margin-left:12px}
 .goth-song-item:hover .goth-hover-play{opacity:1;transform:scale(1)}
 .goth-song-item.goth-active .goth-hover-play{opacity:0}
 
@@ -104,10 +104,10 @@ const PLAYER_CSS = `
 .goth-progress-bar:hover .goth-progress-fill::after{transform:translateY(-50%) scale(1)}
 .goth-progress-times{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;letter-spacing:2px;color:rgba(212,197,176,0.3);font-family:'Cinzel',serif}
 .goth-controls{display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 32px 22px}
-.goth-ctrl{background:none;border:none;color:rgba(212,197,176,0.35);cursor:pointer;transition:all 0.3s ease;padding:8px;display:flex;align-items:center;justify-content:center}
+.goth-ctrl{background:none;border:none;color:rgba(212,197,176,0.35);cursor:pointer;transition:color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;padding:8px;display:flex;align-items:center;justify-content:center}
 .goth-ctrl:hover{color:var(--dorado-medio);text-shadow:0 0 10px rgba(212,168,67,0.3)}
 .goth-ctrl.goth-active{color:var(--rojo-vivo)}
-.goth-play-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(90,10,10,0.6),rgba(139,26,26,0.25));border:1px solid rgba(184,134,11,0.25);color:var(--dorado-claro);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.4s ease;position:relative;overflow:hidden}
+.goth-play-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(90,10,10,0.6),rgba(139,26,26,0.25));border:1px solid rgba(184,134,11,0.25);color:var(--dorado-claro);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s ease, border-color 0.4s ease;position:relative;overflow:hidden}
 .goth-play-btn::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 0deg,transparent,var(--dorado-antiguo),transparent,var(--rojo-sangre),transparent);opacity:0;transition:opacity 0.4s ease;z-index:-1;animation:gothBorderRot 3s linear infinite}
 @keyframes gothBorderRot{to{transform:rotate(360deg)}}
 .goth-play-btn:hover::before,.goth-play-btn.goth-playing::before{opacity:0.5}
@@ -120,7 +120,7 @@ const PLAYER_CSS = `
 .goth-particles-canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
 .goth-vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(5,2,2,0.75) 100%)}
 
-.goth-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(18,8,8,0.95);border:1px solid rgba(184,134,11,0.25);color:var(--dorado-medio);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;padding:10px 24px;border-radius:3px;opacity:0;pointer-events:none;transition:all 0.4s ease;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.goth-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(18,8,8,0.95);border:1px solid rgba(184,134,11,0.25);color:var(--dorado-medio);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;padding:10px 24px;border-radius:3px;opacity:0;pointer-events:none;transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.23,1,0.32,1);z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
 .goth-toast.goth-show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media (max-height:720px) and (min-width:901px){
