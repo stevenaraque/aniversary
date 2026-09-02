@@ -183,7 +183,7 @@ export default function Intro({ onNext }) {
           <div className="flex flex-col items-center text-center gap-5 order-1">
             <motion.div initial={{opacity:0,y:-12}} animate={{opacity:1,y:0}} transition={{delay:0.2,...springs.gentle}} className="flex items-center justify-center gap-2 glass px-5 py-1.5 rounded-full border border-gold/20 w-auto mx-auto text-center">
               <Crown className="w-3.5 h-3.5 text-gold shrink-0" />
-              <span className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-gold-light font-medium text-center leading-none">26 · 08 · 2024 — 2 Años</span>
+              <span className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-gold-light font-medium text-center leading-none">26 · 08 · 2024 - 2 Años</span>
               <Gem className="w-3.5 h-3.5 text-crimson shrink-0" />
             </motion.div>
             {/* EXTENDIDO: max-w-3xl para no quede vacío centro */}
@@ -197,7 +197,7 @@ export default function Intro({ onNext }) {
               <p className="text-white text-sm md:text-[17px] lg:text-[18px] leading-7 w-full max-w-none font-light italic" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 14px rgba(0,0,0,0.9), 0 0 22px rgba(255,255,255,0.14)', color:'#ffeec2'}}>
                 Dos años de nosotros. Un instante eterno.<br/><span className="text-sm not-italic" style={{color:'rgba(255,255,255,0.88)', textShadow:'0 1px 10px rgba(0,0,0,0.85), 0 0 18px rgba(255,255,255,0.1)'}}>Lo que sigue es nuestro recuerdo, guardado en luz y sombra.</span>
               </p>
-              <span className="text-gold/30 text-[11px] tracking-[0.3em] w-full">⚜ — Aeternitas — ⚜</span>
+              <span className="text-gold/30 text-[11px] tracking-[0.3em] w-full">⚜ - Aeternitas - ⚜</span>
             </motion.div>
             <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{...springs.gentle,delay:0.8}} className="flex flex-col items-center gap-3 mt-1 w-full">
               <div className={`flex items-center gap-2 glass px-4 py-2.5 rounded-full border ${error ? 'border-crimson/50' : 'border-gold/20'} transition-colors ${shake ? 'animate-[shake_0.4s_ease]' : ''}`} style={{boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>
@@ -258,7 +258,7 @@ export default function Intro({ onNext }) {
                   <div className="image-overlay-prism"></div>
                   <div className="inner-vig-prism"></div>
                 </div>
-                <div className="frame-caption-prism"><div className="line-prism"></div><span>Nosotros — 26.08.2024</span></div>
+                <div className="frame-caption-prism"><div className="line-prism"></div><span>Nosotros - 26.08.2024</span></div>
               </div>
               <div className="gothic-arch">
                 <svg viewBox="0 0 420 60" fill="none" preserveAspectRatio="none"><path d="M0 60 L0 35 Q0 0 210 0 Q420 0 420 35 L420 60" stroke="url(#archGradP)" strokeWidth="1.5" fill="none"/><path d="M20 60 L20 38 Q20 8 210 8 Q400 8 400 38 L400 60" stroke="url(#archGrad2P)" strokeWidth="0.5" fill="none"/><path d="M210 4 L214 10 L210 16 L206 10 Z" fill="rgba(212,175,55,0.32)"/><defs><linearGradient id="archGradP" x1="0" y1="0" x2="420" y2="0"><stop offset="0%" stopColor="rgba(212,175,55,0.1)"/><stop offset="30%" stopColor="rgba(212,175,55,0.5)"/><stop offset="50%" stopColor="rgba(232,220,200,0.6)"/><stop offset="70%" stopColor="rgba(212,175,55,0.5)"/><stop offset="100%" stopColor="rgba(212,175,55,0.1)"/></linearGradient><linearGradient id="archGrad2P" x1="0" y1="0" x2="420" y2="0"><stop offset="0%" stopColor="rgba(220,38,38,0.05)"/><stop offset="50%" stopColor="rgba(220,38,38,0.25)"/><stop offset="100%" stopColor="rgba(220,38,38,0.05)"/></linearGradient></defs></svg>
