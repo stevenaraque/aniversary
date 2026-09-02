@@ -117,9 +117,9 @@ git log --oneline -5
 - Build OK. Push pendiente.
 
 
-## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 16 commits code (+4 docs) — main intacto 080d43a
+## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 18 commits code (+4 docs) — main intacto 080d43a
 
-Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 16 commits code + 4 docs, `main` nunca tocado:
+Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 18 commits code + 4 docs, `main` nunca tocado:
 
 - **Commit 89f73bc polish(a11y) — invisible**: App.jsx `MotionConfig reducedMotion="never"→"user"`; Final.jsx `.final-hero min-height:100vh→100dvh`; index.css regla global `:focus-visible` anillo dorado + fallback `@media (prefers-reduced-transparency:reduce)` opaco para `.glass`; motion-tokens.js curvas fuertes `easeOut [0.23,1,0.32,1]` / `easeInOut [0.77,0,0.175,1]` / `drawer [0.32,0.72,0,1]` (extend don't fork).
 
@@ -138,5 +138,7 @@ Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas:
 - **Commit 4428a2a perf(taste)**: `Intro.jsx:257` + `Collage.jsx:251` + `Final.jsx:152` imágenes `decoding="async"` + hero `fetchpriority="high"` (CLS/LCP).
 - **Commit 260ad06 perf(taste)**: `MemoryLane.jsx:117` + `Collage.jsx:355` + `Final.jsx:191` + `Puzzle.jsx:125` resto imágenes `decoding="async"` / `loading="eager"` (taste Core Web Vitals).
 - **Commit 9952d0e a11y(motion)**: `Intro.jsx:7,20,23,65` gate `Intro` canvases + cursor follower con `useReducedMotion` (`StarRain`/`Frost` early-return + `CursorFollower` null).
+- **Commit 4103e78 feat(letter)+fix(puzzle)**: `Letter.jsx:401-405` carta real `Mi Canelita` 2 años 26 agosto + `Puzzle.jsx:149` `springs.bouncy→snappy` 400/15→300/30 más sutil.
+- **Commit d166c28 a11y(motion)**: `Playlist.jsx:133` hide `goth-particles-canvas` en `prefers-reduced-motion: reduce` (taste infinite loops → static).
 
-Pendiente: LOW opcionales ya auditados (button contrast `crimson 4.99:1` PASS, copy self-audit sin hallazgos, `main` 080d43a nunca tocado). Listo para PR desde `refine/taste-skills`.
+Pendiente: sincronizado al `40cf315` previo + 4 nuevos commits. `main` 080d43a nunca tocado. Listo para PR `refine/taste-skills → main`.
