@@ -5,11 +5,19 @@ import { BatIcon, FlowerIcon } from './Icons'
 import { springs, motionTokens } from '../lib/motion-tokens'
 
 const PLACEHOLDER_PHOTOS = [
-  '/puzzle-main.jpg', '/puzzle-main.jpg', '/puzzle-main.jpg',
-  '/puzzle-main.jpg', '/puzzle-main.jpg', '/puzzle-main.jpg',
-  '/puzzle-main.jpg', '/puzzle-main.jpg', '/puzzle-main.jpg',
-  '/puzzle-main.jpg', '/puzzle-main.jpg', '/puzzle-main.jpg',
-  '/puzzle-main.jpg', '/puzzle-main.jpg', '/puzzle-main.jpg',
+  'https://picsum.photos/seed/amanecer-cresta/800/800',
+  'https://picsum.photos/seed/geometria-concreta/800/800',
+  'https://picsum.photos/seed/silueta-dorada/800/800',
+  'https://picsum.photos/seed/callejon-luminoso/800/800',
+  'https://picsum.photos/seed/bosque-nieblas/800/800',
+  'https://picsum.photos/seed/reflejos-verticales/800/800',
+  'https://picsum.photos/seed/asfalto-mojado/800/800',
+  'https://picsum.photos/seed/acantilado-infinito/800/800',
+  'https://picsum.photos/seed/luz-natural/800/800',
+  'https://picsum.photos/seed/puente-suspendido/800/800',
+  'https://picsum.photos/seed/tela-urbana/800/800',
+  'https://picsum.photos/seed/detalles-silvestres/800/800',
+  'https://picsum.photos/seed/mirada-intensa/800/800',
 ]
 
 const TAGS = ['naturaleza', 'urbano', 'retrato', 'eventos', 'nosotros']
