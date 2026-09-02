@@ -304,10 +304,12 @@ export default function Letter({ onNext, onPrev }) {
         .letter-card .textBox{opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:0.2s ease-in-out;z-index:2;text-align:center}
         .letter-card .textBox .head{font-size:20px;font-weight:700;letter-spacing:0.14em;font-family:'Cormorant Garamond',serif;color:#f9e076;text-shadow:0 0 16px rgba(212,175,55,0.3)}
         .letter-card .textBox span{font-size:12px;color:lightgrey;letter-spacing:0.14em;text-transform:uppercase}
-        .letter-card:hover > .textBox{opacity:1}
-        .letter-card:hover > .img{height:65%;filter:blur(7px);animation:cardAnim 3s infinite}
         @keyframes cardAnim{0%{transform:translateY(0)}50%{transform:translateY(-20px)}100%{transform:translateY(0)}}
-        .letter-card:hover{transform:scale(1.04) rotate(-1deg);border-color:rgba(212,175,55,0.34);box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 50px rgba(139,0,0,0.18)}
+        @media (hover: hover) and (pointer: fine) {
+          .letter-card:hover > .textBox{opacity:1}
+          .letter-card:hover > .img{height:65%;filter:blur(7px);animation:cardAnim 3s infinite}
+          .letter-card:hover{transform:scale(1.04) rotate(-1deg);border-color:rgba(212,175,55,0.34);box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 50px rgba(139,0,0,0.18)}
+        }
         .letter-card:active{transform:scale(0.98)}
         @media(max-width:640px){.letter-card{width:195px;height:285px}.letter-card .textBox .head{font-size:18px}}
         @media(prefers-reduced-motion:reduce){.animar-ala-izq,.animar-ala-der{animation-duration:1.1s!important}.letter-card:hover > .img{animation:none!important}}

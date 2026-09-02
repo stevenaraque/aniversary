@@ -123,10 +123,12 @@ export default function Countdown({ onNext, onPrev }) {
             .pebble-button::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.1) 50%,transparent 100%);transition:left 0.6s ease;pointer-events:none}
             .pebble-text{font-size:15px;font-weight:600;color:#f9e076;letter-spacing:0.04em;z-index:1;transition:letter-spacing 0.3s ease;text-shadow:0 1px 8px rgba(212,175,55,0.2);font-family:'Cormorant Garamond',serif;white-space:nowrap}
             .pebble-icon{position:relative;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#8b0000 0%,#dc143c 45%,#b8941f 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,175,55,0.2);transition:transform 0.3s ease;z-index:1;flex-shrink:0;border:1px solid rgba(212,175,55,0.18);will-change:transform}
-            .pebble-button:hover{transform:translateY(-2px) translateZ(0);box-shadow:0 12px 36px rgba(0,0,0,0.55),0 4px 12px rgba(139,0,0,0.15);border-color:rgba(212,175,55,0.28)}
-            .pebble-button:hover::before{left:100%}
-            .pebble-button:hover .pebble-icon{transform:scale(1.05) rotate(3deg)}
-            .pebble-button:hover .pebble-text{letter-spacing:0.05em}
+            @media (hover: hover) and (pointer: fine) {
+              .pebble-button:hover{transform:translateY(-2px) translateZ(0);box-shadow:0 12px 36px rgba(0,0,0,0.55),0 4px 12px rgba(139,0,0,0.15);border-color:rgba(212,175,55,0.28)}
+              .pebble-button:hover::before{left:100%}
+              .pebble-button:hover .pebble-icon{transform:scale(1.05) rotate(3deg)}
+              .pebble-button:hover .pebble-text{letter-spacing:0.05em}
+            }
             .pebble-button:active{transform:translateY(0) scale(0.97)}
             .pebble-button:active .pebble-icon{transform:scale(0.94)}
             @media(max-width:640px){.pebble-button{min-width:260px;padding:12px 14px 12px 18px}.pebble-text{font-size:13px}.pebble-icon{width:44px;height:44px;border-radius:14px}}
