@@ -126,13 +126,15 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
         @media(min-width:1024px){.collage-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
         .collage-item{position:relative;border-radius:14px;overflow:hidden;cursor:pointer;isolation:isolate}
         .collage-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s cubic-bezier(.16,1,.3,1),filter .45s ease;will-change:transform}
-        .collage-item:hover img{transform:scale(1.06);filter:brightness(.72)}
         .collage-item .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(5,5,5,.88) 100%);opacity:0;transition:opacity .35s ease;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;pointer-events:none}
-        .collage-item:hover .overlay{opacity:1}
         .collage-item .corner{position:absolute;top:10px;right:10px;width:24px;height:24px;border-top:1px solid rgba(212,175,55,.45);border-right:1px solid rgba(212,175,55,.45);opacity:0;transition:opacity .3s ease;z-index:2}
-        .collage-item:hover .corner{opacity:1}
         .collage-item .num{position:absolute;top:11px;left:13px;font-family:'Cormorant Garamond',serif;font-size:11px;color:rgba(255,255,255,.45);z-index:2;letter-spacing:.12em;opacity:0;transition:opacity .3s ease}
-        .collage-item:hover .num{opacity:1}
+        @media (hover: hover) and (pointer: fine) {
+          .collage-item:hover img{transform:scale(1.06);filter:brightness(.72)}
+          .collage-item:hover .overlay{opacity:1}
+          .collage-item:hover .corner{opacity:1}
+          .collage-item:hover .num{opacity:1}
+        }
         .collage-item .t{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.85);margin-bottom:4px;letter-spacing:.04em}
         .collage-item .tg{font-family:'Sora',sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#d4af37;display:inline-flex;align-items:center;gap:6px}
         .collage-item .tg::before{content:'';width:10px;height:1px;background:rgba(212,175,55,.5)}

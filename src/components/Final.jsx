@@ -80,9 +80,11 @@ export default function Final({ onPrev, onReset }) {
         .final-gallery-item { aspect-ratio: 1; overflow: hidden; border-radius: 2px; position: relative; cursor: pointer; border: 1px solid rgba(212,175,55,0.06); }
         .final-gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
         .final-gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.12) brightness(0.88) contrast(1.04) saturate(0.9); transition: filter 0.6s, transform 0.8s cubic-bezier(0.22,1,0.36,1); }
-        .final-gallery-item:hover img { filter: sepia(0) brightness(0.98) contrast(1.08); transform: scale(1.04); }
         .final-gallery-item::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(220,20,60,0.08); border-radius: 2px; pointer-events: none; transition: border-color 0.4s, box-shadow 0.4s; }
-        .final-gallery-item:hover::after { border-color: rgba(220,20,60,0.22); box-shadow: inset 0 0 12px rgba(220,20,60,0.06); }
+        @media (hover: hover) and (pointer: fine) {
+          .final-gallery-item:hover img { filter: sepia(0) brightness(0.98) contrast(1.08); transform: scale(1.04); }
+          .final-gallery-item:hover::after { border-color: rgba(220,20,60,0.22); box-shadow: inset 0 0 12px rgba(220,20,60,0.06); }
+        }
         .final-vow { text-align: center; padding: 120px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
         .final-vow-text { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 2; color: #e8dcc8; max-width: 600px; margin: 0 auto; letter-spacing: 0.01em; text-shadow: 0 0 24px rgba(220,20,60,0.18), 0 1px 10px rgba(0,0,0,0.6); }
         .final-vow-sig { margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: 1.1rem; color: #dc143c; letter-spacing: 0.08em; text-shadow: 0 0 12px rgba(220,20,60,0.25); }
@@ -143,13 +145,13 @@ export default function Final({ onPrev, onReset }) {
 
         <section className="final-section">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={springs.gentle} className="final-label">Fragmentos de nosotros</motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ ...springs.gentle, delay: 0.15 }} className="final-gallery">
+          <div className="final-gallery">
             {GALLERY.map((g, i) => (
-              <div key={i} className="final-gallery-item" onClick={() => setLightbox(g.src)}>
+              <motion.div key={i} className="final-gallery-item" onClick={() => setLightbox(g.src)} initial={{ opacity: 0, y: 12, scale: 0.98 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.2 }} transition={{ ...springs.gentle, delay: i * 0.06 }}>
                 <img src={g.src} alt={g.alt} loading="lazy" />
-              </div>
+              </motion.div>
             ))}
-          </motion.div>
+          </div>
         </section>
 
         <div className="final-divider" />

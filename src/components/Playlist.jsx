@@ -38,8 +38,10 @@ const PLAYER_CSS = `
 .goth-song-list{display:flex;flex-direction:column;gap:2px}
 .goth-song-item{display:flex;align-items:center;padding:14px 20px;border-radius:4px;cursor:pointer;transition:background-color 0.3s ease, opacity 0.3s ease;position:relative;overflow:hidden;font-family:'Cinzel',serif;background:none;border:none;width:100%;text-align:left;color:var(--texto)}
 .goth-song-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(139,26,26,0.06),transparent 80%);opacity:0;transition:opacity 0.3s ease}
-.goth-song-item:hover::before{opacity:1}
-.goth-song-item:hover{background:rgba(139,26,26,0.05)}
+@media (hover: hover) and (pointer: fine) {
+  .goth-song-item:hover::before{opacity:1}
+  .goth-song-item:hover{background:rgba(139,26,26,0.05)}
+}
 .goth-song-item.goth-active{background:rgba(139,26,26,0.08)}
 .goth-song-item.goth-active::before{opacity:1;background:linear-gradient(90deg,rgba(139,26,26,0.15),rgba(184,134,11,0.03) 60%,transparent)}
 .goth-song-item.goth-active .goth-si-number{color:var(--rojo-vivo)}
@@ -61,7 +63,9 @@ const PLAYER_CSS = `
 .goth-si-artist{font-family:'Philosopher',serif;font-style:italic;font-size:11px;color:rgba(212,197,176,0.25);margin-top:3px;transition:color 0.3s ease}
 .goth-si-duration{font-size:11px;color:rgba(212,197,176,0.18);letter-spacing:1px;flex-shrink:0;margin-left:16px;font-family:'Cinzel',serif}
 .goth-hover-play{width:28px;height:28px;border-radius:50%;background:rgba(184,134,11,0.15);display:flex;align-items:center;justify-content:center;color:var(--dorado-medio);opacity:0;transform:scale(0.8);transition:opacity 0.25s ease, transform 0.25s cubic-bezier(0.23,1,0.32,1);flex-shrink:0;margin-left:12px}
-.goth-song-item:hover .goth-hover-play{opacity:1;transform:scale(1)}
+@media (hover: hover) and (pointer: fine) {
+  .goth-song-item:hover .goth-hover-play{opacity:1;transform:scale(1)}
+}
 .goth-song-item.goth-active .goth-hover-play{opacity:0}
 
 /* PANEL DERECHO: REPRODUCTOR */
@@ -98,20 +102,29 @@ const PLAYER_CSS = `
 .goth-wave.goth-active{opacity:1}
 .goth-progress{margin-top:10px;width:100%}
 .goth-progress-bar{position:relative;width:100%;height:3px;background:rgba(184,134,11,0.08);border-radius:2px;cursor:pointer;transition:height 0.2s ease}
-.goth-progress-bar:hover{height:5px}
+@media (hover: hover) and (pointer: fine) {
+  .goth-progress-bar:hover{height:5px}
+}
 .goth-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--rojo-sangre),var(--rojo-vivo),var(--dorado-antiguo));border-radius:2px;position:relative;transition:width 0.1s linear}
 .goth-progress-fill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%) scale(0.7);width:12px;height:12px;background:var(--dorado-medio);border-radius:50%;box-shadow:0 0 10px rgba(212,168,67,0.5);opacity:0;transition:transform 0.2s cubic-bezier(0.23,1,0.32,1), opacity 0.2s ease}
-.goth-progress-bar:hover .goth-progress-fill::after{transform:translateY(-50%) scale(1);opacity:1}
+@media (hover: hover) and (pointer: fine) {
+  .goth-progress-bar:hover .goth-progress-fill::after{transform:translateY(-50%) scale(1);opacity:1}
+}
 .goth-progress-times{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;letter-spacing:2px;color:rgba(212,197,176,0.3);font-family:'Cinzel',serif}
 .goth-controls{display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 32px 22px}
 .goth-ctrl{background:none;border:none;color:rgba(212,197,176,0.35);cursor:pointer;transition:color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;padding:8px;display:flex;align-items:center;justify-content:center}
-.goth-ctrl:hover{color:var(--dorado-medio);text-shadow:0 0 10px rgba(212,168,67,0.3)}
+@media (hover: hover) and (pointer: fine) {
+  .goth-ctrl:hover{color:var(--dorado-medio);text-shadow:0 0 10px rgba(212,168,67,0.3)}
+}
 .goth-ctrl.goth-active{color:var(--rojo-vivo)}
 .goth-play-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(90,10,10,0.6),rgba(139,26,26,0.25));border:1px solid rgba(184,134,11,0.25);color:var(--dorado-claro);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s ease, border-color 0.4s ease;position:relative;overflow:hidden}
 .goth-play-btn::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 0deg,transparent,var(--dorado-antiguo),transparent,var(--rojo-sangre),transparent);opacity:0;transition:opacity 0.4s ease;z-index:-1;animation:gothBorderRot 3s linear infinite}
 @keyframes gothBorderRot{to{transform:rotate(360deg)}}
-.goth-play-btn:hover::before,.goth-play-btn.goth-playing::before{opacity:0.5}
-.goth-play-btn:hover{border-color:rgba(184,134,11,0.45);box-shadow:0 0 30px rgba(139,26,26,0.25),0 0 60px rgba(139,26,26,0.08);transform:scale(1.06)}
+.goth-play-btn.goth-playing::before{opacity:0.5}
+@media (hover: hover) and (pointer: fine) {
+  .goth-play-btn:hover::before{opacity:0.5}
+  .goth-play-btn:hover{border-color:rgba(184,134,11,0.45);box-shadow:0 0 30px rgba(139,26,26,0.25),0 0 60px rgba(139,26,26,0.08);transform:scale(1.06)}
+}
 .goth-play-btn:active{transform:scale(0.96)}
 .goth-play-btn.goth-playing::before{animation:gothBorderRot 3s linear infinite}
 
