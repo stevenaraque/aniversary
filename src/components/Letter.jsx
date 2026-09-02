@@ -398,11 +398,11 @@ export default function Letter({ onNext, onPrev }) {
               <line x1="18" y1="2" x2="18" y2="24" stroke="#b8944a" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
           </div>
-          <p id="lGreet" className="ltxt mb-3.5" style={{ fontFamily: "'Dancing Script',cursive", fontSize: 'clamp(20px,4vw,26px)', fontWeight: 600, color: '#2c1810' }}>Querida persona,</p>
+          <p id="lGreet" className="ltxt mb-3.5" style={{ fontFamily: "'Dancing Script',cursive", fontSize: 'clamp(20px,4vw,26px)', fontWeight: 600, color: '#2c1810' }}>Mi Canelita,</p>
           <p id="lBody" className="ltxt" style={{ fontSize: 'clamp(13px,2.5vw,15px)', lineHeight: 1.9, color: '#4a3728' }}>
-            Esta pequeña mariposa de papel ha cruzado distancias invisibles para llegar hasta ti. En cada pliegue hay un deseo silencioso, en cada aleteo un pensamiento que no encontró palabras. A veces los mensajes más importantes no necesitan grandes discursos — basta con un instante de belleza para decirlo todo.
+            Hace dos años, un 26 de agosto, la vida nos cruzó sin ruido y desde entonces todo tiene tu nombre. En este tiempo aprendí que el amor no es un día grande, sino todos los pequeños: tu risa en la cocina a medianoche, tu mano que busca la mía sin mirar, como dices mi nombre cuando tienes sueño. Gracias por quedarte en mis días nublados, por enseñarme que la paciencia también es amor y por hacer de lo cotidiano nuestro lugar favorito. No te prometo días perfectos. Te prometo elegirte cada mañana, con la misma certeza del primer día y con todo lo que hemos crecido. Felices dos años. Que lo que viene nos encuentre así, juntos, a nuestro tiempo y a nuestra manera.
           </p>
-          <p id="lSign" className="ltxt mt-5 text-right" style={{ fontFamily: "'Dancing Script',cursive", fontSize: 'clamp(18px,3.5vw,23px)', fontWeight: 700, color: '#2c1810' }}>Con cariño, siempre.</p>
+          <p id="lSign" className="ltxt mt-5 text-right" style={{ fontFamily: "'Dancing Script',cursive", fontSize: 'clamp(18px,3.5vw,23px)', fontWeight: 700, color: '#2c1810' }}>Siempre tuyo, Steven.</p>
           <div id="seal" className="absolute -bottom-4 right-8 w-[42px] h-[42px] rounded-full flex items-center justify-center" style={{ background: 'radial-gradient(circle at 38% 38%,#d44030,#8b1a1a)', boxShadow: '0 2px 8px rgba(0,0,0,0.35),inset 0 1px 3px rgba(255,255,255,0.15)' }}>
             <span style={{ color: 'rgba(255,210,170,0.65)', fontSize: 18 }}>✣</span>
           </div>
