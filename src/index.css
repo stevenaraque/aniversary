@@ -285,6 +285,13 @@ h1, h2, h3, span, p, a, li {
 .animate-float { animation: float-gentle 4s ease-in-out infinite; }
 .animate-rotate { animation: rotate-slow 20s linear infinite; }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-bat, .animate-shimmer, .animate-pulse-depth, .animate-float, .animate-rotate,
+  .gothic-arch svg, .cross-orn, .cross-ring-item, .top-cross-prism, .g-corner svg, .top-cross {
+    animation: none !important;
+  }
+}
+
 /* ─── Background Pattern ─── */
 
 .bg-liquid {
