@@ -117,15 +117,22 @@ git log --oneline -5
 - Build OK. Push pendiente.
 
 
-## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 5 commits code (+2 docs) — main intacto
+## Rama refine/taste-skills — pasada por emilkowalski/skills + taste-skill (anti-slop) — 12 commits code (+3 docs) — main intacto 080d43a
 
-Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 5 commits code + 2 docs:
+Aplicadas en rama nueva (NUNCA main — regla de oro). Las 3 skills descargadas: emilkowalski/skills (clon 2x: skills/impecable) + Leonxlnx/taste-skill. Audit del codigo mostro que ya cumplia la mayoria de reglas (sin scale(0), sin transition:all, springs tokens, sin ease-in en entradas). Cambios aplicados (todos verificados lint 0/0 + build OK) — 12 commits code + 3 docs, `main` nunca tocado:
 
 - **Commit 89f73bc polish(a11y) — invisible**: App.jsx `MotionConfig reducedMotion="never"→"user"`; Final.jsx `.final-hero min-height:100vh→100dvh`; index.css regla global `:focus-visible` anillo dorado + fallback `@media (prefers-reduced-transparency:reduce)` opaco para `.glass`; motion-tokens.js curvas fuertes `easeOut [0.23,1,0.32,1]` / `easeInOut [0.77,0,0.175,1]` / `drawer [0.32,0.72,0,1]` (extend don't fork).
 
 - **Commit 6e0432c feat(motion) — visible**: transicion de pagina emilkowalski (fade+blur+scale) en wrappers raiz de 7 secciones — `Intro.jsx:113`, `Countdown.jsx:57`, `Puzzle.jsx:61`, `MemoryLane.jsx:61`, `Collage.jsx:109`, `Final.jsx:35`, `Playlist.jsx:398` — `initial={{opacity:0,scale:0.985,filter:'blur(6px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} exit={{opacity:0,scale:1.005,filter:'blur(5px)'}} transition={{duration:0.4,ease:motionTokens.easing.easeOut}}`. Playlist no importaba motion-tokens → agregado `import { motionTokens }`. Sin scale(0), sin transition:all. Verificado lint 0/0 + build OK (2221 modules, 59kB CSS / 488kB JS).
 - **Commit f9f426a fix(motion/a11y)**: `Playlist.jsx:39,63,107,110,123` `transition:all→propiedades especificas` (review-animations NEVER all); `Letter.jsx:297,299` `scale(0)→scale(0.85)`; `App.jsx:60` + `Puzzle.jsx:144` `min-h-screen→min-h-[100dvh]` (taste viewport stability).
 - **Commit c3bac42 fix(motion)**: `Playlist.jsx:103` progress knob `scale(0)→scale(0.7)+opacity` (never scale(0)) + strong easing.
-- **Commit 8596600 feat(motion)**: `Final.jsx:146` galeria con stagger `delay: i*0.06` (everything-at-once→30-80ms stagger); `Final.jsx:83` + `Collage.jsx:128` + `Playlist.jsx:39-118` hover gating `@media (hover:hover) and (pointer:fine)` (review-animations ungated hover) para `.final-gallery-item`, `.collage-item`, `.goth-*`.
+- **Commit 8596600 feat(motion)**: `Final.jsx:146` galeria con stagger `delay: i*0.06` (everything-at-once→30-80ms stagger); `Final.jsx:83` + `Collage.jsx:128` + `Playlist.jsx:39-118` hover gating `@media (hover:hover) and (pointer:fine)` para `.final-gallery-item`, `.collage-item`, `.goth-*`.
+- **Commit 5af395a style(taste)**: `src/index.css` tokens Shape (`pill 999px / 14px / 4px / 16px`) + Z-index (`--z-overlay 30/header 40/modal 50/lightbox 100`) + gating `interact-lift/glow`, `header-nav-link`, `scrollbar`.
+- **Commit 2a43c60 style(taste)**: `Countdown.jsx:126` pebble-button + `Letter.jsx:307` letter-card hover gating.
+- **Commit 4ace963 style(taste)**: `Puzzle.jsx:76` tile + `Intro.jsx:79,86,235` gothic-btn/prism hover gating.
+- **Commit eed6215 fix(taste)**: `Intro.jsx:186,200,261` em-dash `—→-` (ZERO ban) + `Final.jsx:55` italic descender `pb-6px`.
+- **Commit 29d44ea perf(taste)**: `index.html:10` preload LCP `intro-main.webp` `fetchpriority="high"` (LCP <2.5s).
+- **Commit fad9ea8 a11y(taste)**: `src/index.css:282` reduced-motion collapse loops `animate-bat/shimmer/pulse/float/rotate` + gothic ornaments.
+- **Commit bfb02cd style(taste)**: `Collage.jsx:7` placeholder `13× puzzle-main.jpg → picsum descriptive seeds` (real image strategy).
 
-Pendiente en esta rama: seguir iterando taste (shape/color lock audit, button contrast, copy) o abrir PR desde `refine/taste-skills` — `main` intacto en `080d43a` (nunca tocado).
+Pendiente: LOW opcionales (button contrast ya auditado `crimson 4.99:1`/`obsidian-gold 15:1` OK, copy self-audit). Abrir PR desde `refine/taste-skills` cuando quieras — `main` 080d43a intacto.
