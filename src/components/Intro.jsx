@@ -254,7 +254,7 @@ export default function Intro({ onNext }) {
               <div className="prism-border"></div>
               <div className="crystal-frame">
                 <div className="image-area-prism">
-                  <img src="/intro-main.webp" alt="Nosotros" loading="eager" />
+                  <img src="/intro-main.webp" alt="Nosotros" loading="eager" decoding="async" fetchpriority="high" />
                   <div className="image-overlay-prism"></div>
                   <div className="inner-vig-prism"></div>
                 </div>

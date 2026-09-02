@@ -149,7 +149,7 @@ export default function Final({ onPrev, onReset }) {
           <div className="final-gallery">
             {GALLERY.map((g, i) => (
               <motion.div key={i} className="final-gallery-item" onClick={() => setLightbox(g.src)} initial={{ opacity: 0, y: 12, scale: 0.98 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: 0.2 }} transition={{ ...springs.gentle, delay: i * 0.06 }}>
-                <img src={g.src} alt={g.alt} loading="lazy" />
+                <img src={g.src} alt={g.alt} loading="lazy" decoding="async" />
               </motion.div>
             ))}
           </div>

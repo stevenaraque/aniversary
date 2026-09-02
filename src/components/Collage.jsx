@@ -258,7 +258,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
                 onClick={() => setSelected(i)}
                 whileHover={{ zIndex: 5 }}
               >
-                <img src={item.src} alt={item.title} loading="lazy" />
+                <img src={item.src} alt={item.title} loading="lazy" decoding="async" />
                 <span className="corner" />
                 <span className="num">{String(item.id + 1).padStart(2, '0')}</span>
                 <div className="overlay">
