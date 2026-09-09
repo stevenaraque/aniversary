@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { motion } from 'motion/react'
 import {
   ArrowLeft, Shuffle, SkipBack, SkipForward, Play, Pause, Repeat,
@@ -35,7 +35,7 @@ const PLAYER_CSS = `
 .goth-song-wrapper::-webkit-scrollbar-track{background:transparent}
 .goth-song-wrapper::-webkit-scrollbar-thumb{background:rgba(184,134,11,0.15);border-radius:2px}
 .goth-song-list{display:flex;flex-direction:column;gap:2px}
-.goth-song-item{display:flex;align-items:center;padding:14px 20px;border-radius:4px;cursor:pointer;transition:all 0.3s ease;position:relative;overflow:hidden;font-family:'Cinzel',serif;background:none;border:none;width:100%;text-align:left;color:var(--texto)}
+.goth-song-item{display:flex;align-items:center;padding:14px 20px;border-radius:4px;cursor:pointer;transition:background-color 0.3s ease;position:relative;overflow:hidden;font-family:'Cinzel',serif;background:none;border:none;width:100%;text-align:left;color:var(--texto)}
 .goth-song-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(139,26,26,0.06),transparent 80%);opacity:0;transition:opacity 0.3s ease}
 .goth-song-item:hover::before{opacity:1}
 .goth-song-item:hover{background:rgba(139,26,26,0.05)}
@@ -59,7 +59,7 @@ const PLAYER_CSS = `
 .goth-si-title{font-size:13px;color:var(--texto);letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color 0.3s ease;font-family:'Cinzel',serif}
 .goth-si-artist{font-family:'Philosopher',serif;font-style:italic;font-size:11px;color:rgba(212,197,176,0.25);margin-top:3px;transition:color 0.3s ease}
 .goth-si-duration{font-size:11px;color:rgba(212,197,176,0.18);letter-spacing:1px;flex-shrink:0;margin-left:16px;font-family:'Cinzel',serif}
-.goth-hover-play{width:28px;height:28px;border-radius:50%;background:rgba(184,134,11,0.15);display:flex;align-items:center;justify-content:center;color:var(--dorado-medio);opacity:0;transform:scale(0.8);transition:all 0.25s ease;flex-shrink:0;margin-left:12px}
+.goth-hover-play{width:28px;height:28px;border-radius:50%;background:rgba(184,134,11,0.15);display:flex;align-items:center;justify-content:center;color:var(--dorado-medio);opacity:0;transform:scale(0.8);transition:opacity 0.25s ease,transform 0.25s ease;flex-shrink:0;margin-left:12px}
 .goth-song-item:hover .goth-hover-play{opacity:1;transform:scale(1)}
 .goth-song-item.goth-active .goth-hover-play{opacity:0}
 
@@ -103,10 +103,10 @@ const PLAYER_CSS = `
 .goth-progress-bar:hover .goth-progress-fill::after{transform:translateY(-50%) scale(1)}
 .goth-progress-times{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;letter-spacing:2px;color:rgba(212,197,176,0.3);font-family:'Cinzel',serif}
 .goth-controls{display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 32px 22px}
-.goth-ctrl{background:none;border:none;color:rgba(212,197,176,0.35);cursor:pointer;transition:all 0.3s ease;padding:8px;display:flex;align-items:center;justify-content:center}
+.goth-ctrl{background:none;border:none;color:rgba(212,197,176,0.35);cursor:pointer;transition:color 0.3s ease;padding:8px;display:flex;align-items:center;justify-content:center}
 .goth-ctrl:hover{color:var(--dorado-medio);text-shadow:0 0 10px rgba(212,168,67,0.3)}
 .goth-ctrl.goth-active{color:var(--rojo-vivo)}
-.goth-play-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(90,10,10,0.6),rgba(139,26,26,0.25));border:1px solid rgba(184,134,11,0.25);color:var(--dorado-claro);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.4s ease;position:relative;overflow:hidden}
+.goth-play-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(90,10,10,0.6),rgba(139,26,26,0.25));border:1px solid rgba(184,134,11,0.25);color:var(--dorado-claro);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.4s ease,box-shadow 0.4s ease,border-color 0.4s ease;position:relative;overflow:hidden}
 .goth-play-btn::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 0deg,transparent,var(--dorado-antiguo),transparent,var(--rojo-sangre),transparent);opacity:0;transition:opacity 0.4s ease;z-index:-1;animation:gothBorderRot 3s linear infinite}
 @keyframes gothBorderRot{to{transform:rotate(360deg)}}
 .goth-play-btn:hover::before,.goth-play-btn.goth-playing::before{opacity:0.5}
@@ -119,7 +119,7 @@ const PLAYER_CSS = `
 .goth-particles-canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
 .goth-vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 50%,transparent 20%,rgba(5,2,2,0.75) 100%)}
 
-.goth-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(18,8,8,0.95);border:1px solid rgba(184,134,11,0.25);color:var(--dorado-medio);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;padding:10px 24px;border-radius:3px;opacity:0;pointer-events:none;transition:all 0.4s ease;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.goth-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(18,8,8,0.95);border:1px solid rgba(184,134,11,0.25);color:var(--dorado-medio);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;padding:10px 24px;border-radius:3px;opacity:0;pointer-events:none;transition:opacity 0.4s ease,transform 0.4s ease;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
 .goth-toast.goth-show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media (max-height:720px) and (min-width:901px){
@@ -182,6 +182,28 @@ function EqIcon() {
 }
 
 const WAVE_BARS = 28
+
+// perf: filas memoizadas — los intervalos de progreso/onda no reconcilian la lista
+const SongRow = memo(function SongRow({ s, i, isCurrent, onSelect }) {
+  return (
+    <button
+      className={`goth-song-item${isCurrent ? ' goth-active' : ''}`}
+      role="listitem"
+      onClick={() => onSelect(i)}
+    >
+      <div className="goth-si-number">
+        <span className="goth-num-text">{String(i + 1).padStart(2, '0')}</span>
+        <EqIcon />
+      </div>
+      <div className="goth-si-info">
+        <div className="goth-si-title">{s.title}</div>
+        <div className="goth-si-artist">{s.artist}</div>
+      </div>
+      <div className="goth-si-duration">{s.duration}</div>
+      <div className="goth-hover-play"><Play size={10} /></div>
+    </button>
+  )
+})
 
 export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onReset }) {
   const list = Array.isArray(songs) && songs.length ? songs : DEFAULT_SONGS
@@ -251,7 +273,7 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
           }
           return next
         })
-        setWave(Array.from({ length: WAVE_BARS }, () => 3 + Math.random() * 18))
+        // perf: la onda la mueve su propio intervalo (180ms), no este de 100ms
       }
     }, 100)
     return () => clearInterval(id)
@@ -259,11 +281,12 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
   }, [song])
 
   // Animación del visualizador mientras suena (aplica también a canciones con audio real)
+  // perf: 180ms en vez de 110ms — la onda se ve igual con ~mitad de re-renders
   useEffect(() => {
     if (!isPlaying) return
     const id = setInterval(() => {
       setWave(Array.from({ length: WAVE_BARS }, () => 3 + Math.random() * 18))
-    }, 110)
+    }, 180)
     return () => clearInterval(id)
   }, [isPlaying])
 
@@ -370,14 +393,22 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
       }
     }
     for (let i = 0; i < COUNT; i++) particles.push(new Particle())
-    let raf
+    let raf = 0
+    let running = true
     const animate = () => {
+      if (!running) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       particles.forEach(p => { p.update(); p.draw() })
       raf = requestAnimationFrame(animate)
     }
+    // perf: pausa en pestaña oculta — este canvas no la tenía
+    const onVis = () => {
+      if (document.hidden) { running = false; cancelAnimationFrame(raf) }
+      else if (!running) { running = true; raf = requestAnimationFrame(animate) }
+    }
+    document.addEventListener('visibilitychange', onVis)
     animate()
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize) }
+    return () => { running = false; cancelAnimationFrame(raf); window.removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVis) }
   }, [])
 
   // Atajos de teclado globales
@@ -434,23 +465,7 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
           <div className="goth-song-wrapper">
             <div className="goth-song-list" role="list">
               {list.map((s, i) => (
-                <button
-                  key={i}
-                  className={`goth-song-item${active(i === current)}`}
-                  role="listitem"
-                  onClick={() => selectSong(i)}
-                >
-                  <div className="goth-si-number">
-                    <span className="goth-num-text">{String(i + 1).padStart(2, '0')}</span>
-                    <EqIcon />
-                  </div>
-                  <div className="goth-si-info">
-                    <div className="goth-si-title">{s.title}</div>
-                    <div className="goth-si-artist">{s.artist}</div>
-                  </div>
-                  <div className="goth-si-duration">{s.duration}</div>
-                  <div className="goth-hover-play"><Play size={10} /></div>
-                </button>
+                <SongRow key={i} s={s} i={i} isCurrent={i === current} onSelect={selectSong} />
               ))}
             </div>
           </div>
@@ -543,7 +558,7 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
         {onNext && (
           <button
             onClick={onNext}
-            className="px-6 py-2 font-bold text-white uppercase tracking-wider text-xs rounded-xl bg-crimson border-b-[4px] border-[#7f1d1d] active:border-b-0 active:translate-y-[4px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)]"
+            className="px-6 py-2 font-bold text-white uppercase tracking-wider text-xs rounded-xl bg-crimson border-b-[4px] border-[#7f1d1d] active:border-b-0 active:translate-y-[4px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)]"
             style={{ fontFamily: 'Cormorant Garamond,serif' }}
           >
             Ver frase final

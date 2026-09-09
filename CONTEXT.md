@@ -116,3 +116,23 @@ git log --oneline -5
 - **Reescrito con metodología de encapsulación flex-wrap (sin breakpoints de layout)** `Playlist.jsx`: `.goth-layout{display:flex;flex-wrap:wrap}`, `.goth-left{flex:1 1 340px;min-width:0;max-width:100%}`, `.goth-right{flex:0 1 440px;min-width:0;max-width:100%}`. El div interno se adapta al contenedor padre: en ancho <780px los paneles **se apilan** (lista arriba, player abajo); en ≥780px quedan lado a lado. Se eliminó el `flex-direction:column` del media 900 (ya lo hace flex-wrap). `.goth-player{width:100%;max-width:100vw;overflow-x:hidden!important}`. **Verificado en Chrome headless en 9 tamaños: `scrollW==clientW` y `horizOverflow:false` en todos** (cero scroll horizontal), con apilamiento correcto en celular/tablet y lado a lado en laptop/desktop.
 - Build OK. Push pendiente.
 
+
+## Rama perf/no-jank — optimización sin cambiar diseño (NUNCA main — regla de oro)
+
+Auditoría sección por sección: lo que trababa el navegador era cantidad de capas animadas simultáneas, no el diseño. Cambios aplicados (lint 0/0 + build OK 58.6kB CSS / 488.4kB JS), `main` nunca tocado:
+
+- **Cosmos global** `CosmosBackground.jsx`: DPR con tope 1.5, cometas desktop 31→20 (móvil 10→8), partículas 500→260, estela 3→2 pasadas, reciclaje de partículas O(n)→buffer circular, halo del mouse solo si se movió, resize con debounce 150ms, pausa total en pestaña oculta.
+- **Playlist** `Playlist.jsx`: onda fuera del intervalo de 100ms (propio a 180ms), filas memoizadas (`SongRow`), canvas con pausa en pestaña oculta, `transition:all`→específicas.
+- **Collage** `Collage.jsx`: blur solo en primera entrada (al filtrar solo opacity/y/scale), `whileHover zIndex`→CSS, flotantes Bat/Flower de Motion→keyframes CSS, lightbox sin `backdrop-blur-xl`, imgs `decoding="async"`.
+- **Blurs anidados**: quitado `backdrop-blur` de overlays full-screen (Puzzle/MemoryLane×2/Collage/Final) — el vidrio queda en la tarjeta.
+- **Transiciones**: sin `filter:blur()` en initial/animate/exit (Intro/Countdown/MemoryLane/Letter/Collage); `transition-all`→propiedades específicas en todos los botones; `will-change` solo donde anima de verdad.
+- **Intro**: `CursorFollower` solo con puntero fino, `candelGlow` anima opacity (no box-shadow).
+- **Countdown**: `TimeBlock`/`AnimatedNumber` con `memo`, loops Crown/Gem/Heart a CSS.
+- **MemoryLane**: `dragDirectionLock` en swipe + fix lightbox roto con video sin `src`.
+- **Letter**: sparkles 18→12, envelope mousemove con throttle rAF.
+- **Final**: quitado `@import` de fuentes en `<style>` (Marcellus ya en `index.html`), hero `100vh`→`100dvh`.
+- **Fuentes**: `Dancing Script` + `Lora` movidas al `<link>` de `index.html` (se quitaron los `@import` de Letter/Final).
+- **App**: `MotionConfig reducedMotion="never"`→`"user"`.
+
+Pendiente: commit + push de `perf/no-jank`, probar en navegador real, luego PR hacia `main`.
+

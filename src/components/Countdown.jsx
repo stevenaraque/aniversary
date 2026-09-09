@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { motion } from 'motion/react'
 import { Heart, Crown, Gem, ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
@@ -25,11 +25,11 @@ function calculateTime() {
   return { years, months, days, hours, minutes, seconds }
 }
 
-function AnimatedNumber({ value }) {
+const AnimatedNumber = memo(function AnimatedNumber({ value }) {
   return <span className="tabular-nums">{String(value).padStart(2, '0')}</span>
-}
+})
 
-function TimeBlock({ value, label, delay, accent, max }) {
+const TimeBlock = memo(function TimeBlock({ value, label, delay, accent, max }) {
   const pct = Math.min(1, value / max)
   const circ = 2 * Math.PI * 42
   const dash = pct * circ
@@ -47,7 +47,7 @@ function TimeBlock({ value, label, delay, accent, max }) {
       </div>
     </motion.div>
   )
-}
+})
 
 export default function Countdown({ onNext, onPrev }) {
   const [time, setTime] = useState(calculateTime())
@@ -62,7 +62,7 @@ export default function Countdown({ onNext, onPrev }) {
       )}
       <style>{`
         .countdown-bg{position:absolute;inset:0;pointer-events:none;opacity:0.06}
-        .countdown-circle{position:absolute;border:1px solid rgba(212,175,55,0.4);border-radius:50%;animation:countPulse 9s ease infinite;will-change:transform,opacity}
+        .countdown-circle{position:absolute;border:1px solid rgba(212,175,55,0.4);border-radius:50%;animation:countPulse 9s ease infinite;will-change:transform}
         .countdown-circle:nth-child(1){width:380px;height:380px;top:50%;left:50%;transform:translate(-50%,-50%)}
         .countdown-circle:nth-child(2){width:580px;height:580px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:3s;border-color:rgba(220,20,60,0.28)}
         @keyframes countPulse{0%,100%{opacity:0.06;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.1;transform:translate(-50%,-50%) scale(1.03)}}
@@ -73,6 +73,13 @@ export default function Countdown({ onNext, onPrev }) {
         .filigree-count::before{left:-8px}.filigree-count::after{right:-8px;color:rgba(220,38,38,0.4)}
         .filigree-dot{width:6px;height:6px;border:1px solid rgba(212,175,55,0.4);transform:rotate(45deg);background:rgba(10,10,10,0.9)}
         @media(max-width:640px){.watermark{font-size:52vw}}
+        /* perf: loops decorativos en CSS (compositor) en vez de Motion (hilo JS) */
+        .count-heart{animation:countHeart 2s ease-in-out infinite}
+        @keyframes countHeart{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.2);opacity:0.9}}
+        .count-drift-a{animation:countDriftA 7s ease-in-out infinite}
+        @keyframes countDriftA{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        .count-drift-b{animation:countDriftB 8s ease-in-out infinite}
+        @keyframes countDriftB{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
       `}</style>
       <div className="countdown-bg"><div className="countdown-circle"></div><div className="countdown-circle"></div></div>
       <div className="countdown-vignette"></div>
@@ -80,11 +87,11 @@ export default function Countdown({ onNext, onPrev }) {
 
       <motion.div className="absolute top-8 right-6 sm:right-10 lg:right-14 opacity-[0.08] hidden sm:block" initial={{opacity:0, x:12}} animate={{opacity:0.08, x:0}} transition={{...springs.gentle, delay:0.6}}><BatIcon className="w-10 h-10 lg:w-12 lg:h-12 text-crimson" /></motion.div>
       <motion.div className="absolute bottom-8 left-6 sm:left-10 lg:left-14 opacity-[0.07] hidden sm:block" initial={{opacity:0, x:-12}} animate={{opacity:0.07, x:0}} transition={{...springs.gentle, delay:0.7}}><FlowerIcon className="w-9 h-9 lg:w-11 lg:h-11 text-gold" /></motion.div>
-      <motion.div className="absolute top-[18%] left-[6%] opacity-[0.03] hidden lg:block" animate={{y:[0,-8,0]}} transition={{duration:7, repeat:Infinity}}><Crown className="w-5 h-5 text-gold" /></motion.div>
-      <motion.div className="absolute bottom-[18%] right-[6%] opacity-[0.03] hidden lg:block" animate={{y:[0,8,0]}} transition={{duration:8, repeat:Infinity}}><Gem className="w-5 h-5 text-crimson" /></motion.div>
+      <div className="absolute top-[18%] left-[6%] opacity-[0.03] hidden lg:block count-drift-a"><Crown className="w-5 h-5 text-gold" /></div>
+      <div className="absolute bottom-[18%] right-[6%] opacity-[0.03] hidden lg:block count-drift-b"><Gem className="w-5 h-5 text-crimson" /></div>
 
       <div className="container relative z-10 flex flex-col items-center justify-center min-h-[100dvh] h-[100dvh] py-5 sm:py-6 text-center gap-4 sm:gap-5 px-4 overflow-hidden">
-        <motion.div initial={{y:-14, opacity:0, filter:'blur(6px)'}} animate={{y:0, opacity:1, filter:'blur(0px)'}} transition={springs.gentle} className="flex flex-col items-center gap-3 w-full">
+        <motion.div initial={{y:-14, opacity:0}} animate={{y:0, opacity:1}} transition={springs.gentle} className="flex flex-col items-center gap-3 w-full">
           <div className="flex items-center justify-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/15">
             <Crown className="w-3 h-3 text-gold/70" /><span className="text-[10px] tracking-[0.22em] uppercase text-gold-light/80">Mi Canelita</span><Gem className="w-3 h-3 text-crimson/60" />
           </div>
@@ -109,7 +116,7 @@ export default function Countdown({ onNext, onPrev }) {
 
         <motion.div className="flex items-center justify-center gap-3" initial={{opacity:0, scaleX:0.8}} animate={{opacity:1, scaleX:1}} transition={{...springs.gentle, delay:0.5}}>
           <div className="h-px w-12 sm:w-16 bg-gradient-to-r from-transparent to-gold/15" />
-          <motion.div animate={{scale:[1,1.2,1], opacity:[0.5,0.9,0.5]}} transition={{duration:2, repeat:Infinity}}><Heart className="w-4 h-4 text-crimson" fill="currentColor" /></motion.div>
+          <div className="count-heart"><Heart className="w-4 h-4 text-crimson" fill="currentColor" /></div>
           <div className="h-px w-12 sm:w-16 bg-gradient-to-l from-transparent to-gold/15" />
         </motion.div>
 
@@ -119,10 +126,10 @@ export default function Countdown({ onNext, onPrev }) {
 
         <motion.div initial={{opacity:0, y:16}} animate={{opacity:1, y:0}} transition={{...springs.gentle, delay:0.75}}>
           <style>{`
-            .pebble-button{position:relative;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 14px 22px;min-width:280px;max-width:100%;background:rgba(10,10,15,0.55);border:1px solid rgba(212,175,55,0.18);border-radius:50px;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,0.5),0 2px 8px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease;overflow:hidden;will-change:transform;transform:translateZ(0)}
+            .pebble-button{position:relative;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 14px 22px;min-width:280px;max-width:100%;background:rgba(10,10,15,0.55);border:1px solid rgba(212,175,55,0.18);border-radius:50px;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,0.5),0 2px 8px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease,border-color 0.3s ease;overflow:hidden;transform:translateZ(0)}
             .pebble-button::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.1) 50%,transparent 100%);transition:left 0.6s ease;pointer-events:none}
             .pebble-text{font-size:15px;font-weight:600;color:#f9e076;letter-spacing:0.04em;z-index:1;transition:letter-spacing 0.3s ease;text-shadow:0 1px 8px rgba(212,175,55,0.2);font-family:'Cormorant Garamond',serif;white-space:nowrap}
-            .pebble-icon{position:relative;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#8b0000 0%,#dc143c 45%,#b8941f 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,175,55,0.2);transition:transform 0.3s ease;z-index:1;flex-shrink:0;border:1px solid rgba(212,175,55,0.18);will-change:transform}
+            .pebble-icon{position:relative;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#8b0000 0%,#dc143c 45%,#b8941f 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,175,55,0.2);transition:transform 0.3s ease;z-index:1;flex-shrink:0;border:1px solid rgba(212,175,55,0.18)}
             .pebble-button:hover{transform:translateY(-2px) translateZ(0);box-shadow:0 12px 36px rgba(0,0,0,0.55),0 4px 12px rgba(139,0,0,0.15);border-color:rgba(212,175,55,0.28)}
             .pebble-button:hover::before{left:100%}
             .pebble-button:hover .pebble-icon{transform:scale(1.05) rotate(3deg)}

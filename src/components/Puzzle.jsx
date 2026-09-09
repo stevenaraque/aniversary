@@ -70,7 +70,7 @@ export default function Puzzle({ onNext, onPrev }) {
         .board-glass{position:relative;z-index:1;background:linear-gradient(160deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.008) 40%,rgba(255,255,255,.02) 100%);backdrop-filter:blur(28px) saturate(1.3);-webkit-backdrop-filter:blur(28px) saturate(1.3);border:1px solid rgba(255,255,255,.06);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 80px rgba(220,38,38,.04),inset 0 1px 0 rgba(255,255,255,.06);border-radius:18px;overflow:hidden}
         .puzzle-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:5px;width:100%;height:100%;transition:gap .6s cubic-bezier(.16,1,.3,1),padding .6s}
         .puzzle-grid.solved{gap:0!important;padding:0!important}
-        .tile{aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);position:relative;touch-action:manipulation;cursor:default;transition:border-color .25s,box-shadow .25s,transform .25s cubic-bezier(.16,1,.3,1);will-change:transform;background-color:rgba(0,0,0,.4);outline:none;display:flex;align-items:center;justify-content:center}
+        .tile{aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);position:relative;touch-action:manipulation;cursor:default;transition:border-color .25s,box-shadow .25s,transform .25s cubic-bezier(.16,1,.3,1);background-color:rgba(0,0,0,.4);outline:none;display:flex;align-items:center;justify-content:center}
         .tile:focus-visible{box-shadow:0 0 0 2px #d4af37}
         .tile.movable{border-color:rgba(220,38,38,.22);box-shadow:0 0 14px rgba(220,38,38,.08);cursor:pointer}
         .tile.movable:hover{border-color:rgba(220,38,38,.4);box-shadow:0 0 24px rgba(220,38,38,.14);transform:scale(1.02)}
@@ -129,8 +129,8 @@ export default function Puzzle({ onNext, onPrev }) {
             <div className="top-cross"><svg width="14" height="22" viewBox="0 0 14 22" fill="none"><rect x="5.5" y="1" width="3" height="20" rx="1" fill="rgba(212,175,55,.45)"/><rect x="2" y="6" width="10" height="2.5" rx="1" fill="rgba(212,175,55,.45)"/></svg></div>
           </div>
           <div className="flex gap-3 flex-wrap justify-center w-full max-w-[360px] mx-auto">
-            <button onClick={handleShuffle} className="group relative flex-1 max-w-[160px] px-5 py-3 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)]"><span className="relative flex items-center justify-center gap-1.5" style={{fontFamily:'Cormorant Garamond,serif'}}>Mezclar</span></button>
-            <button onMouseDown={()=>setShowPreview(true)} onMouseUp={()=>setShowPreview(false)} onMouseLeave={()=>setShowPreview(false)} onTouchStart={()=>setShowPreview(true)} onTouchEnd={()=>setShowPreview(false)} className="group relative flex-1 max-w-[170px] px-5 py-3 font-bold text-gold-light uppercase tracking-wider text-xs rounded-2xl bg-[#0a0a0f] border-b-[5px] border-gold/20 active:border-b-0 active:translate-y-[5px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(212,175,55,0.12)]"><span className="relative flex items-center justify-center gap-1.5" style={{fontFamily:'Cormorant Garamond,serif'}}>Vista previa</span></button>
+            <button onClick={handleShuffle} className="group relative flex-1 max-w-[160px] px-5 py-3 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)]"><span className="relative flex items-center justify-center gap-1.5" style={{fontFamily:'Cormorant Garamond,serif'}}>Mezclar</span></button>
+            <button onMouseDown={()=>setShowPreview(true)} onMouseUp={()=>setShowPreview(false)} onMouseLeave={()=>setShowPreview(false)} onTouchStart={()=>setShowPreview(true)} onTouchEnd={()=>setShowPreview(false)} className="group relative flex-1 max-w-[170px] px-5 py-3 font-bold text-gold-light uppercase tracking-wider text-xs rounded-2xl bg-[#0a0a0f] border-b-[5px] border-gold/20 active:border-b-0 active:translate-y-[5px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(212,175,55,0.12)]"><span className="relative flex items-center justify-center gap-1.5" style={{fontFamily:'Cormorant Garamond,serif'}}>Vista previa</span></button>
           </div>
         </div>
 
@@ -142,7 +142,7 @@ export default function Puzzle({ onNext, onPrev }) {
         <AnimatePresence>
   {solved && (
     <motion.div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-black/70" />
       {/* Uiverse SouravBandyopadhyay — adaptado gótico */}
       <motion.div initial={{scale:0.94,opacity:0,y:10}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.96,opacity:0}} transition={springs.bouncy} className="relative w-[88vw] sm:w-[420px] rounded-2xl border-2 border-gold/25 bg-transparent p-7 sm:p-8 text-center shadow-[0_24px_64px_rgba(0,0,0,0.55)]" style={{background:'linear-gradient(160deg,rgba(20,10,10,0.94) 0%,rgba(10,10,15,0.96) 100%)', backdropFilter:'blur(20px) saturate(1.3)', WebkitBackdropFilter:'blur(20px) saturate(1.3)'}}>
         <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{background:'conic-gradient(from 0deg,transparent 0deg,rgba(212,175,55,0.06) 70deg,transparent 140deg,rgba(220,20,60,0.05) 220deg,transparent 320deg)'}} />
@@ -158,7 +158,7 @@ export default function Puzzle({ onNext, onPrev }) {
           <p className="mt-2 text-white/40 text-[11px]" style={{fontFamily:'Sora,sans-serif'}}>{moves <= 80 ? '¡Equipo imparable!' : moves <= 150 ? '¡Con constancia todo fluye!' : '¡La perseverancia siempre gana!'}</p>
           <div className="mt-5 flex items-center justify-center gap-3 w-full">
             <button onClick={handleShuffle} className="rounded-full border border-gold/15 bg-[#0a0a0f] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-gold-light hover:bg-[#1a1a1f] hover:border-gold/25 transition-colors" style={{fontFamily:'Cormorant Garamond,serif'}}>Jugar otra vez</button>
-            <button onClick={onNext} className="inline-flex items-center gap-1.5 rounded-full bg-crimson border-b-[3px] border-[#7f1d1d] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_6px_14px_-6px_rgba(220,38,38,0.35)] active:border-b-0 active:translate-y-[3px] transition-all" style={{fontFamily:'Cormorant Garamond,serif'}}>Seguir <FlowerIcon className="w-3 h-3 text-white" /></button>
+            <button onClick={onNext} className="inline-flex items-center gap-1.5 rounded-full bg-crimson border-b-[3px] border-[#7f1d1d] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_6px_14px_-6px_rgba(220,38,38,0.35)] active:border-b-0 active:translate-y-[3px] transition-[transform,box-shadow,background-color,border-color]" style={{fontFamily:'Cormorant Garamond,serif'}}>Seguir <FlowerIcon className="w-3 h-3 text-white" /></button>
           </div>
         </div>
       </motion.div>
