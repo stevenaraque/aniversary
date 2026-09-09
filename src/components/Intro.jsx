@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
-import { Skull, Crown, Gem, Lock } from 'lucide-react'
-import { BatIcon } from './Icons'
+import { Crown, Gem, Lock } from 'lucide-react'
+import { BatIcon, GothicSkullIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
 function CursorFollower() {
@@ -184,7 +184,7 @@ export default function Intro({ onNext }) {
             </motion.div>
             {/* EXTENDIDO: max-w-3xl para no quede vacío centro */}
             <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{...springs.gentle,delay:0.45}} className="flex flex-col items-center gap-4 w-full max-w-full px-0 py-4 text-center">
-              <span className="text-[10px] tracking-[0.45em] uppercase text-white/25 w-full">Mi Canelita ❋</span>
+              <span className="text-[11px] tracking-[0.45em] uppercase w-full text-gold-light/85" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 0 14px rgba(212,175,55,0.35)'}}>Mi Canelita ❋</span>
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6rem] font-bold leading-[0.88] tracking-tight w-full" style={{fontFamily:'Cormorant Garamond,serif', letterSpacing:'0.12em'}}>
                 <span className="block text-gradient-blood" style={{fontFamily:'Cormorant Garamond,serif'}}>Nuestro</span>
                 <span className="block text-white drop-shadow-[0_0_22px_rgba(212,175,55,0.28)]" style={{fontFamily:'Cormorant Garamond,serif'}}>Tiempo</span>
@@ -193,7 +193,7 @@ export default function Intro({ onNext }) {
               <p className="text-white text-sm md:text-[17px] lg:text-[18px] leading-7 w-full max-w-none font-light italic" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 1px 14px rgba(0,0,0,0.9), 0 0 22px rgba(255,255,255,0.14)', color:'#ffeec2'}}>
                 Dos años de nosotros. Un instante eterno.<br/><span className="text-sm not-italic" style={{color:'rgba(255,255,255,0.88)', textShadow:'0 1px 10px rgba(0,0,0,0.85), 0 0 18px rgba(255,255,255,0.1)'}}>Lo que sigue es nuestro recuerdo, guardado en luz y sombra.</span>
               </p>
-              <span className="text-gold/30 text-[11px] tracking-[0.3em] w-full">⚜ — Aeternitas — ⚜</span>
+              <span className="text-gold/30 text-[11px] tracking-[0.3em] w-full">⚜ ⚜</span>
             </motion.div>
             <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{...springs.gentle,delay:0.8}} className="flex flex-col items-center gap-3 mt-1 w-full">
               <div className={`flex items-center gap-2 glass px-4 py-2.5 rounded-full border ${error ? 'border-crimson/50' : 'border-gold/20'} transition-colors ${shake ? 'animate-[shake_0.4s_ease]' : ''}`} style={{boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>
@@ -204,7 +204,7 @@ export default function Intro({ onNext }) {
               {error && <span className="text-crimson text-xs tracking-wide -mt-1">{error}</span>}
               <style>{`@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}`}</style>
               <GothicButton onClick={handleUnlock}>Recordemos</GothicButton>
-              <span className="text-white/20 text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2"><Skull className="w-3 h-3"/> 26 DE AGOSTO <Skull className="w-3 h-3"/></span>
+              <span className="text-white/20 text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2"><GothicSkullIcon className="w-4 h-4 text-gold/50"/> 26 DE AGOSTO <GothicSkullIcon className="w-4 h-4 text-gold/50"/></span>
             </motion.div>
           </div>
             <motion.div initial={{opacity:0,scale:0.97}} animate={{opacity:1,scale:1}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-visible">

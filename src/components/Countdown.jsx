@@ -41,7 +41,7 @@ const TimeBlock = memo(function TimeBlock({ value, label, delay, accent, max }) 
           <circle cx="50" cy="50" r="42" fill="none" stroke={accent==='gold'?'rgba(212,175,55,0.5)':'rgba(220,38,38,0.45)'} strokeWidth="1.5" strokeLinecap="round" strokeDasharray={`${dash} ${circ - dash}`} style={{filter:'drop-shadow(0 0 4px rgba(212,175,55,0.25))'}} />
         </svg>
         <div className="absolute inset-[3px] rounded-[1.1rem] sm:rounded-[14px] border border-white/[0.04] pointer-events-none" />
-        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tabular-nums relative z-10" style={{fontFamily:'Cormorant Garamond,serif'}}><AnimatedNumber value={value} /></span>
+        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tabular-nums relative z-10" style={{fontFamily:'Cinzel,serif'}}><AnimatedNumber value={value} /></span>
         <span className="text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-white/30 mt-0.5 relative z-10">{label}</span>
         <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-gold/30 blur-[1px] pointer-events-none hidden sm:block" />
       </div>
@@ -92,12 +92,12 @@ export default function Countdown({ onNext, onPrev }) {
 
       <div className="container relative z-10 flex flex-col items-center justify-center min-h-[100dvh] h-[100dvh] py-5 sm:py-6 text-center gap-4 sm:gap-5 px-4 overflow-hidden">
         <motion.div initial={{y:-14, opacity:0}} animate={{y:0, opacity:1}} transition={springs.gentle} className="flex flex-col items-center gap-3 w-full">
-          <div className="flex items-center justify-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/15">
+          <div className="flex items-center justify-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/30 outline outline-1 outline-offset-[3px] outline-gold/20 shadow-[0_0_18px_rgba(212,175,55,0.15),inset_0_1px_0_rgba(255,255,255,0.07)]">
             <Crown className="w-3 h-3 text-gold/70" /><span className="text-[10px] tracking-[0.22em] uppercase text-gold-light/80">Mi Canelita</span><Gem className="w-3 h-3 text-crimson/60" />
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-none" style={{fontFamily:'Cormorant Garamond,serif', letterSpacing:'0.08em'}}><span className="text-gradient-blood">Tiempo</span> <span className="text-white">juntos</span></h2>
           <div className="flex items-center justify-center gap-2 text-gold/25 text-[11px] tracking-[0.25em] uppercase">
-            <span className="hidden sm:block w-8 h-px bg-gradient-to-r from-transparent to-gold/20" /><BatIcon className="w-3.5 h-3.5 text-crimson/30" /><span>Desde el 26 de agosto de 2024</span><FlowerIcon className="w-3.5 h-3.5 text-gold/30" /><span className="hidden sm:block w-8 h-px bg-gradient-to-l from-transparent to-crimson/20" />
+            <span className="hidden sm:block w-8 h-px bg-gradient-to-r from-transparent to-gold/20" /><BatIcon className="w-3.5 h-3.5 text-crimson/30" /><span>Desde el <span className="text-gold-light/90" style={{fontFamily:'Cinzel,serif', fontWeight:600, letterSpacing:'0.1em'}}>26</span> de agosto de <span className="text-gold-light/90" style={{fontFamily:'Cinzel,serif', fontWeight:600, letterSpacing:'0.1em'}}>2024</span></span><FlowerIcon className="w-3.5 h-3.5 text-gold/30" /><span className="hidden sm:block w-8 h-px bg-gradient-to-l from-transparent to-crimson/20" />
           </div>
           <div className="filigree-count mt-1"><div className="filigree-dot"></div></div>
         </motion.div>
