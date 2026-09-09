@@ -96,7 +96,7 @@ export default function Countdown({ onNext, onPrev }) {
             <Crown className="w-3 h-3 text-gold/70" /><span className="text-[10px] tracking-[0.22em] uppercase text-gold-light/80">Mi Canelita</span><Gem className="w-3 h-3 text-crimson/60" />
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-none" style={{fontFamily:'Cormorant Garamond,serif', letterSpacing:'0.08em'}}><span className="text-gradient-blood">Tiempo</span> <span className="text-white">juntos</span></h2>
-          <div className="flex items-center justify-center gap-2 text-gold/25 text-[11px] tracking-[0.25em] uppercase">
+          <div className="flex items-center justify-center gap-2 text-white/60 text-[11px] tracking-[0.25em] uppercase">
             <span className="hidden sm:block w-8 h-px bg-gradient-to-r from-transparent to-gold/20" /><BatIcon className="w-3.5 h-3.5 text-crimson/30" /><span>Desde el <span className="text-gold-light/90" style={{fontFamily:'Cinzel,serif', fontWeight:600, letterSpacing:'0.1em'}}>26</span> de agosto de <span className="text-gold-light/90" style={{fontFamily:'Cinzel,serif', fontWeight:600, letterSpacing:'0.1em'}}>2024</span></span><FlowerIcon className="w-3.5 h-3.5 text-gold/30" /><span className="hidden sm:block w-8 h-px bg-gradient-to-l from-transparent to-crimson/20" />
           </div>
           <div className="filigree-count mt-1"><div className="filigree-dot"></div></div>
