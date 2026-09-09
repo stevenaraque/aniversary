@@ -23,6 +23,9 @@ const TAG_LABELS = {
 }
 const FILTER_KEYS = ['all', ...TAGS]
 
+// perf/no-jank: marca si el collage ya se montó una vez (blur solo en la primera entrada)
+let collageEntered = false
+
 // Distribución de spans — orig estable (13 fotos = sin hueco, 12 = hueco 1 celda al final limpio)
 const SPANS = [
   'span-2x2', 'span-1x1', 'span-1x1', 'span-1x2',
@@ -64,6 +67,13 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
   const [selected, setSelected] = useState(null)
   const [isPressing, setIsPressing] = useState(false)
   const reduceMotion = useReducedMotion()
+  // perf: el blur de entrada solo la primera vez; al filtrar se anima opacity/y/scale
+  // (inicializador de estado, sin setState en efecto para lint limpio)
+  const [entered] = useState(() => {
+    if (collageEntered) return true
+    collageEntered = true
+    return false
+  })
 
   const handleMusicPress = useCallback(() => {
     if (isPressing) return
@@ -124,6 +134,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
         @media(min-width:768px){.collage-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
         @media(min-width:1024px){.collage-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
         .collage-item{position:relative;border-radius:14px;overflow:hidden;cursor:pointer;isolation:isolate}
+        .collage-item:hover{z-index:5}
         .collage-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s cubic-bezier(.16,1,.3,1),filter .45s ease;will-change:transform}
         .collage-item:hover img{transform:scale(1.06);filter:brightness(.72)}
         .collage-item .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(5,5,5,.88) 100%);opacity:0;transition:opacity .35s ease;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;pointer-events:none}
@@ -165,28 +176,25 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
         @media(prefers-reduced-motion:reduce){
           .collage-item img,.collage-item .overlay,.collage-item .corner,.collage-item .num{transition:none!important}
         }
+        /* perf: flotantes decorativos en CSS (compositor) en vez de Motion (hilo JS) */
+        .collage-float-a{animation:collageFloatA 6s ease-in-out infinite}
+        @keyframes collageFloatA{0%,100%{opacity:0.06;transform:translate(0,0)}25%{opacity:0.06;transform:translate(10px,-8px)}50%{opacity:0.06;transform:translate(-5px,-14px)}75%{opacity:0.06;transform:translate(-10px,-6px)}}
+        .collage-float-b{animation:collageFloatB 8s ease-in-out infinite}
+        @keyframes collageFloatB{0%,100%{opacity:0.05;transform:rotate(0deg)}33%{opacity:0.05;transform:rotate(10deg)}66%{opacity:0.05;transform:rotate(-10deg)}}
       `}</style>
 
-      <motion.div
-        className="absolute top-10 right-6 sm:right-10 hidden sm:block"
-        animate={{ opacity: 0.06, x: [0, 10, -5, -10, 0], y: [0, -8, -14, -6, 0] }}
-        transition={{ duration: 6, repeat: Infinity }}
-      >
+      <div className="absolute top-10 right-6 sm:right-10 hidden sm:block collage-float-a">
         <BatIcon className="w-5 h-5 text-crimson" />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-24 left-6 sm:left-10 hidden sm:block"
-        animate={{ opacity: 0.05, rotate: [0, 10, -10, 0] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      >
+      </div>
+      <div className="absolute bottom-24 left-6 sm:left-10 hidden sm:block collage-float-b">
         <FlowerIcon className="w-5 h-5 text-sunflower" />
-      </motion.div>
+      </div>
 
       <div className="container-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8">
         <motion.div
           className="text-center w-full max-w-3xl mx-auto pt-2 sm:pt-4"
-          initial={{ y: -14, opacity: 0, filter: 'blur(6px)' }}
-          animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+          initial={{ y: -14, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
           transition={springs.gentle}
         >
           <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-crimson/30 mx-auto mb-3" />
@@ -213,7 +221,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-medium border transition-all duration-300 ${
+                className={`px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-medium border transition-[background-color,border-color,color,box-shadow] duration-300 ${
                   active
                     ? 'bg-gold/15 border-gold/55 text-gold-light shadow-[0_0_18px_rgba(212,175,55,0.18)]'
                     : 'glass border-white/8 text-white/55 hover:border-gold/25 hover:text-white/85'
@@ -240,14 +248,13 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
                 key={`${filter}-${item.id}`}
                 layout
                 className={`collage-item ${item.span} ${minH(item.span)}`}
-                initial={{ opacity: 0, y: 18, scale: 0.96, filter: 'blur(6px)' }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 0.96, filter: 'blur(4px)' }}
+                initial={entered ? { opacity: 0, y: 18, scale: 0.96 } : { opacity: 0, y: 18, scale: 0.96, filter: 'blur(6px)' }}
+                animate={entered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ ...springs.gentle, delay: Math.min(i * 0.04, 0.4) }}
                 onClick={() => setSelected(i)}
-                whileHover={{ zIndex: 5 }}
               >
-                <img src={item.src} alt={item.title} loading="lazy" />
+                <img src={item.src} alt={item.title} loading="lazy" decoding="async" />
                 <span className="corner" />
                 <span className="num">{String(item.id + 1).padStart(2, '0')}</span>
                 <div className="overlay">
@@ -304,7 +311,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
             aria-label="Visor de recuerdo"
           >
             <motion.div
-              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+              className="absolute inset-0 bg-black/90"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -336,14 +343,15 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
               key={`lb-${filter}-${selected}`}
               className="relative z-10 max-w-[88vw] sm:max-w-[80vw] max-h-[80vh] flex flex-col items-center"
               onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.9, opacity: 0, filter: 'blur(8px)' }}
-              animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
-              exit={{ scale: 0.9, opacity: 0, filter: 'blur(8px)' }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               transition={springs.gentle}
             >
               <img
                 src={visible[selected].src}
                 alt={visible[selected].title}
+                decoding="async"
                 className="max-w-full max-h-[72vh] object-contain rounded-xl border border-gold/20 shadow-[0_24px_80px_rgba(0,0,0,0.6),0_0_60px_rgba(139,0,0,0.15)]"
               />
               <div className="mt-4 text-center">

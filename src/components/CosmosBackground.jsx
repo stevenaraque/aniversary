@@ -18,8 +18,9 @@ export default function CosmosBackground() {
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches
     const STAR_COUNT = isMobile ? 140 : 300
-    const MAX_COMETS = isMobile ? 10 : 31
-    const MAX_P = isMobile ? 160 : 500
+    // perf: menos cometas/partículas — la cascada se sigue viendo continua
+    const MAX_COMETS = isMobile ? 8 : 20
+    const MAX_P = isMobile ? 160 : 260
 
     const staticCanvas = document.createElement('canvas')
     const sCtx = staticCanvas.getContext('2d')
@@ -40,9 +41,13 @@ export default function CosmosBackground() {
       }
     }
 
+    // perf: DPR con tope — el cosmos no necesita resolución retina completa
+    let DPR = 1
+
     function renderStaticLayer() {
-      staticCanvas.width = W
-      staticCanvas.height = H
+      staticCanvas.width = W * DPR
+      staticCanvas.height = H * DPR
+      sCtx.setTransform(DPR, 0, 0, DPR, 0, 0)
       const bg = sCtx.createRadialGradient(W * 0.3, H * 0.7, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.85)
       bg.addColorStop(0, '#0e0a18')
       bg.addColorStop(0.4, '#08061a')
@@ -70,8 +75,12 @@ export default function CosmosBackground() {
     }
 
     function resize() {
-      W = canvas.width = window.innerWidth
-      H = canvas.height = window.innerHeight
+      DPR = Math.min(window.devicePixelRatio || 1, 1.5)
+      W = window.innerWidth
+      H = window.innerHeight
+      canvas.width = W * DPR
+      canvas.height = H * DPR
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0)
       renderStaticLayer()
     }
 
@@ -90,18 +99,23 @@ export default function CosmosBackground() {
     }
 
     const particles = []
+    let pCursor = 0
+
+    function resetParticle(p, x, y) {
+      p.x = x + rand(-4, 4); p.y = y + rand(-4, 4)
+      p.vx = rand(-0.5, 0.5); p.vy = rand(-0.5, 0.5)
+      p.life = rand(15, 45) | 0; p.maxLife = p.life; p.size = rand(0.6, 2.2); p.alive = true
+    }
 
     function spawnParticle(x, y) {
-      if (particles.length >= MAX_P) {
-        let oldest = 0
-        for (let j = 1; j < particles.length; j++) if (particles[j].life < particles[oldest].life) oldest = j
-        const p = particles[oldest]
-        p.x = x + rand(-4, 4); p.y = y + rand(-4, 4)
-        p.vx = rand(-0.5, 0.5); p.vy = rand(-0.5, 0.5)
-        p.life = rand(15, 45) | 0; p.maxLife = p.life; p.size = rand(0.6, 2.2); p.alive = true
+      if (particles.length < MAX_P) {
+        const p = { x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1, size: 1, alive: true }
+        resetParticle(p, x, y)
+        particles.push(p)
       } else {
-        particles.push({ x: x + rand(-4, 4), y: y + rand(-4, 4), vx: rand(-0.5, 0.5), vy: rand(-0.5, 0.5), life: rand(15, 45) | 0, maxLife: 0, size: rand(0.6, 2.2), alive: true })
-        particles[particles.length - 1].maxLife = particles[particles.length - 1].life
+        // perf: buffer circular — recicla en orden en vez de buscar la más vieja O(n)
+        resetParticle(particles[pCursor], x, y)
+        pCursor = (pCursor + 1) % particles.length
       }
     }
 
@@ -177,13 +191,10 @@ export default function CosmosBackground() {
     function updateComet(c) { c.x += c.vx; c.y += c.vy; c.sparkTimer++; if (c.sparkTimer % 5 === 0) spawnParticle(c.x, c.y); if (c.y < -300 || c.x > W + 300) c.alive = false }
     function drawComet(c) {
       const spd = Math.sqrt(c.vx * c.vx + c.vy * c.vy), dx = -c.vx / spd, dy = -c.vy / spd, tx = c.x + dx * c.tailLen, ty = c.y + dy * c.tailLen
+      // perf: 2 pasadas (halo + núcleo) en vez de 3 — mismo look, 1 gradiente menos por cometa
       const gHalo = ctx.createLinearGradient(c.x, c.y, tx, ty)
-      gHalo.addColorStop(0, c.mid); gHalo.addColorStop(0.3, 'rgba(212,175,55,0.22)'); gHalo.addColorStop(1, c.tail)
-      ctx.globalAlpha = c.brightness * 0.32; ctx.strokeStyle = gHalo; ctx.lineWidth = c.w * 7; ctx.lineCap = 'round'
-      ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke()
-      const gMid = ctx.createLinearGradient(c.x, c.y, tx, ty)
-      gMid.addColorStop(0, c.mid); gMid.addColorStop(0.35, 'rgba(199,139,30,0.45)'); gMid.addColorStop(1, c.tail)
-      ctx.globalAlpha = c.brightness * 0.6; ctx.strokeStyle = gMid; ctx.lineWidth = c.w * 2.6; ctx.lineCap = 'round'
+      gHalo.addColorStop(0, c.mid); gHalo.addColorStop(0.3, 'rgba(212,175,55,0.26)'); gHalo.addColorStop(1, c.tail)
+      ctx.globalAlpha = c.brightness * 0.4; ctx.strokeStyle = gHalo; ctx.lineWidth = c.w * 7; ctx.lineCap = 'round'
       ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke()
       const gCore = ctx.createLinearGradient(c.x, c.y, tx, ty)
       gCore.addColorStop(0, c.head); gCore.addColorStop(0.15, c.mid); gCore.addColorStop(1, c.tail)
@@ -208,9 +219,10 @@ export default function CosmosBackground() {
 
     // Spawn denso en desktop (cascada continua), espaciado en móvil
     let spawnTimer = 0, nextSpawn = isMobile ? rand(16, 27) : rand(2.4, 5.6), frame = 0
+    let lastMx = -1, lastMy = -1
     function loop() {
       frame++
-      ctx.drawImage(staticCanvas, 0, 0)
+      ctx.drawImage(staticCanvas, 0, 0, W, H)
       drawStars(frame)
       spawnTimer++
       if (spawnTimer >= nextSpawn) {
@@ -222,19 +234,35 @@ export default function CosmosBackground() {
       for (let i = comets.length - 1; i >= 0; i--) { updateComet(comets[i]); if (!comets[i].alive) comets.splice(i, 1) }
       for (let i = 0; i < comets.length; i++) drawComet(comets[i])
       updateAndDrawFlashes()
-      ctx.globalAlpha = 0.012; ctx.fillStyle = '#ffd700'
-      ctx.beginPath(); ctx.arc(mx, my, 180, 0, 6.2832); ctx.fill()
-      ctx.globalAlpha = 1
+      // perf: el halo del mouse solo se redibuja si el mouse se movió
+      if (mx !== lastMx || my !== lastMy) {
+        lastMx = mx; lastMy = my
+        ctx.globalAlpha = 0.012; ctx.fillStyle = '#ffd700'
+        ctx.beginPath(); ctx.arc(mx, my, 180, 0, 6.2832); ctx.fill()
+        ctx.globalAlpha = 1
+      }
       animationId = requestAnimationFrame(loop)
     }
 
     resize()
-    window.addEventListener('resize', resize)
+    // perf: resize con debounce — evita re-renderizar la capa estática a cada píxel
+    let rzT = 0
+    const onResize = () => { clearTimeout(rzT); rzT = setTimeout(resize, 150) }
+    window.addEventListener('resize', onResize)
+    // perf: pausa total en pestaña oculta (ahorra CPU/batería)
+    let running = true
+    const onVis = () => {
+      if (document.hidden) { running = false; cancelAnimationFrame(animationId) }
+      else if (!running) { running = true; animationId = requestAnimationFrame(loop) }
+    }
+    document.addEventListener('visibilitychange', onVis)
     loop()
 
     return () => {
       cancelAnimationFrame(animationId)
-      window.removeEventListener('resize', resize)
+      clearTimeout(rzT)
+      window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVis)
       document.removeEventListener('mousemove', onMouseMove)
     }
   }, [])

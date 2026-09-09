@@ -17,6 +17,7 @@ function SwipeableCard({ children, onSwipeLeft, onSwipeRight }) {
   return (
     <motion.div
       drag="x"
+      dragDirectionLock
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.28}
       onDragEnd={(_, info) => {
@@ -72,7 +73,7 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
       </div>
 
       <div className="container-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8 overflow-visible">
-        <motion.div className="text-center w-full max-w-3xl mx-auto" initial={{y:-14,opacity:0,filter:'blur(6px)'}} animate={{y:0,opacity:1,filter:'blur(0px)'}} transition={springs.gentle}>
+        <motion.div className="text-center w-full max-w-3xl mx-auto" initial={{y:-14,opacity:0}} animate={{y:0,opacity:1}} transition={springs.gentle}>
           <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-crimson/25 mx-auto mb-3" />
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold" style={{fontFamily:'Cormorant Garamond,serif'}}><span className="text-gradient-blood">Paseo de</span> <span className="text-white">recuerdos</span></h2>
           <p className="text-gold/30 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-widest mt-2"><FlowerIcon className="w-3.5 h-3.5" /> {current + 1} / {memories.length} <FlowerIcon className="w-3.5 h-3.5" /></p>
@@ -85,11 +86,11 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
             <h3 className="text-3xl sm:text-4xl font-bold text-white flex items-center gap-2.5" style={{fontFamily:'Cormorant Garamond,serif', textShadow:'0 2px 16px rgba(0,0,0,0.6)'}}><BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-gold/60" /> Historia</h3>
             <p className="text-white/70 text-sm leading-relaxed -mt-2" style={{fontFamily:'Cormorant Garamond,serif'}}>{readSet.size} / {memories.length} historias leídas</p>
             <div className="w-full flex flex-col items-center gap-4">
-              <button onClick={handleShowDesc} className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0a0a0f] border border-gold/20 rounded-xl text-white font-medium text-sm tracking-wide hover:border-gold/35 hover:bg-[#141414] transition-all duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+              <button onClick={handleShowDesc} className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0a0a0f] border border-gold/20 rounded-xl text-white font-medium text-sm tracking-wide hover:border-gold/35 hover:bg-[#141414] transition-[border-color,background-color,color,box-shadow] duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
                 <BookOpen className="w-4 h-4 text-gold/70" /> <span style={{fontFamily:'Cormorant Garamond,serif'}}>Leer historia</span>
                 {readSet.has(current) && <span className="ml-1 w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.6)]" title="Leída" />}
               </button>
-              <button onClick={onNext} disabled={!isAllRead} className={`w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-medium text-sm tracking-wide transition-all duration-200 border ${isAllRead ? 'bg-crimson border-crimson/30 text-white hover:bg-[#b91c1c] hover:border-gold/20 shadow-[0_4px_20px_rgba(220,38,38,0.25)] cursor-pointer' : 'bg-[#0a0a0f]/60 border-white/10 text-white/35 cursor-not-allowed backdrop-blur-sm'}`}>
+              <button onClick={onNext} disabled={!isAllRead} className={`w-full inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-medium text-sm tracking-wide transition-[border-color,background-color,color,box-shadow] duration-200 border ${isAllRead ? 'bg-crimson border-crimson/30 text-white hover:bg-[#b91c1c] hover:border-gold/20 shadow-[0_4px_20px_rgba(220,38,38,0.25)] cursor-pointer' : 'bg-[#0a0a0f]/60 border-white/10 text-white/35 cursor-not-allowed backdrop-blur-sm'}`}>
                 {isAllRead ? <Unlock className="w-4 h-4 text-white/90" /> : <Lock className="w-4 h-4 text-white/30" />}
                 <span style={{fontFamily:'Cormorant Garamond,serif'}}>{isAllRead ? 'Leer la carta' : `Desbloquea (${readSet.size}/${memories.length})`}</span>
                 {isAllRead ? <Mail className="w-4 h-4 text-white/80" /> : null}
@@ -108,13 +109,13 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
             </p>
             <div className="relative w-full max-w-full">
               <SwipeableCard onSwipeLeft={next} onSwipeRight={prev}>
-                <motion.div key={current} className="glass glass-refraction rounded-2xl overflow-hidden cursor-pointer group w-full" initial={{opacity:0, scale:0.97}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.97}} transition={springs.gentle} onClick={()=>setShowLightbox(true)}>
+                <motion.div key={current} className="glass glass-refraction rounded-2xl overflow-hidden cursor-pointer group w-full" initial={{opacity:0, scale:0.97}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.97}} transition={springs.gentle} onClick={() => { if (currentMemory.type !== 'video' && currentMemory.src) setShowLightbox(true) }}>
                   {currentMemory.type==='video' ? (
                     <div className="bg-deep-black/50 flex items-center justify-center relative w-full p-8">
                       <div className="w-16 h-16 rounded-full bg-crimson/10 flex items-center justify-center"><Camera className="w-8 h-8 text-crimson/30" /></div>
                     </div>
                   ) : (
-                    <img src={currentMemory.src} alt={currentMemory.caption} className="w-full h-auto object-contain max-h-[65vh] sm:max-h-[60vh]" />
+                    <img src={currentMemory.src} alt={currentMemory.caption} decoding="async" className="w-full h-auto object-contain max-h-[65vh] sm:max-h-[60vh]" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 </motion.div>
@@ -133,7 +134,7 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
       <AnimatePresence>
         {showDesc && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setShowDesc(false)}>
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+            <div className="absolute inset-0 bg-black/70" />
             <motion.div className="relative glass glass-prominent rounded-2xl p-6 sm:p-7 w-[92vw] sm:w-full max-w-[420px] max-h-[75vh] overflow-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)]" initial={{scale:0.9,y:20}} animate={{scale:1,y:0}} exit={{scale:0.9,opacity:0}} transition={springs.gentle} onClick={e=>e.stopPropagation()}>
               <button onClick={()=>setShowDesc(false)} className="absolute top-3 right-3 w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-white/10"><X className="w-4 h-4 text-white/60" /></button>
               <div className="flex items-center gap-2 mb-4 text-gold/50 text-xs tracking-[0.2em] uppercase"><BookOpen className="w-4 h-4" /> Recuerdo {current+1} de {memories.length} {readSet.has(current) ? '✓' : ''}</div>
@@ -144,11 +145,11 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
       </AnimatePresence>
 
       <AnimatePresence>
-        {showLightbox && (
+        {showLightbox && currentMemory.src && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setShowLightbox(false)}>
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-black/90" />
             <button className="absolute top-6 right-6 w-10 h-10 rounded-full glass text-white flex items-center justify-center z-10" onClick={()=>setShowLightbox(false)}><X className="w-5 h-5" /></button>
-            <motion.img src={currentMemory.src} alt={currentMemory.caption} className="max-w-full max-h-[85vh] object-contain rounded-2xl z-10 max-w-[90vw]" initial={{scale:0.9,opacity:0}} animate={{scale:1,opacity:1}} exit={{scale:0.9,opacity:0}} transition={springs.gentle} />
+            <motion.img src={currentMemory.src} alt={currentMemory.caption} decoding="async" className="max-w-full max-h-[85vh] object-contain rounded-2xl z-10 max-w-[90vw]" initial={{scale:0.9,opacity:0}} animate={{scale:1,opacity:1}} exit={{scale:0.9,opacity:0}} transition={springs.gentle} />
           </motion.div>
         )}
       </AnimatePresence>

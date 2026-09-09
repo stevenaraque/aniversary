@@ -237,7 +237,7 @@ export default function Letter({ onNext, onPrev }) {
           bf.style.transition = 'opacity 0.72s ease, transform 0.72s ease'
           bf.style.opacity = '0'; bf.style.transform += ' scale(0.94)'
           light.style.transition = 'opacity 0.72s ease'; light.style.opacity = '0'
-          setTimeout(() => sparkles(W * 0.5, H * 0.46, 18), T_SP)
+          setTimeout(() => sparkles(W * 0.5, H * 0.46, 12), T_SP)
         }
       } else if (phaseInner === 'fadeOut') {
         if (el >= T_OUT + T_SP) { setPhase('open'); return }
@@ -253,12 +253,20 @@ export default function Letter({ onNext, onPrev }) {
     }
   }, [phase])
 
+  const envRaf = useRef(0)
   const handleEnvelopeMove = (e) => {
-    if (!envelopeRef.current) return
-    const r = envelopeRef.current.getBoundingClientRect()
-    const cx = (e.clientX - r.left) / r.width - 0.5
-    const cy = (e.clientY - r.top) / r.height - 0.5
-    envelopeRef.current.style.transform = `perspective(700px) rotateY(${cx * 3.8}deg) rotateX(${-cy * 3.8}deg)`
+    if (!envelopeRef.current || envRaf.current) return
+    // perf: throttle a 1 update por frame — evita layout/paint por cada mousemove
+    const px = e.clientX, py = e.clientY
+    envRaf.current = requestAnimationFrame(() => {
+      envRaf.current = 0
+      const el = envelopeRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const cx = (px - r.left) / r.width - 0.5
+      const cy = (py - r.top) / r.height - 0.5
+      el.style.transform = `perspective(700px) rotateY(${cx * 3.8}deg) rotateX(${-cy * 3.8}deg)`
+    })
   }
   const handleEnvelopeLeave = () => {
     if (envelopeRef.current) envelopeRef.current.style.transform = 'perspective(700px) rotateY(0) rotateX(0)'
@@ -272,7 +280,7 @@ export default function Letter({ onNext, onPrev }) {
     >
       {/* ── ESTILOS — mariposa cyan + carta Uiverse + papyrus ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+        /* perf: fuentes (Dancing Script/Lora) precargadas en index.html, sin @import bloqueante */
         .perspectiva{perspective:800px}
         .preservar-3d{transform-style:preserve-3d}
          @keyframes aleteo-izq{0%{transform:rotateY(14deg) rotateX(8deg)}100%{transform:rotateY(68deg) rotateX(10deg)}}
@@ -299,7 +307,7 @@ export default function Letter({ onNext, onPrev }) {
         #miniBf{opacity:0;transform:scale(0) rotate(-15deg);transition:opacity 0.55s ease 1.78s, transform 0.68s cubic-bezier(0.34,1.56,0.64,1) 1.78s}
         #letterWrap.show #miniBf{opacity:1;transform:scale(1) rotate(-15deg)}
         /* ── Carta cerrada: tu diseño sobre (260×360) + hover Uiverse JohnnyCSilva ── */
-        .letter-card{width:260px;height:360px;background:linear-gradient(145deg,#1a0f0f 0%,#2a1111 50%,#0a0a0f 100%);border:1px solid rgba(212,175,55,0.22);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;transition:0.2s ease-in-out;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 20px 60px rgba(0,0,0,0.55),0 0 40px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08)}
+        .letter-card{width:260px;height:360px;background:linear-gradient(145deg,#1a0f0f 0%,#2a1111 50%,#0a0a0f 100%);border:1px solid rgba(212,175,55,0.22);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;transition:transform 0.2s ease-in-out,box-shadow 0.2s ease-in-out,border-color 0.2s ease-in-out;position:relative;overflow:hidden;cursor:pointer;box-shadow:0 20px 60px rgba(0,0,0,0.55),0 0 40px rgba(139,0,0,0.12),inset 0 1px 0 rgba(212,175,55,0.08)}
         .letter-card .img{height:30%;position:absolute;transition:0.2s ease-in-out;z-index:1;color:rgba(220,20,60,0.55);filter:drop-shadow(0 0 12px rgba(220,20,60,0.2))}
         .letter-card .textBox{opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:0.2s ease-in-out;z-index:2;text-align:center}
         .letter-card .textBox .head{font-size:20px;font-weight:700;letter-spacing:0.14em;font-family:'Cormorant Garamond',serif;color:#f9e076;text-shadow:0 0 16px rgba(212,175,55,0.3)}
@@ -347,7 +355,7 @@ export default function Letter({ onNext, onPrev }) {
 
       {/* ── CONTENIDO usa .container para responsivo ── */}
       <div className="container relative z-10 flex flex-col items-center justify-center w-full text-center gap-6 px-4">
-        <motion.div initial={{ y: -12, opacity: 0, filter: 'blur(6px)' }} animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }} transition={springs.gentle} className="flex flex-col items-center gap-3 pb-1">
+          <motion.div initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={springs.gentle} className="flex flex-col items-center gap-3 pb-1">
           <Feather className="w-9 h-9 text-crimson/30 mx-auto" />
           <h2 className="text-4xl md:text-5xl font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond',serif" }}>
             <span className="text-gradient-blood">Una carta</span> <span className="text-white">para ti</span>
@@ -407,7 +415,7 @@ export default function Letter({ onNext, onPrev }) {
         </div>
         {/* Botones — pebble puzzle para collage + repetir vuelo como antes (text link cyan) */}
         <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-[360px] flex flex-col items-center gap-3 px-4" style={{ top: 'calc(100% + 20px)' }}>
-          <motion.button onClick={onNext} className="w-full max-w-[260px] px-6 py-3.5 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-all duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2" style={{ fontFamily: "'Cormorant Garamond',serif" }} initial={{ opacity: 0, y: 10 }} animate={{ opacity: phase === 'open' ? 1 : 0, y: phase === 'open' ? 0 : 10 }} transition={{ delay: 2.1, duration: 0.45 }} whileTap={{ scale: 0.98 }}>
+          <motion.button onClick={onNext} className="w-full max-w-[260px] px-6 py-3.5 font-bold text-white uppercase tracking-wider text-xs rounded-2xl bg-crimson border-b-[5px] border-[#7f1d1d] active:border-b-0 active:translate-y-[5px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2" style={{ fontFamily: "'Cormorant Garamond',serif" }} initial={{ opacity: 0, y: 10 }} animate={{ opacity: phase === 'open' ? 1 : 0, y: phase === 'open' ? 0 : 10 }} transition={{ delay: 2.1, duration: 0.45 }} whileTap={{ scale: 0.98 }}>
             Ver nuestro collage <span style={{ fontSize: 14 }}>♡</span>
           </motion.button>
           <motion.button onClick={() => { setPhase('idle'); setTimeout(() => setPhase('flying'), 80) }} className="text-[11px] tracking-[0.18em] uppercase cursor-pointer hover:opacity-80 transition-opacity" style={{ color: 'rgba(34,211,238,0.42)', background: 'none', border: 'none', fontFamily: "'Cormorant Garamond',serif" }} initial={{ opacity: 0 }} animate={{ opacity: phase === 'open' ? 1 : 0 }} transition={{ delay: 2.45, duration: 0.4 }}>

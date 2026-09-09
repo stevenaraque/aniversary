@@ -9,12 +9,16 @@ function CursorFollower() {
   const y = useMotionValue(-100)
   const sx = useSpring(x, springs.gentle)
   const sy = useSpring(y, springs.gentle)
+  // perf: solo existe con puntero fino — en táctil no escucha mousemove
+  const [fine] = useState(() => typeof window !== 'undefined' && window.matchMedia('(pointer:fine)').matches)
   useEffect(() => {
+    if (!fine) return
     const move = (e) => { x.set(e.clientX); y.set(e.clientY) }
     window.addEventListener('mousemove', move)
     return () => window.removeEventListener('mousemove', move)
-  }, [x, y])
-  return <motion.div className="hidden lg:block fixed top-0 left-0 w-32 h-32 rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 z-50 will-change-transform" style={{ x: sx, y: sy, background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(220,20,60,0.06) 50%, transparent 70%)', filter: 'blur(40px)' }} />
+  }, [x, y, fine])
+  if (!fine) return null
+  return <motion.div className="hidden lg:block fixed top-0 left-0 w-32 h-32 rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 z-50" style={{ x: sx, y: sy, background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(220,20,60,0.06) 50%, transparent 70%)', filter: 'blur(40px)' }} />
 }
 
 function StarRainCanvas() {
@@ -75,13 +79,13 @@ function GothicButton({ onClick, children }) {
   return (
     <>
       <style>{`
-        .gothic-btn{cursor:pointer;width:17.5em;height:5em;border-radius:1.5em;border:1px solid rgba(212,175,55,0.32);display:flex;justify-content:right;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,0.6),0 0 22px rgba(139,0,0,0.18),inset 0 1px 0 rgba(212,175,55,0.08);position:relative;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#050505 100%);transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease;will-change:transform}
+        .gothic-btn{cursor:pointer;width:17.5em;height:5em;border-radius:1.5em;border:1px solid rgba(212,175,55,0.32);display:flex;justify-content:right;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,0.6),0 0 22px rgba(139,0,0,0.18),inset 0 1px 0 rgba(212,175,55,0.08);position:relative;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#050505 100%);transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease}
         .gothic-btn:hover{border-color:rgba(212,175,55,0.55);box-shadow:0 12px 40px rgba(0,0,0,0.7),0 0 30px rgba(212,175,55,0.18);transform:translateY(-1px)}
         .gothic-p{font-size:1.1rem;font-weight:700;letter-spacing:0.07em;color:#f9e076;position:absolute;top:50%;left:1.3em;transform:translateY(-50%);transition:transform 0.5s ease,opacity 0.5s ease;white-space:nowrap;font-family:'Cormorant Garamond',serif;text-shadow:0 0 10px rgba(212,175,55,0.3)}
         .gothic-glow{width:4em;height:3.5em;background:linear-gradient(135deg,#8b0000 0%,#dc143c 50%,#4a0e0e 100%);border-radius:1em;position:relative;box-shadow:0 0 0.5em rgba(0,0,0,0.4),inset 0.2em 0 0.3em rgba(212,175,55,0.4);overflow:hidden;margin-right:0.75em;transition:width 0.5s ease;flex-shrink:0;border:1px solid rgba(212,175,55,0.18)}
         .gothic-sign{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;color:#f9e076}
         .gothic-white{width:100%;background:rgba(212,175,55,0.06);height:2.5em;position:absolute;top:0;filter:blur(0.5em);pointer-events:none}
-        .gothic-blob{position:absolute;top:50%;left:50%;filter:blur(0.3em);transition:filter 0.5s ease;opacity:0.95;will-change:filter}
+        .gothic-blob{position:absolute;top:50%;left:50%;filter:blur(0.3em);transition:filter 0.5s ease;opacity:0.95}
         #g-red{transform:translate(-50%,-50%) scale(4);animation:g-rotar 5s linear infinite;color:#dc143c}#g-gold{transform:translate(-95%,-55%) scale(2.5);animation:g-rotar 6s linear infinite;color:#d4af37}#g-crimson{transform:translate(-75%,-5%) scale(2);animation:g-rotar 7s linear infinite;color:#8b0000}
         @keyframes g-rotar{0%{rotate:0deg}100%{rotate:360deg}}.gothic-btn:hover .gothic-p{transform:translate(-25%,-50%);opacity:0}.gothic-btn:hover .gothic-glow{width:16em}.gothic-btn:hover .gothic-blob{filter:blur(0.7em)}.gothic-btn:active{transform:scale(0.96)}
         @media(max-width:640px){.gothic-btn{width:15em;height:4.2em;border-radius:1.2em}.gothic-p{font-size:0.95rem;left:1em}.gothic-glow{width:3.4em;height:3em}.gothic-btn:hover .gothic-glow{width:13.5em}}
@@ -124,13 +128,13 @@ export default function Intro({ onNext }) {
 
         .umbra-hero{height:100dvh;width:100%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
         .umbra-bg{position:absolute;width:100%;height:100%;opacity:0.05;pointer-events:none}
-        .umbra-circle{position:absolute;border:1px solid rgba(212,175,55,0.45);border-radius:50%;animation:umbraPulse 8s ease-in-out infinite;will-change:transform,opacity}
+        .umbra-circle{position:absolute;border:1px solid rgba(212,175,55,0.45);border-radius:50%;animation:umbraPulse 8s ease-in-out infinite}
         .umbra-circle:nth-child(1){width:420px;height:420px;top:50%;left:50%;transform:translate(-50%,-50%)}.umbra-circle:nth-child(2){width:620px;height:620px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:2s;border-color:rgba(220,20,60,0.3)}.umbra-circle:nth-child(3){width:820px;height:820px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:4s}
         @keyframes umbraPulse{0%,100%{opacity:0.05;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.09;transform:translate(-50%,-50%) scale(1.04)}}
-        .umbra-diamond{position:absolute;width:14px;height:14px;border:1px solid rgba(212,175,55,0.2);transform:rotate(45deg);animation:umbraRot 12s linear infinite;will-change:transform}
+        .umbra-diamond{position:absolute;width:14px;height:14px;border:1px solid rgba(212,175,55,0.2);transform:rotate(45deg);animation:umbraRot 12s linear infinite}
         .umbra-diamond:nth-child(1){top:48px;left:48px}.umbra-diamond:nth-child(2){top:48px;right:48px;animation-delay:3s;border-color:rgba(220,20,60,0.18)}.umbra-diamond:nth-child(3){bottom:48px;left:48px;animation-delay:6s}.umbra-diamond:nth-child(4){bottom:48px;right:48px;animation-delay:9s;border-color:rgba(220,20,60,0.18)}
         @keyframes umbraRot{0%,100%{transform:rotate(45deg)}50%{transform:rotate(135deg)}}
-        .candelabro{position:absolute;width:2px;height:62%;top:19%;background:linear-gradient(to bottom,transparent 0%,rgba(212,175,55,0.18) 12%,rgba(212,175,55,0.22) 50%,rgba(212,175,55,0.14) 88%,transparent);box-shadow:0 0 10px rgba(212,175,55,0.08);will-change:opacity}
+        .candelabro{position:absolute;width:2px;height:62%;top:19%;background:linear-gradient(to bottom,transparent 0%,rgba(212,175,55,0.18) 12%,rgba(212,175,55,0.22) 50%,rgba(212,175,55,0.14) 88%,transparent);box-shadow:0 0 10px rgba(212,175,55,0.08)}
         .candelabro::before{content:'◆';position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(212,175,55,0.9);text-shadow:0 0 8px rgba(212,175,55,0.4)}
         .candelabro::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:26px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.35),transparent);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
         .candelabro i{position:absolute;left:50%;transform:translateX(-50%);width:18px;height:1px;background:rgba(212,175,55,0.18)}
@@ -138,12 +142,12 @@ export default function Intro({ onNext }) {
         .candelabro:nth-child(1){left:22.5%}.candelabro:nth-child(2){right:22.5%}
         .candelabro{animation:candelGlow 5s ease infinite}
         .candelabro:nth-child(2){animation-delay:2.5s}
-        @keyframes candelGlow{0%,100%{opacity:0.85}50%{opacity:1;box-shadow:0 0 14px rgba(212,175,55,0.12)}}
-        .umbra-fog{position:absolute;width:200%;height:100%;background:radial-gradient(ellipse at center,transparent 22%,rgba(0,0,0,0.88) 76%);animation:umbraFog 22s ease infinite;will-change:transform}
+        @keyframes candelGlow{0%,100%{opacity:0.85}50%{opacity:1}}
+        .umbra-fog{position:absolute;width:200%;height:100%;background:radial-gradient(ellipse at center,transparent 22%,rgba(0,0,0,0.88) 76%);animation:umbraFog 22s ease infinite}
         @keyframes umbraFog{0%,100%{transform:translateX(0)}50%{transform:translateX(-22%)}}
-        .umbra-dust{position:absolute;width:1px;height:1px;background:rgba(212,175,55,0.38);border-radius:50%;box-shadow:0 0 4px rgba(212,175,55,0.22);will-change:transform,opacity;transform:translateY(100vh);animation:umbraDustT 22s linear infinite}
+        .umbra-dust{position:absolute;width:1px;height:1px;background:rgba(212,175,55,0.38);border-radius:50%;box-shadow:0 0 4px rgba(212,175,55,0.22);transform:translateY(100vh);animation:umbraDustT 22s linear infinite}
         @keyframes umbraDustT{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:0.6}90%{opacity:0.6}100%{transform:translateY(-10vh) translateX(80px);opacity:0}}
-        .umbra-ink{position:absolute;top:0;width:1.5px;height:120px;background:linear-gradient(to bottom,transparent,rgba(139,0,0,0.32));opacity:0;will-change:transform,opacity;transform:translateY(-130px) scaleY(0);animation:umbraInkT 9s ease-in infinite}
+        .umbra-ink{position:absolute;top:0;width:1.5px;height:120px;background:linear-gradient(to bottom,transparent,rgba(139,0,0,0.32));opacity:0;transform:translateY(-130px) scaleY(0);animation:umbraInkT 9s ease-in infinite}
         @keyframes umbraInkT{0%{transform:translateY(-130px) scaleY(0);opacity:0}18%{transform:translateY(0) scaleY(1);opacity:0.45}100%{transform:translateY(110vh) scaleY(1);opacity:0}}
         .filigree{width:100%;max-width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.35) 15%,rgba(212,175,55,0.55) 50%,rgba(220,20,60,0.3) 85%,transparent);position:relative;display:flex;align-items:center;justify-content:center}
         .filigree::before,.filigree::after{content:'◆';position:absolute;top:50%;transform:translateY(-55%);font-size:9px;color:rgba(212,175,55,0.6)}
@@ -179,7 +183,7 @@ export default function Intro({ onNext }) {
               <Gem className="w-3.5 h-3.5 text-crimson shrink-0" />
             </motion.div>
             {/* EXTENDIDO: max-w-3xl para no quede vacío centro */}
-            <motion.div initial={{opacity:0,y:20,filter:'blur(6px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.45}} className="flex flex-col items-center gap-4 w-full max-w-full px-0 py-4 text-center">
+            <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{...springs.gentle,delay:0.45}} className="flex flex-col items-center gap-4 w-full max-w-full px-0 py-4 text-center">
               <span className="text-[10px] tracking-[0.45em] uppercase text-white/25 w-full">Mi Canelita ❋</span>
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6rem] font-bold leading-[0.88] tracking-tight w-full" style={{fontFamily:'Cormorant Garamond,serif', letterSpacing:'0.12em'}}>
                 <span className="block text-gradient-blood" style={{fontFamily:'Cormorant Garamond,serif'}}>Nuestro</span>
@@ -203,7 +207,7 @@ export default function Intro({ onNext }) {
               <span className="text-white/20 text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2"><Skull className="w-3 h-3"/> 26 DE AGOSTO <Skull className="w-3 h-3"/></span>
             </motion.div>
           </div>
-          <motion.div initial={{opacity:0,scale:0.97,filter:'blur(8px)'}} animate={{opacity:1,scale:1,filter:'blur(0px)'}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-visible">
+            <motion.div initial={{opacity:0,scale:0.97}} animate={{opacity:1,scale:1}} transition={{...springs.gentle,delay:0.6}} className="order-2 w-full h-auto flex items-center justify-center p-2 lg:p-0 max-w-full overflow-visible">
             <style>{`
               .gothic-prism{position:relative;width:100%;max-width:420px;--crimson:#dc2626;--gold:#d4af37;--bone:#e8dcc8;--obsidian:#0a0a0f; margin:0 auto}
               @property --prism{syntax:'<angle>';initial-value:0deg;inherits:false}

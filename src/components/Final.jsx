@@ -46,9 +46,9 @@ export default function Final({ onPrev, onReset }) {
       )}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
+        /* perf: Marcellus ya se precarga en index.html, sin @import bloqueante */
         .final-page { position: relative; z-index: 1; width: 100%; }
-        .final-hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; position: relative; }
+        .final-hero { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; position: relative; }
         .final-pre { font-family: 'Sora', sans-serif; font-weight: 200; font-size: clamp(0.65rem, 1.2vw, 0.8rem); letter-spacing: 0.5em; text-transform: uppercase; color: rgba(255,234,167,0.32); margin-bottom: 32px; }
         .final-names { display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
         .final-name { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(2.8rem, 8vw, 6rem); letter-spacing: 0.04em; line-height: 1.1; background: linear-gradient(135deg, #dc143c 0%, #8b0000 55%, #4a0e0e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 24px rgba(220,20,60,0.35)) drop-shadow(0 0 60px rgba(139,0,0,0.18)); }
@@ -145,7 +145,7 @@ export default function Final({ onPrev, onReset }) {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ ...springs.gentle, delay: 0.15 }} className="final-gallery">
             {GALLERY.map((g, i) => (
               <div key={i} className="final-gallery-item" onClick={() => setLightbox(g.src)}>
-                <img src={g.src} alt={g.alt} loading="lazy" />
+                <img src={g.src} alt={g.alt} loading="lazy" decoding="async" />
               </div>
             ))}
           </motion.div>
@@ -182,7 +182,7 @@ export default function Final({ onPrev, onReset }) {
 
       <AnimatePresence>
         {lightbox && (
-          <motion.div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} role="dialog" aria-label="Imagen ampliada">
+          <motion.div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} role="dialog" aria-label="Imagen ampliada">
             <span className="absolute top-7 right-9 text-white/40 text-xs tracking-[0.2em] uppercase cursor-pointer hover:text-crimson transition-colors" onClick={() => setLightbox(null)}>Cerrar</span>
             <motion.img src={lightbox} alt="Imagen ampliada" className="max-w-[85vw] max-h-[85vh] object-contain rounded-sm" initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} transition={springs.gentle} onClick={e => e.stopPropagation()} />
           </motion.div>
