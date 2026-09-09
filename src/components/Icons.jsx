@@ -56,10 +56,42 @@ export function FlowerIcon({ className = 'w-5 h-5', ...props }) {
         <ellipse cx="4.6" cy="12" rx="1.6" ry="1" />
         <ellipse cx="19.4" cy="12" rx="1.6" ry="1" />
       </g>
-      {/* centro */}
-      <circle cx="12" cy="12" r="3.6" fill="#b8941f" stroke="none" />
-      <circle cx="12" cy="12" r="2.4" fill="#f9e076" stroke="none" opacity="0.9" />
-      <circle cx="11.1" cy="11" r="0.7" fill="white" opacity="0.7" />
+    {/* centro */}
+    <circle cx="12" cy="12" r="3.6" fill="#b8941f" stroke="none" />
+    <circle cx="12" cy="12" r="2.4" fill="#f9e076" stroke="none" opacity="0.9" />
+    <circle cx="11.1" cy="11" r="0.7" fill="white" opacity="0.7" />
+  </svg>
+  )
+}
+
+export function GothicSkullIcon({ className = 'w-5 h-5', ...props }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      {/* cráneo */}
+      <path d="M12 2.6c-4.7 0-7.8 3.3-7.8 7.6 0 2.6 1.3 4.5 3 5.7v2.9c0 .7.5 1.2 1.2 1.2h7.2c.7 0 1.2-.5 1.2-1.2v-2.9c1.7-1.2 3-3.1 3-5.7 0-4.3-3.1-7.6-7.8-7.6z" />
+      {/* ojos góticos almendrados */}
+      <path d="M7.3 10.6c.5-1.7 1.8-2.7 3.4-2.5.2 1.5-.5 2.9-1.9 3.4-.7.3-1.4 0-1.5-.9z" fill="currentColor" stroke="none" opacity="0.92" />
+      <path d="M16.7 10.6c-.5-1.7-1.8-2.7-3.4-2.5-.2 1.5.5 2.9 1.9 3.4.7.3 1.4 0 1.5-.9z" fill="currentColor" stroke="none" opacity="0.92" />
+      {/* brillo en ojos */}
+      <circle cx="9.1" cy="9.6" r="0.45" fill="#050505" opacity="0.85" />
+      <circle cx="14.9" cy="9.6" r="0.45" fill="#050505" opacity="0.85" />
+      {/* nariz gótica */}
+      <path d="M12 12.4l-1.2 2h2.4z" fill="currentColor" stroke="none" opacity="0.92" />
+      {/* diamante en la frente */}
+      <path d="M12 4.6l.8 1-.8 1-.8-1z" fill="currentColor" stroke="none" opacity="0.75" />
+      {/* grieta fina */}
+      <path d="M12 6.6v1.4M12 8l-1 1" opacity="0.55" strokeWidth="1" />
+      {/* dientes */}
+      <path d="M9.6 16.6v2.1M11.1 16.9v1.9M12.9 16.9v1.9M14.4 16.6v2.1" strokeWidth="1.1" />
     </svg>
   )
 }
