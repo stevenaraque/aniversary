@@ -160,39 +160,39 @@ function buildButterfly(mats) {
 }
 
 // Dibuja un frame del aleteo en el tiempo `phase` (segundos de aleteo).
-function poseFlap(parts, phase) {
+function poseFlap(parts, phase, k = 1) {
   const { bodyGroup, antennas, wingR, wingL } = parts
   const waveF = flapWave(phase)
   const waveH = flapWave(phase - 0.45)
-  const angF = 1.0 * waveF + 0.1
-  const angH = 0.94 * waveH + 0.085
+  const angF = k * waveF + 0.1 * k
+  const angH = k * 0.94 * waveH + 0.085 * k
   const dH = angH - angF
   wingR.rotation.z = angF
   wingL.rotation.z = -angF
   wingR.userData.hwPivot.rotation.z = dH
   wingL.userData.hwPivot.rotation.z = -dH
-  const twist = 0.3 * Math.cos(phase - 0.2)
+  const twist = k * 0.3 * Math.cos(phase - 0.2)
   wingR.rotation.x = twist
   wingL.rotation.x = -twist
   const lagF = flapWave(phase - 0.6)
   const lagH = flapWave(phase - 0.9)
-  const fw = 0.1 + 0.3 * lagF
-  const hw = 0.08 + 0.24 * lagH
+  const fw = 0.1 + k * 0.3 * lagF
+  const hw = 0.08 + k * 0.24 * lagH
   wingR.userData.fw.fold(fw)
   wingL.userData.fw.fold(fw)
   wingR.userData.hw.fold(hw)
   wingL.userData.hw.fold(hw)
   for (const w of [wingR, wingL]) {
-    w.position.y = w.userData.shY + 0.035 * flapWave(phase - 0.25)
-    w.position.z = w.userData.shZ + 0.045 * Math.cos(phase - 0.5)
+    w.position.y = w.userData.shY + k * 0.035 * flapWave(phase - 0.25)
+    w.position.z = w.userData.shZ + k * 0.045 * Math.cos(phase - 0.5)
   }
-  bodyGroup.position.y = 0.06 * Math.sin(2 * phase - 1.1)
-  bodyGroup.rotation.x = 0.07 * flapWave(phase - 0.35)
-  for (let i = 0; i < 2; i++) antennas[i].rotation.z = antennas[i].userData.baseZ + 0.09 * Math.sin(phase * 0.5 + i * 2)
+  bodyGroup.position.y = k * 0.06 * Math.sin(2 * phase - 1.1)
+  bodyGroup.rotation.x = k * 0.07 * flapWave(phase - 0.35)
+  for (let i = 0; i < 2; i++) antennas[i].rotation.z = antennas[i].userData.baseZ + k * 0.09 * Math.sin(phase * 0.5 + i * 2)
 }
 
 // Monta la mariposa en `canvas` (caja cuadrada transparente, 112px por defecto).
-// Devuelve `dispose()`. Con reduced-motion dibuja un solo frame estático.
+// Devuelve `dispose()`. Con reduced-motion aletea lento en vez de congelarse.
 export function mountOrigamiButterfly(canvas, opts = {}) {
   const size = opts.size || 112
   const reduceMotion = typeof window !== 'undefined'
@@ -251,33 +251,31 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
     try { renderer.forceContextLoss() } catch { /* noop */ }
   }
 
-  if (reduceMotion) {
-    // Un solo frame estático a mitad de aleteo: sin loop, sin CPU.
-    poseFlap(parts, 0.9)
+  // Con movimiento reducido NO se congela: aleteo lento y contenido
+  // (igual que las alas CSS viejas, que iban a 1.1s en vez de pararse).
+  const hz = reduceMotion ? 0.6 : FLAP_HZ
+  const ampK = reduceMotion ? 0.45 : 1
+  const loop = (now) => {
+    if (!running) return
+    const dt = Math.min(((now - last) / 1000) || 0.016, 0.05)
+    last = now
+    flap += dt * Math.PI * 2 * hz
+    poseFlap(parts, flap, ampK)
     render()
-  } else {
-    const loop = (now) => {
-      if (!running) return
-      const dt = Math.min(((now - last) / 1000) || 0.016, 0.05)
-      last = now
-      flap += dt * Math.PI * 2 * FLAP_HZ
-      poseFlap(parts, flap)
-      render()
+    raf = requestAnimationFrame(loop)
+  }
+  visHandler = () => {
+    if (document.hidden) {
+      running = false
+      cancelAnimationFrame(raf)
+    } else if (!running) {
+      running = true
+      last = performance.now()
       raf = requestAnimationFrame(loop)
     }
-    visHandler = () => {
-      if (document.hidden) {
-        running = false
-        cancelAnimationFrame(raf)
-      } else if (!running) {
-        running = true
-        last = performance.now()
-        raf = requestAnimationFrame(loop)
-      }
-    }
-    document.addEventListener('visibilitychange', visHandler)
-    raf = requestAnimationFrame((now) => { last = now; loop(now) })
   }
+  document.addEventListener('visibilitychange', visHandler)
+  raf = requestAnimationFrame((now) => { last = now; loop(now) })
 
   return dispose
 }
