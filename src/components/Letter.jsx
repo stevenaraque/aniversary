@@ -35,7 +35,7 @@ export default function Letter({ onNext, onPrev }) {
 
     const W = window.innerWidth
     const H = window.innerHeight
-    const BF_W = 112, BF_H = 112
+    const BF_W = 148, BF_H = 148
     const sc = W < 480 ? 0.58 : W < 768 ? 0.72 : 0.88
     const cx = W * 0.5, cy = H * 0.46
 
@@ -242,7 +242,7 @@ export default function Letter({ onNext, onPrev }) {
       if (!alive) return
       const canvas = origamiHostRef.current
       if (!canvas) return
-      origamiDisposeRef.current = m.mountOrigamiButterfly(canvas)
+      origamiDisposeRef.current = m.mountOrigamiButterfly(canvas, { size: 148 })
     }).catch(() => {})
     return () => {
       alive = false
@@ -310,11 +310,11 @@ export default function Letter({ onNext, onPrev }) {
       {/* Luz neon dorado-roja que sigue mariposa */}
       <div ref={lightRef} className="fixed pointer-events-none z-[1] rounded-full" style={{ width: 220, height: 220, background: 'radial-gradient(circle,rgba(212,175,55,0.10) 0%,rgba(220,20,60,0.06) 38%,transparent 68%)', filter: 'blur(12px)', opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.45s ease' }} />
 
-      {/* ── MARIPOSA ORIGAMI 112×112 — canvas Three.js transparente ── */}
+      {/* ── MARIPOSA ORIGAMI 148×148 — canvas Three.js transparente ── */}
       <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease', filter: phase === 'flying' ? 'drop-shadow(0 0 10px rgba(212,175,55,0.45)) drop-shadow(0 0 18px rgba(220,20,60,0.32))' : 'none' }} aria-hidden>
-        <div ref={bfInnerRef} className="relative" style={{ width: 112, height: 112 }}>
+        <div ref={bfInnerRef} className="relative" style={{ width: 148, height: 148 }}>
           {phase === 'flying' && (
-            <canvas ref={origamiHostRef} width={112} height={112} style={{ width: 112, height: 112, display: 'block' }} />
+            <canvas ref={origamiHostRef} width={148} height={148} style={{ width: 148, height: 148, display: 'block' }} />
           )}
         </div>
       </div>

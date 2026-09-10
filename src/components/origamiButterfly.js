@@ -5,11 +5,13 @@ import * as THREE from 'three'
 // La trayectoria del vuelo la sigue moviendo Letter.jsx; este canvas
 // es transparente y vive dentro de la caja de 112x112 de la mariposa.
 
-const RED = 0xcc3520
-const CREAM = 0xf7f0df
-const EDGE = 0x7c2418
-const INK = 0x453a2e
-const FLAP_HZ = 10.5
+const GOLD = 0xd4af37
+const CHAMPAGNE = 0xf7f0df
+const CRIMSON = 0xdc143c
+const WINE = 0x8b0000
+const EDGE = 0xb8941f
+const INK = 0x1a0a0f
+const FLAP_HZ = 12.5
 
 // Subida rápida y bajada lenta: una senoide pura delata el aleteo falso.
 function flapWave(t) {
@@ -77,15 +79,16 @@ function makeFoldPanel(innerTris, outerTris, axis0, axis1, xThreshold, matF, mat
   }
 }
 
-function buildWing(matRedFront, matRedBack, matEdge) {
+function buildWing(mats) {
   const w = new THREE.Group()
+  // Ala delantera DORADA, ala trasera VINO: bicolor legible + paleta del sitio.
   const fw = makeFoldPanel(
     [[[0.04, 0.02, 0.30], [0.05, -0.04, -0.02], [0.55, 0.14, 0.16]]],
     [
       [[0.05, -0.04, -0.02], [0.55, 0.14, 0.16], [1.34, 0.04, 0.34]],
       [[0.55, 0.14, 0.16], [1.34, 0.04, 0.34], [1.04, -0.07, 0.06]],
     ],
-    [0.05, -0.04, -0.02], [0.55, 0.14, 0.16], 0.8, matRedFront, matRedBack, matEdge
+    [0.05, -0.04, -0.02], [0.55, 0.14, 0.16], 0.8, mats.goldFront, mats.goldBack, mats.edge
   )
   w.add(fw.group)
   const hw = makeFoldPanel(
@@ -94,7 +97,7 @@ function buildWing(matRedFront, matRedBack, matEdge) {
       [[0.08, -0.04, -0.34], [0.40, 0.10, -0.06], [0.62, -0.02, -0.48]],
       [[0.40, 0.10, -0.06], [0.62, -0.02, -0.48], [0.46, -0.06, -0.02]],
     ],
-    [0.08, -0.04, -0.34], [0.40, 0.10, -0.06], 0.43, matRedFront, matRedBack, matEdge
+    [0.08, -0.04, -0.34], [0.40, 0.10, -0.06], 0.43, mats.wineFront, mats.wineBack, mats.edge
   )
   const hwPivot = new THREE.Group()
   hwPivot.position.set(0, -0.01, -0.12)
@@ -150,8 +153,8 @@ function buildButterfly(mats) {
     bodyGroup.add(g)
     antennas.push(g)
   }
-  const wingR = buildWing(mats.redFront, mats.redBack, mats.edge)
-  const wingL = buildWing(mats.redFront, mats.redBack, mats.edge)
+  const wingR = buildWing(mats)
+  const wingL = buildWing(mats)
   wingL.scale.x *= -1
   wingL.position.x *= -1
   wingL.rotation.y *= -1
@@ -222,10 +225,12 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
   // Emissive suave: el papel washi se diseñó sobre fondo crema;
   // sobre el obsidian del sitio necesita luz propia para no apagarse.
   const mats = {
-    redFront: new THREE.MeshStandardMaterial({ color: RED, emissive: RED, emissiveIntensity: 0.38, roughness: 0.85, metalness: 0, side: THREE.FrontSide, flatShading: true }),
-    redBack: new THREE.MeshStandardMaterial({ color: CREAM, emissive: CREAM, emissiveIntensity: 0.22, roughness: 0.9, metalness: 0, side: THREE.BackSide, flatShading: true }),
-    edge: new THREE.LineBasicMaterial({ color: EDGE, transparent: true, opacity: 0.5 }),
-    ink: new THREE.MeshStandardMaterial({ color: INK, emissive: INK, emissiveIntensity: 0.5, roughness: 0.8, metalness: 0, side: THREE.DoubleSide, flatShading: true }),
+    goldFront: new THREE.MeshStandardMaterial({ color: CHAMPAGNE, emissive: CHAMPAGNE, emissiveIntensity: 0.25, roughness: 0.9, metalness: 0, side: THREE.FrontSide, flatShading: true }),
+    goldBack: new THREE.MeshStandardMaterial({ color: GOLD, emissive: GOLD, emissiveIntensity: 0.5, roughness: 0.85, metalness: 0, side: THREE.BackSide, flatShading: true }),
+    wineFront: new THREE.MeshStandardMaterial({ color: CHAMPAGNE, emissive: CHAMPAGNE, emissiveIntensity: 0.25, roughness: 0.9, metalness: 0, side: THREE.FrontSide, flatShading: true }),
+    wineBack: new THREE.MeshStandardMaterial({ color: CRIMSON, emissive: CRIMSON, emissiveIntensity: 0.5, roughness: 0.85, metalness: 0, side: THREE.BackSide, flatShading: true }),
+    edge: new THREE.LineBasicMaterial({ color: EDGE, transparent: true, opacity: 0.6 }),
+    ink: new THREE.MeshStandardMaterial({ color: INK, emissive: WINE, emissiveIntensity: 0.4, roughness: 0.8, metalness: 0, side: THREE.DoubleSide, flatShading: true }),
   }
   const parts = buildButterfly(mats)
   parts.butterfly.scale.setScalar(1.15)
