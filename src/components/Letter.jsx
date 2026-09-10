@@ -3,15 +3,15 @@ import { motion } from 'motion/react'
 import { Feather, ArrowLeft } from 'lucide-react'
 import { springs } from '../lib/motion-tokens'
 
-// ── Carta + Mariposa — Uiverse JohnnyCSilva + origami cyan, vuelo pantalla completa optimizado ──
+// ── Carta + Mariposa origami Three.js — vuelo pantalla completa optimizado ──
 export default function Letter({ onNext, onPrev }) {
   const [phase, setPhase] = useState('idle') // idle | flying | open
   const bfRef = useRef(null)
   const bfInnerRef = useRef(null)
-  const wingLRef = useRef(null)
-  const wingRRef = useRef(null)
   const lightRef = useRef(null)
   const envelopeRef = useRef(null)
+  const origamiHostRef = useRef(null)
+  const origamiDisposeRef = useRef(null)
   const rafRef = useRef(0)
   const trailsRef = useRef([])
   const containerRef = useRef(null)
@@ -29,11 +29,9 @@ export default function Letter({ onNext, onPrev }) {
     if (phase !== 'flying') return
     const bf = bfRef.current
     const bfInner = bfInnerRef.current
-    const wingL = wingLRef.current
-    const wingR = wingRRef.current
     const light = lightRef.current
     const host = containerRef.current
-    if (!bf || !bfInner || !wingL || !wingR || !light || !host) return
+    if (!bf || !bfInner || !light || !host) return
 
     const W = window.innerWidth
     const H = window.innerHeight
@@ -166,13 +164,6 @@ export default function Letter({ onNext, onPrev }) {
     light.style.transition = 'opacity 0.42s ease'
     bfInner.style.transformOrigin = 'center center'
     bfInner.style.transform = `scale(${sc}) rotate(0deg)`
-    // reset alas a animar (estaban en pausa tras vuelo anterior)
-    wingL.className = 'animar-ala-izq preservar-3d absolute left-0 top-0 w-1/2 h-full origin-right'
-    wingR.className = 'animar-ala-der preservar-3d absolute right-0 top-0 w-1/2 h-full origin-left'
-    wingL.style.animationDuration = '0.044s'
-    wingR.style.animationDuration = '0.044s'
-    wingL.style.animationPlayState = 'running'
-    wingR.style.animationPlayState = 'running'
     smoothPosRef.current = { x: null, y: null }
     angleRef.current = 0
     curAngle = 0
@@ -207,14 +198,6 @@ export default function Letter({ onNext, onPrev }) {
           const bank = Math.max(-13, Math.min(13, dx * 0.55))
           const pitch = Math.max(-5, Math.min(5, -dy * 0.22))
           bfInner.style.transform = `scale(${sc}) rotate(${curAngle}deg) rotateZ(${bank * 0.28}deg) rotateX(${pitch}deg)`
-          // aleteo +50% más — solo alas, recorrido intacto (0.036-0.049s)
-          const vyNorm = Math.max(-1, Math.min(1, dy * 0.16))
-          const flapTarget = vyNorm < -0.12 ? 0.036 : vyNorm > 0.32 ? 0.049 : 0.044
-          const curFlap = parseFloat(wingL.style.animationDuration) || 0.044
-          const flap = lerp(curFlap, flapTarget, 0.07)
-          const fd = flap.toFixed(3) + 's'
-          wingL.style.animationDuration = fd
-          wingR.style.animationDuration = fd
           // estela muy espaciada para no cargar
           if (speed > 1.1 && (ts - lastTrailFrame) > 42) {
             trailAccum += (speed - 1.1) * 0.04
@@ -227,9 +210,6 @@ export default function Letter({ onNext, onPrev }) {
         prevPt = { x: pt.x, y: pt.y }
         if (ce >= FLY) {
           phaseInner = 'settling'; startTs = ts
-          wingL.className = 'pausa-ala-izq preservar-3d absolute left-0 top-0 w-1/2 h-full origin-right'
-          wingR.className = 'pausa-ala-der preservar-3d absolute right-0 top-0 w-1/2 h-full origin-left'
-          wingL.style.animationDuration = ''; wingR.style.animationDuration = ''
         }
       } else if (phaseInner === 'settling') {
         if (el >= T_SET) {
@@ -250,6 +230,23 @@ export default function Letter({ onNext, onPrev }) {
       cancelAnimationFrame(rafRef.current)
       trails.forEach(t => t.el.remove()); trailsRef.current = []
       smoothPosRef.current = { x: null, y: null }
+    }
+  }, [phase])
+
+  // Mariposa origami Three.js: carga perezosa SOLO durante el vuelo.
+  // three.js queda en un chunk separado — el bundle inicial no crece.
+  useEffect(() => {
+    if (phase !== 'flying') return
+    let alive = true
+    import('./origamiButterfly.js').then((m) => {
+      if (!alive) return
+      const canvas = origamiHostRef.current
+      if (!canvas) return
+      origamiDisposeRef.current = m.mountOrigamiButterfly(canvas)
+    }).catch(() => {})
+    return () => {
+      alive = false
+      if (origamiDisposeRef.current) { origamiDisposeRef.current(); origamiDisposeRef.current = null }
     }
   }, [phase])
 
@@ -278,23 +275,9 @@ export default function Letter({ onNext, onPrev }) {
       className="main-wrapper relative flex flex-col items-center justify-center py-6 sm:py-8"
       style={{ minHeight: '100dvh', background: 'transparent', fontFamily: "'Lora',serif", overflow: 'hidden' }}
     >
-      {/* ── ESTILOS — mariposa cyan + carta Uiverse + papyrus ── */}
+      {/* ── ESTILOS — carta Uiverse + papyrus (mariposa: canvas origami Three.js) ── */}
       <style>{`
         /* perf: fuentes (Dancing Script/Lora) precargadas en index.html, sin @import bloqueante */
-        .perspectiva{perspective:800px}
-        .preservar-3d{transform-style:preserve-3d}
-         @keyframes aleteo-izq{0%{transform:rotateY(14deg) rotateX(8deg)}100%{transform:rotateY(68deg) rotateX(10deg)}}
-        @keyframes aleteo-der{0%{transform:rotateY(-14deg) rotateX(8deg)}100%{transform:rotateY(-68deg) rotateX(10deg)}}
-        .animar-ala-izq{animation:aleteo-izq 0.044s infinite alternate ease-in-out}
-        .animar-ala-der{animation:aleteo-der 0.044s infinite alternate ease-in-out}
-        .pausa-ala-izq{animation:none!important;transform:rotateY(20deg) rotateX(10deg)}
-        .pausa-ala-der{animation:none!important;transform:rotateY(-20deg) rotateX(10deg)}
-        .clip-ala-sup-izq{clip-path:polygon(0 20%,100% 100%,30% 0)}
-        .clip-ala-inf-izq{clip-path:polygon(30% 100%,100% 0,0 70%)}
-        .clip-ala-fondo-izq{clip-path:polygon(0 20%,100% 50%,0 70%)}
-        .clip-ala-sup-der{clip-path:polygon(100% 20%,0 100%,70% 0)}
-        .clip-ala-inf-der{clip-path:polygon(70% 100%,0 0,100% 70%)}
-        .clip-ala-fondo-der{clip-path:polygon(100% 20%,0 50%,100% 70%)}
         .bf-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:5;will-change:transform,opacity}
         .bf-sparkle{position:fixed;pointer-events:none;z-index:15;border-radius:9999px;background:radial-gradient(circle,rgba(212,175,55,0.95) 0%,rgba(220,20,60,0.65) 45%,transparent 70%);will-change:transform,opacity;box-shadow:0 0 6px rgba(212,175,55,0.6),0 0 12px rgba(220,20,60,0.25)}
         #letterWrap{opacity:0;transform:translate(-50%,-50%) scale(0.88);pointer-events:none;transition:opacity 0.95s ease, transform 1.15s cubic-bezier(0.22,1,0.36,1)}
@@ -318,7 +301,7 @@ export default function Letter({ onNext, onPrev }) {
         .letter-card:hover{transform:scale(1.04) rotate(-1deg);border-color:rgba(212,175,55,0.34);box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 50px rgba(139,0,0,0.18)}
         .letter-card:active{transform:scale(0.98)}
         @media(max-width:640px){.letter-card{width:195px;height:285px}.letter-card .textBox .head{font-size:18px}}
-        @media(prefers-reduced-motion:reduce){.animar-ala-izq,.animar-ala-der{animation-duration:1.1s!important}.letter-card:hover > .img{animation:none!important}}
+        @media(prefers-reduced-motion:reduce){.letter-card:hover > .img{animation:none!important}}
       `}</style>
 
       {/* Viñeta ultra sutil — no tapa cometas */}
@@ -327,22 +310,12 @@ export default function Letter({ onNext, onPrev }) {
       {/* Luz neon dorado-roja que sigue mariposa */}
       <div ref={lightRef} className="fixed pointer-events-none z-[1] rounded-full" style={{ width: 220, height: 220, background: 'radial-gradient(circle,rgba(212,175,55,0.10) 0%,rgba(220,20,60,0.06) 38%,transparent 68%)', filter: 'blur(12px)', opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.45s ease' }} />
 
-      {/* ── MARIPOSA 112×112 — neon negro/rojo/dorado ── */}
+      {/* ── MARIPOSA ORIGAMI 112×112 — canvas Three.js transparente ── */}
       <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease', filter: phase === 'flying' ? 'drop-shadow(0 0 10px rgba(212,175,55,0.45)) drop-shadow(0 0 18px rgba(220,20,60,0.32))' : 'none' }} aria-hidden>
-        <div ref={bfInnerRef} className="perspectiva relative" style={{ width: 112, height: 112 }}>
-          <div className="preservar-3d absolute w-full h-full">
-            <div className="absolute left-1/2 top-1/4 w-1.5 h-14 -translate-x-1/2 z-10" style={{ background: 'linear-gradient(180deg,#1a0a0f 0%,#8b0000 55%,#d4af37 100%)', clipPath: 'polygon(50% 0,100% 10%,100% 90%,50% 100%,0 90%,0 10%)', boxShadow: '0 0 8px rgba(212,175,55,0.55),0 0 14px rgba(220,20,60,0.35)' }} />
-            <div ref={wingLRef} className="animar-ala-izq preservar-3d absolute left-0 top-0 w-1/2 h-full origin-right">
-              <div className="clip-ala-fondo-izq absolute w-full h-full top-0" style={{ background: '#0a0a0f', opacity: 0.98, boxShadow: 'inset 0 0 12px rgba(220,20,60,0.18)' }} />
-              <div className="clip-ala-sup-izq absolute w-full h-1/2 top-0" style={{ background: 'linear-gradient(135deg,#8b0000 0%,#dc143c 55%,#d4af37 100%)', opacity: 0.98, boxShadow: 'inset -5px -5px 14px rgba(0,0,0,0.32),0 0 10px rgba(212,175,55,0.28)' }} />
-              <div className="clip-ala-inf-izq absolute w-full h-1/2 bottom-0" style={{ background: 'linear-gradient(135deg,#4a0e0e 0%,#8b0000 60%,#b8941f 100%)', opacity: 0.98, boxShadow: 'inset -5px 5px 14px rgba(0,0,0,0.32),0 0 8px rgba(220,20,60,0.20)' }} />
-            </div>
-            <div ref={wingRRef} className="animar-ala-der preservar-3d absolute right-0 top-0 w-1/2 h-full origin-left">
-              <div className="clip-ala-fondo-der absolute w-full h-full top-0" style={{ background: '#0a0a0f', opacity: 0.98, boxShadow: 'inset 0 0 12px rgba(220,20,60,0.18)' }} />
-              <div className="clip-ala-sup-der absolute w-full h-1/2 top-0" style={{ background: 'linear-gradient(225deg,#8b0000 0%,#dc143c 55%,#d4af37 100%)', opacity: 0.98, boxShadow: 'inset 5px -5px 14px rgba(0,0,0,0.32),0 0 10px rgba(212,175,55,0.28)' }} />
-              <div className="clip-ala-inf-der absolute w-full h-1/2 bottom-0" style={{ background: 'linear-gradient(225deg,#4a0e0e 0%,#8b0000 60%,#b8941f 100%)', opacity: 0.98, boxShadow: 'inset 5px 5px 14px rgba(0,0,0,0.32),0 0 8px rgba(220,20,60,0.20)' }} />
-            </div>
-          </div>
+        <div ref={bfInnerRef} className="relative" style={{ width: 112, height: 112 }}>
+          {phase === 'flying' && (
+            <canvas ref={origamiHostRef} width={112} height={112} style={{ width: 112, height: 112, display: 'block' }} />
+          )}
         </div>
       </div>
 
