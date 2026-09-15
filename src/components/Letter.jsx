@@ -35,7 +35,7 @@ export default function Letter({ onNext, onPrev }) {
 
     const W = window.innerWidth
     const H = window.innerHeight
-    const BF_W = 148, BF_H = 148
+    const BF_W = 180, BF_H = 180
     const sc = W < 480 ? 0.58 : W < 768 ? 0.72 : 0.88
     const cx = W * 0.5, cy = H * 0.46
 
@@ -189,7 +189,9 @@ export default function Letter({ onNext, onPrev }) {
           const dx = pt.x - prevPt.x
           const dy = pt.y - prevPt.y
           const speed = Math.hypot(dx, dy)
-          const targetAngle = Math.atan2(dy, dx) * 180 / Math.PI - 90
+          // Calibración rumbo: -90 mapea math->CSS (0=>270 este, 90=>0 sur)
+          const RAW_OFFSET = -90
+          const targetAngle = Math.atan2(dy, dx) * 180 / Math.PI + RAW_OFFSET
           let delta = targetAngle - curAngle
           if (delta > 180) delta -= 360
           if (delta < -180) delta += 360
@@ -242,7 +244,7 @@ export default function Letter({ onNext, onPrev }) {
       if (!alive) return
       const canvas = origamiHostRef.current
       if (!canvas) return
-      origamiDisposeRef.current = m.mountOrigamiButterfly(canvas, { size: 148 })
+      origamiDisposeRef.current = m.mountOrigamiButterfly(canvas, { size: 180 })
     }).catch(() => {})
     return () => {
       alive = false
@@ -310,11 +312,11 @@ export default function Letter({ onNext, onPrev }) {
       {/* Luz neon dorado-roja que sigue mariposa */}
       <div ref={lightRef} className="fixed pointer-events-none z-[1] rounded-full" style={{ width: 220, height: 220, background: 'radial-gradient(circle,rgba(212,175,55,0.10) 0%,rgba(220,20,60,0.06) 38%,transparent 68%)', filter: 'blur(12px)', opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.45s ease' }} />
 
-      {/* ── MARIPOSA ORIGAMI 148×148 — canvas Three.js transparente ── */}
-      <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease', filter: phase === 'flying' ? 'drop-shadow(0 0 10px rgba(212,175,55,0.45)) drop-shadow(0 0 18px rgba(220,20,60,0.32))' : 'none' }} aria-hidden>
-        <div ref={bfInnerRef} className="relative" style={{ width: 148, height: 148 }}>
+      {/* ── MARIPOSA ORIGAMI 180×180 — canvas Three.js transparente (180 evita recorte alas con escala 1.55) ── */}
+      <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease', filter: phase === 'flying' ? 'drop-shadow(0 0 10px rgba(212,175,55,0.45)) drop-shadow(0 0 18px rgba(220,20,60,0.32))' : 'none', overflow: 'visible' }} aria-hidden>
+        <div ref={bfInnerRef} className="relative" style={{ width: 180, height: 180, overflow: 'visible' }}>
           {phase === 'flying' && (
-            <canvas ref={origamiHostRef} width={148} height={148} style={{ width: 148, height: 148, display: 'block' }} />
+            <canvas ref={origamiHostRef} width={180} height={180} style={{ width: 180, height: 180, display: 'block', overflow: 'visible' }} />
           )}
         </div>
       </div>
