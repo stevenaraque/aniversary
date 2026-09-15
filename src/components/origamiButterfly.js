@@ -163,14 +163,14 @@ function buildButterfly(mats) {
   return { butterfly, body, wR, wL, antennae: [aR, aL] }
 }
 
-// Pose de aleteo real: flap rápido + camber con retardo + hindwing en desfase
+// Pose de aleteo REAL y marcado: amplitud +55% para que se NOTE (antes se veía plana)
 function poseFlap(P, phase, k, o = {}) {
-  const amp = o.amp ?? 1, base = o.base ?? 0.3, asL = o.asL ?? 1, asR = o.asR ?? 1, vel = o.vel ?? 0
+  const amp = o.amp ?? 1, base = o.base ?? 0.30, asL = o.asL ?? 1, asR = o.asR ?? 1, vel = o.vel ?? 0
   const w = flapWave(phase), wH = flapWave(phase - .55)
-  const aR = base + .78 * amp * k * asR * w, aL = base + .78 * amp * k * asL * w
+  const aR = base + 1.18 * amp * k * asR * w, aL = base + 1.18 * amp * k * asL * w
   P.wR.fore.group.rotation.z = aR
   P.wL.fore.group.rotation.z = -aL
-  const hR = base * .95 + .62 * amp * k * asR * wH, hL = base * .95 + .62 * amp * k * asL * wH
+  const hR = base * .92 + 0.92 * amp * k * asR * wH, hL = base * .92 + 0.92 * amp * k * asL * wH
   P.wR.hind.group.rotation.z = hR
   P.wL.hind.group.rotation.z = -hL
   for (const [wing, s] of [[P.wR, 1], [P.wL, -1]]) {
@@ -209,10 +209,10 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
 
   const scene = new THREE.Scene()
   if (isDemo) scene.background = new THREE.Color(0x150a10)
-  const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100)
-  // Vista cercana 3/4 para 148px — alas llenan canvas
-  if (isDemo) { camera.position.set(0.9, 1.9, 3.2); camera.lookAt(0, 0.42, 0) }
-  else { camera.position.set(0.85, 2.0, 3.0); camera.lookAt(0, 0.35, 0) }
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100)
+  // Vista lateral 3/4 baja para que el aleteo SE NOTE (antes cenital la aplana)
+  if (isDemo) { camera.position.set(1.05, 1.45, 3.4); camera.lookAt(0, 0.40, 0) }
+  else { camera.position.set(1.15, 1.25, 3.2); camera.lookAt(0, 0.30, 0) }
 
   // Luces cálidas para que el oro metalizado no se apague sobre obsidian
   scene.add(new THREE.HemisphereLight(0x3a2a30, 0x0d0709, .7))
@@ -262,7 +262,7 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
     if (!running) return
     const dt = Math.min(((now - last) / 1000) || 0.016, 0.05)
     last = now
-    let hz = baseHz, amp = 1, base = 0.30
+    let hz = baseHz, amp = 1.35, base = 0.42
     if (isDemo && !reduceMotion) {
       demoT -= dt
       if (demoT <= 0) {
@@ -273,9 +273,9 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
           else { demoMode = 'flap'; demoT = 0.8 + Math.random() * 1.2 }
         } else { demoMode = 'flap'; demoT = 0.9 + Math.random() * 1.4 }
       }
-      const tgt = demoMode === 'flap' ? { hz: FLAP_HZ, amp: 1, base: 0.30 }
-        : demoMode === 'glide' ? { hz: 2.2, amp: 0.10, base: 0.62 }
-        : { hz: 6.2, amp: 0.50, base: 0.42 }
+      const tgt = demoMode === 'flap' ? { hz: FLAP_HZ, amp: 1.35, base: 0.42 }
+        : demoMode === 'glide' ? { hz: 2.2, amp: 0.14, base: 0.62 }
+        : { hz: 6.2, amp: 0.62, base: 0.42 }
       curHz = mix(curHz, tgt.hz, 6, dt); curAmp = mix(curAmp, tgt.amp, 5, dt); curBase = mix(curBase, tgt.base, 4, dt)
       hz = curHz; amp = curAmp; base = curBase
     }
@@ -283,11 +283,11 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
     // velNorm para camber — en Danaus se liga a hz real
     const velNorm = Math.cos(phase) * (hz / FLAP_HZ)
     poseFlap(parts, phase, ampK, {
-      amp: isDemo && !reduceMotion ? amp : 1,
-      base: isDemo && !reduceMotion ? base : 0.30,
+      amp: isDemo && !reduceMotion ? amp : 1.35,
+      base: isDemo && !reduceMotion ? base : 0.42,
       vel: velNorm,
-      bob: .022 * ampK * Math.sin(phase - 1.3) * (isDemo && !reduceMotion ? amp : 1),
-      pitchBob: .04 * ampK * Math.cos(phase - 1.1) * (isDemo && !reduceMotion ? amp : 1)
+      bob: .028 * ampK * Math.sin(phase - 1.3) * (isDemo && !reduceMotion ? amp : 1),
+      pitchBob: .05 * ampK * Math.cos(phase - 1.1) * (isDemo && !reduceMotion ? amp : 1)
     })
     // demo: leve flotación de la mariposa para que no se vea rígida
     if (isDemo && !reduceMotion) {
