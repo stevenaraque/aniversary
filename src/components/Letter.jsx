@@ -214,6 +214,13 @@ export default function Letter({ onNext, onPrev }) {
           phaseInner = 'settling'; startTs = ts
         }
       } else if (phaseInner === 'settling') {
+        // Endereza la mariposa antes de desvanecer — no termina al revés
+        curAngle += (0 - curAngle) * 0.08
+        angleRef.current = curAngle
+        bfInner.style.transform = `scale(${sc}) rotate(${curAngle}deg) rotateZ(0deg) rotateX(0deg)`
+        // Mantén posición en el centro de aterrizaje
+        bf.style.transform = `translate3d(${cx - BF_W * sc / 2}px,${cy - 4 - BF_H * sc / 2}px,0)`
+        light.style.transform = `translate3d(${cx - 100}px,${cy - 4 - 100}px,0)`
         if (el >= T_SET) {
           phaseInner = 'fadeOut'; startTs = ts
           bf.style.transition = 'opacity 0.72s ease, transform 0.72s ease'
