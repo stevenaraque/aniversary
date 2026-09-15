@@ -136,12 +136,16 @@ export default function Puzzle({ onNext, onPrev }) {
           </div>
         </div>
 
-        <button onClick={onNext} className="mt-4 glass px-4 py-1.5 rounded-full text-white/25 text-[11px] tracking-widest uppercase hover:text-white/50 border border-transparent hover:border-gold/20 transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
-          Saltar puzzle → <FlowerIcon className="w-3 h-3 text-gold/30" />
-        </button>
-        <button onClick={() => setPreviewWin(true)} className="glass px-4 py-1.5 rounded-full text-white/20 text-[10px] tracking-widest uppercase hover:text-white/40 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto" title="Vista previa del aviso">
-          Ver aviso
-        </button>
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug') && (
+          <>
+            <button onClick={onNext} className="mt-4 glass px-4 py-1.5 rounded-full text-white/25 text-[11px] tracking-widest uppercase hover:text-white/50 border border-transparent hover:border-gold/20 transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
+              Saltar puzzle → <FlowerIcon className="w-3 h-3 text-gold/30" />
+            </button>
+            <button onClick={() => setPreviewWin(true)} className="glass px-4 py-1.5 rounded-full text-white/20 text-[10px] tracking-widest uppercase hover:text-white/40 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto" title="Vista previa del aviso">
+              Ver aviso
+            </button>
+          </>
+        )}
 
         <AnimatePresence>
           {showWin && (

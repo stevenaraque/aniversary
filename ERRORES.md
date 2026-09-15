@@ -1,7 +1,7 @@
 # ERRORES Y LECCIONES — anniversary-app
 
 > Bitácora de errores reales del proyecto y cómo no repetirlos.
-> Última actualización: 2026-09-09 (rama `style/puzzle-modal`)
+> Última actualización: 2026-09-15 — `main` `c7eb44d` (origami + perf 30fps)
 
 ---
 
@@ -34,10 +34,10 @@
 
 ## 5. CosmosBackground tragón
 
-- **Síntoma:** el fondo global consumía CPU siempre.
-- **Causa:** 31 cometas × 3 pasadas con gradiente nuevo por frame, 500 partículas con búsqueda O(n) de la más vieja, canvas a DPR nativo, halo del mouse redibujado aunque no se mueva, sin pausa en pestaña oculta.
-- **Solución:** DPR con tope 1.5, 20 cometas, 260 partículas, estela en 2 pasadas, buffer circular, halo solo si el mouse se movió, `visibilitychange` + resize con debounce.
-- **Regla:** ningún canvas corre en pestaña oculta (Intro ya lo hacía; Cosmos y Playlist no).
+- **Síntoma:** el fondo global consumía CPU siempre — en pestaña normal con extensiones iba lento, en incógnito rápido.
+- **Causa:** 31 cometas × 3 pasadas con gradiente nuevo por frame a 60fps, 500 partículas con búsqueda O(n) de la más vieja, canvas a DPR nativo, halo del mouse redibujado aunque no se mueva, sin pausa en pestaña oculta.
+- **Solución:** DPR con tope 1.5, **12 cometas (180★/120P) `src/components/CosmosBackground.jsx:20` throttle 30fps `now-lastLoop<33` `src/components/CosmosBackground.jsx:223`**, 5 cometas/100★/80P móvil, estela en 2 pasadas, buffer circular, halo solo si el mouse se movió, `visibilitychange` + resize con debounce. `FrostCanvas` 42→24 `src/components/Intro.jsx:58` + check `saveData/reduced` `src/components/Intro.jsx:47`, `Playlist` 50→30 `src/components/Playlist.jsx:359`.
+- **Regla:** ningún canvas corre en pestaña oculta ni a 60fps si 30fps se ve igual (Cascada dorada sigue continua).
 
 ## 6. Playlist con doble intervalo
 
@@ -65,9 +65,9 @@
 
 ## 10. `@import` de fuentes dentro de `<style>`
 
-- **Síntoma:** fuentes que tardaban o bloqueaban render.
+- **Síntoma:** fuentes que tardaban o bloqueaban render — 9 familias en 1 request pesaba.
 - **Causa:** `@import` en estilos inyectados es bloqueante.
-- **Solución:** todas las fuentes en el `<link>` de `index.html` (Cormorant, Sora, Marcellus, Cinzel, Philosopher, Dancing Script, Lora, Playfair Display).
+- **Solución:** todas las fuentes en el `<link>` de `index.html` (Cormorant, Sora, Marcellus, Cinzel, Philosopher, Dancing Script, Lora) — `Playfair Display` quitado por no usado `index.html:11`. `manualChunks` `vite.config.js:5` separa `motion`/`three` para bajar main a 102kB gzip.
 
 ## 11. Lightbox roto con video sin `src`
 

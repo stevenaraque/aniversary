@@ -4,11 +4,11 @@
 
 **Repositorio:** https://github.com/stevenaraque/aniversary  
 **Ramas:**
-- `main` @ `b64efab` — **estable, producción en Vercel** (intro gótica UMBRA + contador 26.08 + marco prismático)
+- `main` @ `c7eb44d` — **estable, producción en Vercel** (UMBRA + origami Three.js + perf 30fps)
 - `reflect/spacious-glass` @ `129afef` — experimental spacious (desactualizada, no usar)
 - Backup físico: `anniversary-app-backup-pre-reflect/` en `Template/`
 
-**Stack:** React 19 + Vite 8 + Tailwind 4 (`@tailwindcss/vite`) + Motion (`motion`) + Lucide  
+**Stack:** React 19 + Vite 8 + Tailwind 4 (`@tailwindcss/vite`) + Motion (`motion`) + Lucide + Three 0.160  
 **Node:** v24.19.0
 
 ---
@@ -18,13 +18,13 @@
 1. **Paleta:** Negro profundo `#050505` / Obsidian `#0a0a0f` / Rojo vino `#8b0000→#dc143c` / Dorado `#d4af37` `#f9e076` `#b8941f` (`src/index.css:3` `@theme`) + Bone `#e8dcc8`. Gold/crimson para glass, cometas, prism.
 2. **Tipografía — Cormorant Garamond (delicada, fineza)** (`index.html:6`): `h1/h2` Cormorant 700 `text-gradient-blood` / `white`, `p/body` Cormorant 300. Se sustituyó Cinzel/Cinzel Decorative por Cormorant en títulos, botones, badges (look fino y coherente). Sora queda solo para micro-etiquetas/fallback. No usar Georgia, no reintroducir Cinzel sin preguntar.
 3. **Liquid Glass** (`src/index.css:48`): `.glass` blur 16-40px saturate 1.4-1.8, `.glass-prominent`, `.glass-deep`, `.glass-refraction` conic 20s, `interact-lift/glow`.
-4. **Fondo animado global** `src/components/CosmosBackground.jsx:1` — **Río de Cometas Dorados en cascada continua** canvas `fixed inset-0` 300 estrellas + 5 nebulosas + **26 cometas** (desktop) con estela triple halo/mid/core + 500 partículas, spawn denso `rand(2,5)` frames (cascada continua en toda la página). Móvil: estrellas 140, cometas 8, partículas 160, spawn espaciado `rand(20,32)`. **NO usa `prefers-reduced-motion` para congelar el cosmos** (el fondo debe seguir animado). `StarRainCanvas` en Intro 18/36 estrellas throttled 34ms + `FrostCanvas` 42 partículas solo desktop. Fondo transparente en secciones para ver cometas.
+4. **Fondo animado global** `src/components/CosmosBackground.jsx:1` — **Río de Cometas Dorados en cascada continua** canvas `fixed inset-0` **180★** + 5 nebulosas + **12 cometas** (desktop) `5 móvil` con estela doble + **120 partículas** `80 móvil`, **throttle 30fps** `now-lastLoop<33` `src/components/CosmosBackground.jsx:223`, DPR cap 1.5, buffer circular, halo solo si mueve, pause `visibilitychange`. Spawn denso `rand(1.6,4)` frames. **NO congela** el cosmos con `prefers-reduced-motion`. `StarRainCanvas` 18/36★ throttled 34ms + `FrostCanvas` **24 partículas/2 cristales** solo desktop y no en `prefers-reduced/saveData`. Fondo transparente en secciones para ver cometas.
 5. **Patrón Container/Wrapper** (`src/index.css:280`): `.main-wrapper` 100% flex center `min-h-[100dvh] h-[100dvh] overflow-hidden` → `.container` 1200 / `.container-lg` 1280 + `px 20→16` → grid. Intro usa `container-lg grid [1.05fr_0.95fr] gap-14` con foto. Sin scroll en Intro/Countdown.
 6. **Motion** `src/lib/motion-tokens.js:1`: `springs.gentle/bouncy`, `motionTokens`. Intro: `StarRainCanvas` canvas, `FrostCanvas` ice crystals, `GothicButton` bat, `umbra` circles/dust/ink. Countdown: `TimeBlock` con anillo SVG progress.
 7. **Iconos** `src/components/Icons.jsx:1`: `BatIcon` / `FlowerIcon` custom + Lucide `Crown/Gem/Heart/Skull`. Flaticon bat para botón Recordemos.
 8. **Puzzle 4×4** `src/components/Puzzle.jsx:7` — 16 piezas, `glass-deep` + spotlight, fix `isSolvable` → `(inv+filaAbajo)%2===1`.
 9. **Datos editables** `src/data/memories.js` `photos.js` `songs.js` — arrays simples, `public/puzzle-main.jpg` (reemplazar por foto real), `public/gothic/*.png` marcos.
-10. **Build:** `npm run build` OK ~52kB CSS / 411kB JS. Tailwind `bg-linear-to-*`.
+10. **Build:** `npm run build` OK `59.6kB CSS / 358kB JS (102kB gzip) + 470kB three (118kB) + 129kB motion (42kB)` `vite.config.js:5` `manualChunks`. Tailwind `bg-linear-to-*`.
 
 ---
 
@@ -34,13 +34,13 @@
 
 | Sección | Archivo | Notas |
 |---------|---------|-------|
-| Intro | `Intro.jsx:99` | UMBRA hero `100dvh` static, `StarRain 18/36` + `Frost 42` + `geometric circles` + `dust/ink/fog` + `GothicButton Recordemos` bat + `gothic-prism` foto 575px `prism-border` |
+| Intro | `Intro.jsx:99` | UMBRA hero `100dvh` static, `StarRain 18/36` + `Frost 24/2` + `geometric circles` + `dust/ink/fog` + `GothicButton Recordemos` bat + `gothic-prism` foto 575px `prism-border` |
 | Countdown | `Countdown.jsx:7` | Fecha **26.08.2024** calendario real, `TimeBlock` 6 con anillo `gold/crimson` + watermark `II`, `pebble-button` bat, `Mi Canelita` badge |
-| Puzzle | `Puzzle.jsx:64` | 4×4 premium |
+| Puzzle | `Puzzle.jsx:64` | 4×4 premium, `Saltar puzzle`/`Ver aviso` solo con `?debug=1` `src/components/Puzzle.jsx:138` |
 | MemoryLane | `MemoryLane.jsx:17` | Swipe drag x 80/vel 400 |
-| Letter | `Letter.jsx:8` | Sobre rotateY |
+| Letter | `Letter.jsx:8` | Carta papyrus + mariposa origami Three.js 148×148 lazy `origamiButterfly.js:199` 12.5Hz vuelo pantalla completa |
 | Collage | `Collage.jsx:39` | Masonry 13 fotos sin hueco |
-| Playlist | `Playlist.jsx:153` | Reproductor gótico (disco + lista panel) + `onNext`→`final` |
+| Playlist | `Playlist.jsx:153` | Reproductor gótico (disco + lista panel, 30 partículas desktop) + `onNext`→`final` |
 | Final | `Final.jsx:1` | Hero Elena&Matteo + declaración + timeline 5 + gallery 5 + vow ∞ + lightbox, scroll, Marcellus |
 
 ---
@@ -61,10 +61,11 @@
 ## Comandos
 
 ```powershell
-cd "C:\Users\USER\Desktop\2 years\agente\Template\anniversary-app"
+cd "C:\Users\USER\Desktop\anniversary-app"
 git checkout main; npm run dev          # http://localhost:5173
 npm run build
 git log --oneline -5
+# debug puzzle: http://localhost:5173/?debug=1  muestra Saltar/Ver aviso
 ```
 
 **Deploy:** Vercel importa `stevenaraque/aniversary` branch `main` (auto).
@@ -117,31 +118,26 @@ git log --oneline -5
 - Build OK. Push pendiente.
 
 
-## Rama perf/no-jank — optimización sin cambiar diseño (NUNCA main — regla de oro)
+## Update 15-09-2026 — perf/speed-fix + origami en main
 
-Auditoría sección por sección: lo que trababa el navegador era cantidad de capas animadas simultáneas, no el diseño. Cambios aplicados (lint 0/0 + build OK 58.6kB CSS / 488.4kB JS), `main` nunca tocado:
+- **Cosmos 30fps** `src/components/CosmosBackground.jsx:223` `180★/100` `12☄/5` `120P/80` throttle `33ms`, `FrostCanvas` `42→24` + `saveData/reduced` check `src/components/Intro.jsx:47`, `Playlist` `50→30` `src/components/Playlist.jsx:359`, `Playfair Display` quitado `index.html:11`, `vite.config.js:5` `manualChunks` `motion 42kB` `three 118kB` separado — pestaña normal ya no se arrastra con extensiones
+- **Origami en main** `src/components/origamiButterfly.js:199` lazy 148×148 12.5Hz bicolor, grupos fix `origamiButterfly.js:49`, reduce 0.6Hz
+- **Puzzle debug** `src/components/Puzzle.jsx:138` `Saltar puzzle`/`Ver aviso` solo con `?debug=1` + atajo `sessionStorage`
+- Build `59.6kB CSS / 358kB JS (102kB gzip) + 470kB three (118kB) + 129kB motion (42kB)` lint 0/0, push `75f805f` `c7eb44d`
 
-- **Cosmos global** `CosmosBackground.jsx`: DPR con tope 1.5, cometas desktop 31→20 (móvil 10→8), partículas 500→260, estela 3→2 pasadas, reciclaje de partículas O(n)→buffer circular, halo del mouse solo si se movió, resize con debounce 150ms, pausa total en pestaña oculta.
-- **Playlist** `Playlist.jsx`: onda fuera del intervalo de 100ms (propio a 180ms), filas memoizadas (`SongRow`), canvas con pausa en pestaña oculta, `transition:all`→específicas.
-- **Collage** `Collage.jsx`: blur solo en primera entrada (al filtrar solo opacity/y/scale), `whileHover zIndex`→CSS, flotantes Bat/Flower de Motion→keyframes CSS, lightbox sin `backdrop-blur-xl`, imgs `decoding="async"`.
-- **Blurs anidados**: quitado `backdrop-blur` de overlays full-screen (Puzzle/MemoryLane×2/Collage/Final) — el vidrio queda en la tarjeta.
-- **Transiciones**: sin `filter:blur()` en initial/animate/exit (Intro/Countdown/MemoryLane/Letter/Collage); `transition-all`→propiedades específicas en todos los botones; `will-change` solo donde anima de verdad.
-- **Intro**: `CursorFollower` solo con puntero fino, `candelGlow` anima opacity (no box-shadow).
-- **Countdown**: `TimeBlock`/`AnimatedNumber` con `memo`, loops Crown/Gem/Heart a CSS.
-- **MemoryLane**: `dragDirectionLock` en swipe + fix lightbox roto con video sin `src`.
-- **Letter**: sparkles 18→12, envelope mousemove con throttle rAF.
-- **Final**: quitado `@import` de fuentes en `<style>` (Marcellus ya en `index.html`), hero `100vh`→`100dvh`.
-- **Fuentes**: `Dancing Script` + `Lora` movidas al `<link>` de `index.html` (se quitaron los `@import` de Letter/Final).
-- **App**: `MotionConfig reducedMotion="never"`→`"user"`.
+## Rama perf/no-jank — histórico (ya mergeado en main)
 
-Pendiente: commit + push de `perf/no-jank`, probar en navegador real, luego PR hacia `main`.
+Auditoría sección por sección: lo que trababa el navegador era cantidad de capas animadas simultáneas, no el diseño. Cambios aplicados (lint 0/0 + build OK 58.6kB CSS / 488.4kB JS):
 
-## Rama feat/letter-origami — mariposa origami Three.js en Letter (NUNCA main)
+- **Cosmos global** `CosmosBackground.jsx`: DPR con tope 1.5, cometas desktop 31→20 (móvil 10→8), partículas 500→260, estela 3→2 pasadas, reciclaje O(n)→buffer circular, halo solo si mueve, debounce 150ms, pause hidden.
+- **Playlist** `Playlist.jsx`: onda 180ms, `SongRow` memo, `transition:all`→específicas.
+- **Collage** `Collage.jsx`: blur solo primera entrada, `whileHover zIndex`→CSS, flotantes a CSS, `decoding="async"`.
+- **Blurs/Transiciones/Intro/Countdown/etc** ya listados — todo aplicado en main.
 
-- **Qué:** la mariposa CSS/DOM de `Letter.jsx` se reemplazó por la origami de papel de la plantilla del usuario (`three@0.160.0` en `package.json`). Solo modelo + aleteo (`flapWave` 10.5Hz + pliegue Rodrigues + torsión): SIN rutas, pétalos, HUD, sombra ni listeners globales de la plantilla.
-- **Cómo (sin dañar):** `src/components/origamiButterfly.js` exporta `mountOrigamiButterfly(canvas, {size})`; `Letter.jsx` lo importa con `import()` dinámico SOLO en `phase==='flying'` → three queda en chunk separado (`origamiButterfly-*.js` ~476kB), el bundle inicial no crece (sigue ~489kB). Canvas 148×148 transparente montado en la caja que ya movía el vuelo (trayectoria, tiempos, sparkles, trails y carta intactos). Cleanup total al salir de fase/unmount + pausa en pestaña oculta + aleteo lento (0.6Hz, amp 0.45) con `prefers-reduced-motion` en vez de congelar.
-- **Look final:** aleteo 12.5Hz, bicolor paleta del sitio (delanteras oro `#d4af37`, traseras vino `#dc143c`, reversos champagne, cuerpo vino oscuro), cámara 3/4 desde arriba + `emissive` (el washi se apagaba en obsidian). Caras coloridas en `BackSide` (la cámara ve los reversos).
-- **Bug real encontrado:** mesh con array de materiales SIN `geometry.groups` no dibuja nada (solo se veían aristas) → `addGroup(0, N, 0)` + `addGroup(0, N, 1)` en `makeFoldPanel`.
-- **CSS borrado:** keyframes `aleteo-*`, clases `animar/pausa-ala-*`, `clip-ala-*`, `.perspectiva/.preservar-3d` (verificado 0 refs).
-- Verificado: lint 0/0, build OK, capturas headless desktop 1366 + móvil 390 (vuelo visible, carta abre, canvas se desmonta, 0 errores consola). Rama local SIN push/merge.
+## Rama feat/letter-origami — histórico (ya en main)
+
+- **Qué:** mariposa CSS/DOM → origami papel `three@0.160.0` solo modelo + aleteo `flapWave` 12.5Hz Rodrigues
+- **Cómo:** `mountOrigamiButterfly(canvas,{size})` `import()` dinámico solo `flying` → chunk separado `5.6kB + three 470kB`, canvas 148×148, cleanup + pause hidden + reduce 0.6Hz
+- **Bug:** `addGroup(0,N,0)+addGroup(0,N,1)` sin groups no dibuja
+- Ahora en `main` `75f805f`
 
