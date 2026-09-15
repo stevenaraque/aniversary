@@ -353,10 +353,11 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
     const canvas = canvasRef.current
     if (!canvas) return
     const isMobile = window.matchMedia('(max-width: 768px)').matches
-    if (isMobile) return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (isMobile || prefersReduced) return
     const ctx = canvas.getContext('2d')
     let particles = []
-    const COUNT = 50
+    const COUNT = 30
     const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
     resize()
     window.addEventListener('resize', resize)
