@@ -36,7 +36,7 @@ export default function Letter({ onNext, onPrev }) {
     const W = window.innerWidth
     const H = window.innerHeight
     const BF_W = 180, BF_H = 180
-    const sc = W < 480 ? 0.58 : W < 768 ? 0.72 : 0.88
+    const sc = W < 480 ? 0.78 : W < 768 ? 0.88 : 0.88
     const cx = W * 0.5, cy = H * 0.46
 
     // ── Trayectoria PANTALLA COMPLETA — 6 arcos amplios ida y vuelta ──
