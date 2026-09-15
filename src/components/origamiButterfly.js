@@ -191,24 +191,28 @@ function poseFlap(P, phase, k, o = {}) {
   })
 }
 
-// Monta Danaus aurum en canvas 148×148 transparente — aleteo real 12.5Hz
+// Monta Danaus aurum en canvas transparente — aleteo real 12.5Hz
+// opts.demo=true (preview) activa vuelo variado natural: ráfaga/planeo/cernido con camber
 export function mountOrigamiButterfly(canvas, opts = {}) {
   const size = opts.size || 148
+  const isDemo = !!opts.demo
   const reduceMotion = typeof window !== 'undefined'
     && typeof window.matchMedia === 'function'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: isDemo ? false : true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
   renderer.setSize(size, size, false)
+  if (isDemo) renderer.setClearColor(0x150a10, 1)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.toneMappingExposure = 1.08
 
   const scene = new THREE.Scene()
+  if (isDemo) scene.background = new THREE.Color(0x150a10)
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100)
   // Vista cercana 3/4 para 148px — alas llenan canvas
-  camera.position.set(0.85, 2.0, 3.0)
-  camera.lookAt(0, 0.35, 0)
+  if (isDemo) { camera.position.set(0.9, 1.9, 3.2); camera.lookAt(0, 0.42, 0) }
+  else { camera.position.set(0.85, 2.0, 3.0); camera.lookAt(0, 0.35, 0) }
 
   // Luces cálidas para que el oro metalizado no se apague sobre obsidian
   scene.add(new THREE.HemisphereLight(0x3a2a30, 0x0d0709, .7))
@@ -232,6 +236,9 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
   let last = 0
   let phase = 0
   let visHandler = null
+  // demo: vuelo variado natural (ráfaga/planeo/cernido) para que no se vea lana/mecánico
+  let demoMode = 'flap', demoT = isDemo && !reduceMotion ? 1.2 : 999
+  let curHz = FLAP_HZ, curAmp = 1, curBase = 0.30
 
   const render = () => { renderer.render(scene, camera) }
 
@@ -248,22 +255,47 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
   }
 
   // 12.5Hz real — subida rápida/bajada lenta via flapWave, no seno puro. En reduced aleteo lento 0.6Hz.
-  const hz = reduceMotion ? 0.6 : FLAP_HZ
+  const baseHz = reduceMotion ? 0.6 : FLAP_HZ
   const ampK = reduceMotion ? 0.45 : 1
+  const mix = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt))
   const loop = (now) => {
     if (!running) return
     const dt = Math.min(((now - last) / 1000) || 0.016, 0.05)
     last = now
+    let hz = baseHz, amp = 1, base = 0.30
+    if (isDemo && !reduceMotion) {
+      demoT -= dt
+      if (demoT <= 0) {
+        if (demoMode === 'flap') {
+          const r = Math.random()
+          if (r < 0.45) { demoMode = 'glide'; demoT = 0.6 + Math.random() * 0.9 }
+          else if (r < 0.78) { demoMode = 'hover'; demoT = 0.9 + Math.random() * 1.1 }
+          else { demoMode = 'flap'; demoT = 0.8 + Math.random() * 1.2 }
+        } else { demoMode = 'flap'; demoT = 0.9 + Math.random() * 1.4 }
+      }
+      const tgt = demoMode === 'flap' ? { hz: FLAP_HZ, amp: 1, base: 0.30 }
+        : demoMode === 'glide' ? { hz: 2.2, amp: 0.10, base: 0.62 }
+        : { hz: 6.2, amp: 0.50, base: 0.42 }
+      curHz = mix(curHz, tgt.hz, 6, dt); curAmp = mix(curAmp, tgt.amp, 5, dt); curBase = mix(curBase, tgt.base, 4, dt)
+      hz = curHz; amp = curAmp; base = curBase
+    }
     phase += dt * Math.PI * 2 * hz
     // velNorm para camber — en Danaus se liga a hz real
     const velNorm = Math.cos(phase) * (hz / FLAP_HZ)
     poseFlap(parts, phase, ampK, {
-      amp: 1,
-      base: 0.30,
+      amp: isDemo && !reduceMotion ? amp : 1,
+      base: isDemo && !reduceMotion ? base : 0.30,
       vel: velNorm,
-      bob: .022 * ampK * Math.sin(phase - 1.3),
-      pitchBob: .04 * ampK * Math.cos(phase - 1.1)
+      bob: .022 * ampK * Math.sin(phase - 1.3) * (isDemo && !reduceMotion ? amp : 1),
+      pitchBob: .04 * ampK * Math.cos(phase - 1.1) * (isDemo && !reduceMotion ? amp : 1)
     })
+    // demo: leve flotación de la mariposa para que no se vea rígida
+    if (isDemo && !reduceMotion) {
+      const t = now * 0.001
+      parts.butterfly.position.y = -0.08 + Math.sin(t * 0.9) * 0.035 + Math.sin(t * 1.6) * 0.015
+      parts.butterfly.position.x = Math.sin(t * 0.6) * 0.04
+      parts.butterfly.rotation.y = Math.sin(t * 0.7) * 0.08
+    }
     render()
     raf = requestAnimationFrame(loop)
   }

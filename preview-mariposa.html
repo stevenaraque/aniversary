@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>preview mariposa — Danaus aurum demo</title>
+<style>
+  body{margin:0;overflow:hidden;height:100vh;
+    background:radial-gradient(ellipse at 50% 40%,#1c1016 0%,#0c0609 70%)}
+  p{position:fixed;bottom:16px;width:100%;text-align:center;margin:0;
+    font:11px/1.6 monospace;letter-spacing:.2em;color:rgba(212,175,55,.5)}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+</script>
+</head>
+<body>
+<p>MODO DEMO — así vuela dentro de la carta (ráfaga/planeo/cernido natural)</p>
+<script type="module">
+import { mountOrigamiButterfly } from '/src/components/origamiButterfly.js'
+const c=document.createElement('canvas')
+c.style.position='fixed'
+c.style.left='50%'
+c.style.top='50%'
+c.style.transform='translate(-50%,-50%)'
+c.style.width='320px'
+c.style.height='320px'
+document.body.appendChild(c)
+mountOrigamiButterfly(c,{size:168,demo:true})
+</script>
+</body>
+</html>
