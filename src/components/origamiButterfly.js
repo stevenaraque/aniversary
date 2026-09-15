@@ -1,203 +1,199 @@
 import * as THREE from 'three'
 
-// Mariposa origami de papel (portada de la plantilla del usuario).
-// Solo modelo + aleteo: sin rutas, sin pétalos, sin HUD, sin sombra.
-// La trayectoria del vuelo la sigue moviendo Letter.jsx; este canvas
-// es transparente y vive dentro de la caja de 112x112 de la mariposa.
+// Danaus aurum — modelo de ala en abanico (buildFan) + cuerpo segmentado + antenas articuladas
+// Adaptado de la placa de vuelo: solo modelo + aleteo real 12.5Hz, sin HUD/órbita/polvo.
+// Letter.jsx mueve la caja por pantalla (6 Bézier); esta mariposa solo aletea dentro del canvas 148×148.
 
 const GOLD = 0xd4af37
 const CHAMPAGNE = 0xf7f0df
 const CRIMSON = 0xdc143c
 const WINE = 0x8b0000
 const EDGE = 0xb8941f
-const INK = 0x1a0a0f
 const FLAP_HZ = 12.5
 
-// Subida rápida y bajada lenta: una senoide pura delata el aleteo falso.
 function flapWave(t) {
   return 0.8 * Math.sin(t) + 0.2 * Math.sin(2 * t - 0.7)
 }
 
-function triGeo(tris) {
-  const pos = new Float32Array(tris.length * 9)
-  let i = 0
-  for (const t of tris) for (const v of t) { pos[i++] = v[0]; pos[i++] = v[1]; pos[i++] = v[2] }
+function triGeo(flat) {
   const g = new THREE.BufferGeometry()
-  g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(flat), 3))
   g.computeVertexNormals()
   return g
 }
+function rodrigues(v, k, a) {
+  const c = Math.cos(a), s = Math.sin(a)
+  return v.clone().multiplyScalar(c)
+    .add(new THREE.Vector3().crossVectors(k, v).multiplyScalar(s))
+    .add(k.clone().multiplyScalar(k.dot(v) * (1 - c)))
+}
+function foldFlat(flat, origin, axis, ang) {
+  const out = flat.slice(), p = new THREE.Vector3()
+  for (let i = 0; i < flat.length; i += 3) {
+    p.set(flat[i], flat[i + 1], flat[i + 2]).sub(origin)
+    const r = rodrigues(p, axis, ang).add(origin)
+    out[i] = r.x; out[i + 1] = r.y; out[i + 2] = r.z
+  }
+  return out
+}
+const tri3 = (a, b, c, flip) => flip
+  ? [c.x, c.y, c.z, b.x, b.y, b.z, a.x, a.y, a.z]
+  : [a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z]
 
-const _v = new THREE.Vector3()
-const _d = new THREE.Vector3()
-const _c = new THREE.Vector3()
-
-function rodrigues(out, p, p0, dir, sinT, cosT) {
-  _v.subVectors(p, p0)
-  _c.copy(dir).multiplyScalar(dir.dot(_v) * (1 - cosT))
-  out.copy(_v).multiplyScalar(cosT)
-    .add(_d.crossVectors(dir, _v).multiplyScalar(sinT))
-    .add(_c).add(p0)
+function makeFoldPanel({ inner, outer, hinge, fold, mats, edge, edgeOp = 0.5, flip = false }) {
+  const axis = new THREE.Vector3().subVectors(hinge[1], hinge[0]).normalize()
+  const all = [...tri3(...inner, flip), ...foldFlat(tri3(...outer, flip), hinge[0], axis, fold)]
+  const back = []
+  for (let i = 0; i < all.length; i += 9)
+    back.push(all[i + 6], all[i + 7], all[i + 8], all[i + 3], all[i + 4], all[i + 5], all[i], all[i + 1], all[i + 2])
+  const mF = new THREE.Mesh(triGeo(all), mats.front); mF.castShadow = true
+  const mB = new THREE.Mesh(triGeo(back), mats.back)
+  const grp = new THREE.Group(); grp.add(mF, mB)
+  if (edge) {
+    const lg = new THREE.BufferGeometry().setFromPoints([hinge[0].clone(), hinge[1].clone()])
+    grp.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: edge, transparent: true, opacity: edgeOp })))
+  }
+  return { group: grp, meshF: mF, meshB: mB }
 }
 
-function makeFoldPanel(innerTris, outerTris, axis0, axis1, xThreshold, matF, matB, matEdge) {
-  const geo = triGeo([...innerTris, ...outerTris])
-  // Sin grupos, un mesh con array de materiales no dibuja nada:
-  // el grupo 0 pinta frentes y el grupo 1 reversos, ambos sobre toda el ala.
-  const vCount = geo.attributes.position.count
-  geo.clearGroups()
-  geo.addGroup(0, vCount, 0)
-  geo.addGroup(0, vCount, 1)
-  const edge = new THREE.EdgesGeometry(geo, 1)
-  const mesh = new THREE.Mesh(geo, [matF, matB])
-  const lines = new THREE.LineSegments(edge, matEdge)
-  const base = geo.attributes.position.array.slice()
-  const eBase = edge.attributes.position.array.slice()
-  const outerIdx = []
-  const eOuterIdx = []
-  for (let i = 0; i < base.length; i += 3) if (base[i] > xThreshold) outerIdx.push(i)
-  for (let i = 0; i < eBase.length; i += 3) if (eBase[i] > xThreshold) eOuterIdx.push(i)
-  const p0 = new THREE.Vector3(...axis0)
-  const p1 = new THREE.Vector3(...axis1)
-  const dir = p1.clone().sub(p0).normalize()
-  const tmp = new THREE.Vector3()
-  const group = new THREE.Group()
-  group.add(mesh, lines)
+function makeMats() {
+  const std = (o) => new THREE.MeshStandardMaterial({ flatShading: true, side: THREE.FrontSide, ...o })
   return {
-    group,
-    fold(theta) {
-      const s = Math.sin(theta)
-      const c = Math.cos(theta)
-      const pa = geo.attributes.position.array
-      const pb = edge.attributes.position.array
-      for (const i of outerIdx) { tmp.set(base[i], base[i + 1], base[i + 2]); rodrigues(tmp, tmp, p0, dir, s, c); pa[i] = tmp.x; pa[i + 1] = tmp.y; pa[i + 2] = tmp.z }
-      for (const i of eOuterIdx) { tmp.set(eBase[i], eBase[i + 1], eBase[i + 2]); rodrigues(tmp, tmp, p0, dir, s, c); pb[i] = tmp.x; pb[i + 1] = tmp.y; pb[i + 2] = tmp.z }
-      geo.attributes.position.needsUpdate = true
-      edge.attributes.position.needsUpdate = true
-      geo.computeVertexNormals()
-    },
+    goldF: std({ color: GOLD, metalness: .58, roughness: .42, envMapIntensity: .8 }),
+    goldB: std({ color: CHAMPAGNE, metalness: .26, roughness: .62, envMapIntensity: .5 }),
+    wineF: std({ color: WINE, metalness: .30, roughness: .52, envMapIntensity: .5 }),
+    wineB: std({ color: 0xb01035, metalness: .36, roughness: .44, envMapIntensity: .55 }),
+    ink: std({ color: 0x241018, metalness: .30, roughness: .55, envMapIntensity: .35, side: THREE.DoubleSide }),
+    club: std({ color: GOLD, metalness: .6, roughness: .4, envMapIntensity: .7 }),
+    edge: EDGE
   }
 }
 
-function buildWing(mats) {
-  const w = new THREE.Group()
-  // Ala delantera DORADA, ala trasera VINO: bicolor legible + paleta del sitio.
-  const fw = makeFoldPanel(
-    [[[0.04, 0.02, 0.30], [0.05, -0.04, -0.02], [0.55, 0.14, 0.16]]],
-    [
-      [[0.05, -0.04, -0.02], [0.55, 0.14, 0.16], [1.34, 0.04, 0.34]],
-      [[0.55, 0.14, 0.16], [1.34, 0.04, 0.34], [1.04, -0.07, 0.06]],
-    ],
-    [0.05, -0.04, -0.02], [0.55, 0.14, 0.16], 0.8, mats.goldFront, mats.goldBack, mats.edge
-  )
-  w.add(fw.group)
-  const hw = makeFoldPanel(
-    [[[0.04, 0.02, 0.14], [0.08, -0.04, -0.34], [0.40, 0.10, -0.06]]],
-    [
-      [[0.08, -0.04, -0.34], [0.40, 0.10, -0.06], [0.62, -0.02, -0.48]],
-      [[0.40, 0.10, -0.06], [0.62, -0.02, -0.48], [0.46, -0.06, -0.02]],
-    ],
-    [0.08, -0.04, -0.34], [0.40, 0.10, -0.06], 0.43, mats.wineFront, mats.wineBack, mats.edge
-  )
-  const hwPivot = new THREE.Group()
-  hwPivot.position.set(0, -0.01, -0.12)
-  hwPivot.add(hw.group)
-  w.add(hwPivot)
-  w.userData = { fw, hw, hwPivot, shY: 0.07, shZ: 0.14 }
-  w.position.set(0.02, 0.07, 0.14)
-  w.rotation.y = -0.12
-  w.scale.setScalar(1.18)
-  return w
+function buildBody(m) {
+  const g = new THREE.Group()
+  const secs = [[.34, .020, .050], [.28, .052, .038], [.14, .075, .030], [0, .062, .018],
+    [-.13, .046, .005], [-.24, .030, -.005], [-.33, .015, -.012], [-.40, .003, -.018]]
+  const ring = s => { const [z, r, y] = s; return [[0, y + r, z], [r * .8, y, z], [0, y - r * 1.3, z], [-r * .8, y, z]].map(p => new THREE.Vector3(...p)) }
+  const tris = []
+  for (let i = 0; i < secs.length - 1; i++) {
+    const a = ring(secs[i]), b = ring(secs[i + 1])
+    for (let j = 0; j < 4; j++) {
+      const k = (j + 1) % 4
+      tris.push(...a[j].toArray(), ...a[k].toArray(), ...b[k].toArray())
+      tris.push(...a[j].toArray(), ...b[k].toArray(), ...b[j].toArray())
+    }
+  }
+  const tip = new THREE.Vector3(0, -.03, -.46), last = ring(secs.at(-1))
+  for (let j = 0; j < 4; j++) { const k = (j + 1) % 4; tris.push(...last[j].toArray(), ...last[k].toArray(), ...tip.toArray()) }
+  const body = new THREE.Mesh(triGeo(tris), m.ink); body.castShadow = true; g.add(body)
+  const head = new THREE.Mesh(new THREE.IcosahedronGeometry(.042, 0), m.ink)
+  head.position.set(0, .062, .375); head.castShadow = true; g.add(head)
+  const eyeM = new THREE.MeshStandardMaterial({ color: CRIMSON, emissive: CRIMSON, emissiveIntensity: .35, roughness: .3, flatShading: true })
+  for (const s of [1, -1]) {
+    const e = new THREE.Mesh(new THREE.OctahedronGeometry(.018, 0), eyeM); e.position.set(s * .034, .066, .40); e.rotation.y = s * .5; g.add(e)
+  }
+  return g
+}
+function buildAntenna(m, s) {
+  const g = new THREE.Group()
+  g.position.set(s * .024, .078, .405)
+  const dir = new THREE.Vector3(s * .38, .9, .42).normalize()
+  const baseQ = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir)
+  g.quaternion.copy(baseQ); g.userData = { baseQ, s }
+  const seg1 = new THREE.Mesh(new THREE.CylinderGeometry(.0035, .005, .13, 5), m.ink)
+  seg1.position.y = .065; g.add(seg1)
+  const j = new THREE.Group(); j.position.y = .13
+  const seg2 = new THREE.Mesh(new THREE.CylinderGeometry(.0025, .0035, .08, 5), m.ink)
+  seg2.position.y = .04; j.add(seg2)
+  const club = new THREE.Mesh(new THREE.SphereGeometry(.011, 6, 5), m.club)
+  club.position.y = .085; j.add(club); j.rotation.x = -.55; g.add(j)
+  return g
+}
+
+function buildFan(mats, s, origin, veins, fold, front, back) {
+  const rel = p => p.clone().sub(origin)
+  const o0 = new THREE.Vector3(0, 0, 0)
+  const g = new THREE.Group(); g.position.copy(origin)
+  let parent = g; const joints = []
+  const n = veins.length
+  for (let i = 0; i < n - 1; i++) {
+    if (i > 0) {
+      const lg = new THREE.BufferGeometry().setFromPoints([o0, rel(veins[i])])
+      parent.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: mats.edge, transparent: true, opacity: .4 })))
+    }
+    const va = veins[i], vb = veins[i + 1], mid = va.clone().lerp(vb, .5)
+    const panel = makeFoldPanel({
+      inner: [o0, rel(va), rel(mid)], outer: [o0, rel(mid), rel(vb)],
+      hinge: [o0.clone(), rel(mid)], fold: fold * (1 - .15 * i),
+      mats: { front, back }, edge: mats.edge, edgeOp: .45, flip: s < 0
+    })
+    parent.add(panel.group)
+    if (i < n - 2) {
+      const j = new THREE.Group()
+      j.userData.axis = rel(vb).clone().normalize()
+      parent.add(j); joints.push(j); parent = j
+    }
+  }
+  const tip = new THREE.Object3D(); tip.position.copy(rel(veins[n - 1])); parent.add(tip)
+  return { group: g, joints, tip }
+}
+
+function buildWing(mats, s) {
+  const root = new THREE.Group(); root.position.set(s * .045, .085, .10)
+  const P = p => new THREE.Vector3(s * p[0], p[1], p[2])
+  const fore = buildFan(mats, s, new THREE.Vector3(0, 0, 0),
+    [P([.61, .08, .20]), P([1.01, .13, .06]), P([.89, .03, -.22]), P([.07, 0, -.16])],
+    -.07, mats.goldF, mats.goldB)
+  root.add(fore.group)
+  const hind = buildFan(mats, s, P([0, -.018, -.12]),
+    [P([.48, .055, 0]), P([.75, .06, -.16]), P([.51, .03, -.30])],
+    -.06, mats.wineF, mats.wineB)
+  root.add(hind.group)
+  return { root, fore, hind }
 }
 
 function buildButterfly(mats) {
-  const butterfly = new THREE.Group()
-  const bodyGroup = new THREE.Group()
-  butterfly.add(bodyGroup)
-  const secs = [
-    { z: 0.50, rt: 0.045, rs: 0.06, rb: 0.05 },
-    { z: 0.30, rt: 0.07, rs: 0.085, rb: 0.075 },
-    { z: 0.05, rt: 0.06, rs: 0.075, rb: 0.07 },
-    { z: -0.30, rt: 0.035, rs: 0.045, rb: 0.045 },
-    { z: -0.62, rt: 0.008, rs: 0.01, rb: 0.01 },
-  ]
-  const ring = (s) => [[0, s.rt, s.z], [s.rs, 0, s.z], [0, -s.rb, s.z], [-s.rs, 0, s.z]]
-  const tris = []
-  for (let i = 0; i < secs.length - 1; i++) {
-    const A = ring(secs[i])
-    const B = ring(secs[i + 1])
-    for (let k = 0; k < 4; k++) {
-      const k2 = (k + 1) % 4
-      tris.push([A[k], B[k2], B[k]], [A[k], A[k2], B[k2]])
-    }
-  }
-  bodyGroup.add(new THREE.Mesh(triGeo(tris), mats.ink))
-  const head = new THREE.Mesh(new THREE.OctahedronGeometry(0.09, 0), mats.ink)
-  head.position.set(0, 0.01, 0.56)
-  head.scale.set(0.75, 0.8, 1.05)
-  bodyGroup.add(head)
-  const antennas = []
-  for (const s of [1, -1]) {
-    const g = new THREE.Group()
-    g.position.set(0.03 * s, 0.06, 0.6)
-    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.007, 0.55, 5), mats.ink)
-    stalk.position.y = 0.275
-    g.add(stalk)
-    const knob = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 5), mats.ink)
-    knob.position.y = 0.55
-    knob.scale.set(1, 0.75, 1)
-    g.add(knob)
-    g.userData.baseZ = -0.5 * s
-    g.rotation.z = g.userData.baseZ
-    g.rotation.x = 0.95
-    bodyGroup.add(g)
-    antennas.push(g)
-  }
-  const wingR = buildWing(mats)
-  const wingL = buildWing(mats)
-  wingL.scale.x *= -1
-  wingL.position.x *= -1
-  wingL.rotation.y *= -1
-  butterfly.add(wingR, wingL)
-  return { butterfly, bodyGroup, antennas, wingR, wingL }
+  const butterfly = new THREE.Group(), body = new THREE.Group()
+  body.add(buildBody(mats))
+  const wR = buildWing(mats, 1), wL = buildWing(mats, -1)
+  body.add(wR.root, wL.root)
+  const aR = buildAntenna(mats, 1), aL = buildAntenna(mats, -1)
+  body.add(aR, aL)
+  butterfly.add(body)
+  return { butterfly, body, wR, wL, antennae: [aR, aL] }
 }
 
-// Dibuja un frame del aleteo en el tiempo `phase` (segundos de aleteo).
-function poseFlap(parts, phase, k = 1) {
-  const { bodyGroup, antennas, wingR, wingL } = parts
-  const waveF = flapWave(phase)
-  const waveH = flapWave(phase - 0.45)
-  const angF = k * waveF + 0.1 * k
-  const angH = k * 0.94 * waveH + 0.085 * k
-  const dH = angH - angF
-  wingR.rotation.z = angF
-  wingL.rotation.z = -angF
-  wingR.userData.hwPivot.rotation.z = dH
-  wingL.userData.hwPivot.rotation.z = -dH
-  const twist = k * 0.3 * Math.cos(phase - 0.2)
-  wingR.rotation.x = twist
-  wingL.rotation.x = -twist
-  const lagF = flapWave(phase - 0.6)
-  const lagH = flapWave(phase - 0.9)
-  const fw = 0.1 + k * 0.3 * lagF
-  const hw = 0.08 + k * 0.24 * lagH
-  wingR.userData.fw.fold(fw)
-  wingL.userData.fw.fold(fw)
-  wingR.userData.hw.fold(hw)
-  wingL.userData.hw.fold(hw)
-  for (const w of [wingR, wingL]) {
-    w.position.y = w.userData.shY + k * 0.035 * flapWave(phase - 0.25)
-    w.position.z = w.userData.shZ + k * 0.045 * Math.cos(phase - 0.5)
+// Pose de aleteo real: flap rápido + camber con retardo + hindwing en desfase
+function poseFlap(P, phase, k, o = {}) {
+  const amp = o.amp ?? 1, base = o.base ?? 0.3, asL = o.asL ?? 1, asR = o.asR ?? 1, vel = o.vel ?? 0
+  const w = flapWave(phase), wH = flapWave(phase - .55)
+  const aR = base + .78 * amp * k * asR * w, aL = base + .78 * amp * k * asL * w
+  P.wR.fore.group.rotation.z = aR
+  P.wL.fore.group.rotation.z = -aL
+  const hR = base * .95 + .62 * amp * k * asR * wH, hL = base * .95 + .62 * amp * k * asL * wH
+  P.wR.hind.group.rotation.z = hR
+  P.wL.hind.group.rotation.z = -hL
+  for (const [wing, s] of [[P.wR, 1], [P.wL, -1]]) {
+    wing.fore.joints.forEach((j, i) => {
+      j.quaternion.setFromAxisAngle(j.userData.axis, s * (.11 * vel * amp * (1 - .28 * i) - .02 * w * amp))
+    })
+    wing.hind.joints.forEach((j, i) => {
+      j.quaternion.setFromAxisAngle(j.userData.axis, s * (.10 * vel * amp * (1 - .3 * i)))
+    })
   }
-  bodyGroup.position.y = k * 0.06 * Math.sin(2 * phase - 1.1)
-  bodyGroup.rotation.x = k * 0.07 * flapWave(phase - 0.35)
-  for (let i = 0; i < 2; i++) antennas[i].rotation.z = antennas[i].userData.baseZ + k * 0.09 * Math.sin(phase * 0.5 + i * 2)
+  P.body.position.y = o.bob ?? 0
+  P.body.rotation.x = o.pitchBob ?? 0
+  P.body.rotation.z = .03 * amp * w
+  P.antennae.forEach((a) => {
+    a.quaternion.copy(a.userData.baseQ)
+    a.rotateX(.08 * Math.sin(phase * .5 - 1) + .05 * amp * Math.cos(phase - 1.6))
+    a.rotateZ(a.userData.s * (.06 * Math.sin(phase * .7)))
+  })
 }
 
-// Monta la mariposa en `canvas` (caja cuadrada transparente, 112px por defecto).
-// Devuelve `dispose()`. Con reduced-motion aletea lento en vez de congelarse.
+// Monta Danaus aurum en canvas 148×148 transparente — aleteo real 12.5Hz
 export function mountOrigamiButterfly(canvas, opts = {}) {
-  const size = opts.size || 112
+  const size = opts.size || 148
   const reduceMotion = typeof window !== 'undefined'
     && typeof window.matchMedia === 'function'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -206,40 +202,35 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
   renderer.setSize(size, size, false)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.08
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200)
-  // Vista 3/4 desde arriba: se ven las alas rojas por encima.
-  // De frente solo se vería el morro (una mota). Las alas ocupan ±1.6.
-  camera.position.set(1.2, 2.8, 4.2)
-  camera.lookAt(0, 0, 0)
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100)
+  // Vista cercana 3/4 para 148px — alas llenan canvas
+  camera.position.set(0.85, 2.0, 3.0)
+  camera.lookAt(0, 0.35, 0)
 
-  scene.add(new THREE.HemisphereLight(0xfff6e6, 0xcbb99a, 0.95))
-  const key = new THREE.DirectionalLight(0xffffff, 1.7)
-  key.position.set(6, 10, 7)
+  // Luces cálidas para que el oro metalizado no se apague sobre obsidian
+  scene.add(new THREE.HemisphereLight(0x3a2a30, 0x0d0709, .7))
+  const key = new THREE.DirectionalLight(0xfff1d6, 2.2)
+  key.position.set(2.4, 5, 1.6)
   scene.add(key)
-  const rim = new THREE.DirectionalLight(0xffe9c9, 0.55)
-  rim.position.set(-7, 4, -6)
+  const rim = new THREE.DirectionalLight(0xcfd8e8, .55)
+  rim.position.set(-2.5, 1.4, -2.6)
   scene.add(rim)
 
-  // Emissive suave: el papel washi se diseñó sobre fondo crema;
-  // sobre el obsidian del sitio necesita luz propia para no apagarse.
-  const mats = {
-    goldFront: new THREE.MeshStandardMaterial({ color: CHAMPAGNE, emissive: CHAMPAGNE, emissiveIntensity: 0.25, roughness: 0.9, metalness: 0, side: THREE.FrontSide, flatShading: true }),
-    goldBack: new THREE.MeshStandardMaterial({ color: GOLD, emissive: GOLD, emissiveIntensity: 0.5, roughness: 0.85, metalness: 0, side: THREE.BackSide, flatShading: true }),
-    wineFront: new THREE.MeshStandardMaterial({ color: CHAMPAGNE, emissive: CHAMPAGNE, emissiveIntensity: 0.25, roughness: 0.9, metalness: 0, side: THREE.FrontSide, flatShading: true }),
-    wineBack: new THREE.MeshStandardMaterial({ color: CRIMSON, emissive: CRIMSON, emissiveIntensity: 0.5, roughness: 0.85, metalness: 0, side: THREE.BackSide, flatShading: true }),
-    edge: new THREE.LineBasicMaterial({ color: EDGE, transparent: true, opacity: 0.6 }),
-    ink: new THREE.MeshStandardMaterial({ color: INK, emissive: WINE, emissiveIntensity: 0.4, roughness: 0.8, metalness: 0, side: THREE.DoubleSide, flatShading: true }),
-  }
+  const mats = makeMats()
   const parts = buildButterfly(mats)
-  parts.butterfly.scale.setScalar(1.15)
+  // Escala para que 1.34 de ala llene 148px — probado en headless, vuelo visible
+  parts.butterfly.scale.setScalar(1.55)
+  parts.butterfly.position.set(0, -0.08, 0)
+  parts.butterfly.rotation.order = 'YXZ'
   scene.add(parts.butterfly)
 
   let raf = 0
   let running = true
   let last = 0
-  let flap = 0
+  let phase = 0
   let visHandler = null
 
   const render = () => { renderer.render(scene, camera) }
@@ -256,16 +247,23 @@ export function mountOrigamiButterfly(canvas, opts = {}) {
     try { renderer.forceContextLoss() } catch { /* noop */ }
   }
 
-  // Con movimiento reducido NO se congela: aleteo lento y contenido
-  // (igual que las alas CSS viejas, que iban a 1.1s en vez de pararse).
+  // 12.5Hz real — subida rápida/bajada lenta via flapWave, no seno puro. En reduced aleteo lento 0.6Hz.
   const hz = reduceMotion ? 0.6 : FLAP_HZ
   const ampK = reduceMotion ? 0.45 : 1
   const loop = (now) => {
     if (!running) return
     const dt = Math.min(((now - last) / 1000) || 0.016, 0.05)
     last = now
-    flap += dt * Math.PI * 2 * hz
-    poseFlap(parts, flap, ampK)
+    phase += dt * Math.PI * 2 * hz
+    // velNorm para camber — en Danaus se liga a hz real
+    const velNorm = Math.cos(phase) * (hz / FLAP_HZ)
+    poseFlap(parts, phase, ampK, {
+      amp: 1,
+      base: 0.30,
+      vel: velNorm,
+      bob: .022 * ampK * Math.sin(phase - 1.3),
+      pitchBob: .04 * ampK * Math.cos(phase - 1.1)
+    })
     render()
     raf = requestAnimationFrame(loop)
   }
