@@ -189,7 +189,7 @@ export default function Letter({ onNext, onPrev }) {
           const dx = pt.x - prevPt.x
           const dy = pt.y - prevPt.y
           const speed = Math.hypot(dx, dy)
-          const targetAngle = Math.atan2(dy, dx) * 180 / Math.PI + 90
+          const targetAngle = Math.atan2(dy, dx) * 180 / Math.PI - 90
           let delta = targetAngle - curAngle
           if (delta > 180) delta -= 360
           if (delta < -180) delta += 360
