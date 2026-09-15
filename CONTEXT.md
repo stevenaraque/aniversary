@@ -136,3 +136,12 @@ Auditoría sección por sección: lo que trababa el navegador era cantidad de ca
 
 Pendiente: commit + push de `perf/no-jank`, probar en navegador real, luego PR hacia `main`.
 
+## Rama feat/letter-origami — mariposa origami Three.js en Letter (NUNCA main)
+
+- **Qué:** la mariposa CSS/DOM de `Letter.jsx` se reemplazó por la origami de papel de la plantilla del usuario (`three@0.160.0` en `package.json`). Solo modelo + aleteo (`flapWave` 10.5Hz + pliegue Rodrigues + torsión): SIN rutas, pétalos, HUD, sombra ni listeners globales de la plantilla.
+- **Cómo (sin dañar):** `src/components/origamiButterfly.js` exporta `mountOrigamiButterfly(canvas, {size})`; `Letter.jsx` lo importa con `import()` dinámico SOLO en `phase==='flying'` → three queda en chunk separado (`origamiButterfly-*.js` ~476kB), el bundle inicial no crece (sigue ~489kB). Canvas 148×148 transparente montado en la caja que ya movía el vuelo (trayectoria, tiempos, sparkles, trails y carta intactos). Cleanup total al salir de fase/unmount + pausa en pestaña oculta + aleteo lento (0.6Hz, amp 0.45) con `prefers-reduced-motion` en vez de congelar.
+- **Look final:** aleteo 12.5Hz, bicolor paleta del sitio (delanteras oro `#d4af37`, traseras vino `#dc143c`, reversos champagne, cuerpo vino oscuro), cámara 3/4 desde arriba + `emissive` (el washi se apagaba en obsidian). Caras coloridas en `BackSide` (la cámara ve los reversos).
+- **Bug real encontrado:** mesh con array de materiales SIN `geometry.groups` no dibuja nada (solo se veían aristas) → `addGroup(0, N, 0)` + `addGroup(0, N, 1)` en `makeFoldPanel`.
+- **CSS borrado:** keyframes `aleteo-*`, clases `animar/pausa-ala-*`, `clip-ala-*`, `.perspectiva/.preservar-3d` (verificado 0 refs).
+- Verificado: lint 0/0, build OK, capturas headless desktop 1366 + móvil 390 (vuelo visible, carta abre, canvas se desmonta, 0 errores consola). Rama local SIN push/merge.
+

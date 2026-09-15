@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Trophy, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { BatIcon, FlowerIcon } from './Icons'
 import { springs } from '../lib/motion-tokens'
 
@@ -27,13 +27,11 @@ export default function Puzzle({ onNext, onPrev }) {
   const [moves, setMoves] = useState(0)
   const [started, setStarted] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
-  // vista previa del aviso de victoria (sin tener que ganar)
-  const [previewWin, setPreviewWin] = useState(false)
   const boardRef = useRef(null)
 
   const isSolved = board.every((t, i) => t === i)
   const solved = isSolved && started
-  const showWin = solved || previewWin
+  const showWin = solved
 
   const moveTile = useCallback((idx) => {
     if (isSolved) return
@@ -44,7 +42,7 @@ export default function Puzzle({ onNext, onPrev }) {
     if (adj) { const n = [...board];[n[idx], n[empty]] = [n[empty], n[idx]]; setBoard(n); setMoves(m => m + 1) }
   }, [board, isSolved])
 
-  const handleShuffle = () => { setBoard(shuffleBoard()); setMoves(0); setStarted(false); setPreviewWin(false) }
+  const handleShuffle = () => { setBoard(shuffleBoard()); setMoves(0); setStarted(false) }
 
   useEffect(() => {
     const h = (e) => {
@@ -136,15 +134,6 @@ export default function Puzzle({ onNext, onPrev }) {
             <button onMouseDown={() => setShowPreview(true)} onMouseUp={() => setShowPreview(false)} onMouseLeave={() => setShowPreview(false)} onTouchStart={() => setShowPreview(true)} onTouchEnd={() => setShowPreview(false)} className="group relative flex-1 max-w-[170px] px-5 py-3 font-bold text-gold-light uppercase tracking-wider text-xs rounded-2xl bg-[#0a0a0f] border-b-[5px] border-gold/20 active:border-b-0 active:translate-y-[5px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(212,175,55,0.12)]"><span className="relative flex items-center justify-center gap-1.5" style={{ fontFamily: 'Cormorant Garamond,serif' }}>Vista previa</span></button>
           </div>
         </div>
-
-        {/* Botón saltar para programar */}
-        <button onClick={onNext} className="glass px-4 py-1.5 rounded-full text-white/30 text-[11px] tracking-widest uppercase hover:text-white/60 hover:border-gold/20 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
-          Saltar puzzle → <FlowerIcon className="w-3 h-3 text-gold/30" />
-        </button>
-        {/* Vista previa del aviso de victoria (sin tener que ganar) */}
-        <button onClick={() => setPreviewWin(true)} className="glass px-4 py-1.5 rounded-full text-white/30 text-[11px] tracking-widest uppercase hover:text-white/60 hover:border-gold/20 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
-          Ver aviso <Trophy className="w-3 h-3 text-gold/30" />
-        </button>
 
         <AnimatePresence>
           {showWin && (

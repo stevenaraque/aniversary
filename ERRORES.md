@@ -101,3 +101,10 @@
 - **Síntoma:** ediciones fallidas / contenido inesperado.
 - **Causa:** se leyó código estando en `refine/taste-skills` y luego se editó en `main` (versiones distintas).
 - **Regla:** después de `checkout`, releer lo que se vaya a tocar.
+
+## 17. Mesh Three.js con array de materiales no dibuja sin `groups`
+
+- **Síntoma:** la mariposa origami se veía como alambre rojo (solo aristas) + una mancha: las caras no renderizaban.
+- **Causa:** `new THREE.Mesh(geo, [matF, matB])` sin `geometry.groups` → el renderer no pinta ningún grupo.
+- **Solución:** en `makeFoldPanel` (`origamiButterfly.js`): `geo.addGroup(0, N, 0)` (frentes) + `geo.addGroup(0, N, 1)` (reversos) sobre todos los vértices.
+- **Regla:** todo mesh con array de materiales lleva sus `addGroup` explícitos.
