@@ -46,7 +46,9 @@ function FrostCanvas() {
   const ref=useRef(null)
   useEffect(()=>{
     const isMobile=window.matchMedia('(max-width:768px)').matches
-    if(isMobile) return // desactiva en móvil para rendimiento
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const saveData = navigator.connection && navigator.connection.saveData
+    if(isMobile || prefersReduced || saveData) return // perf/speed-fix: desactiva en móvil/reduced/saveData
     const canvas=ref.current
     if(!canvas) return
     const ctx=canvas.getContext('2d')
@@ -55,8 +57,8 @@ function FrostCanvas() {
     class Particle{constructor(){this.reset()} reset(){this.x=Math.random()*W;this.y=-10;this.z=Math.random();this.size=0.3+this.z*0.6;this.speed=0.18+this.z*0.4;this.drift=(Math.random()-0.5)*0.18;this.opacity=0.06+this.z*0.16} update(){this.y+=this.speed;this.x+=this.drift;if(this.y>H+10)this.reset()} draw(){ctx.fillStyle=`rgba(255,255,255,${this.opacity})`;ctx.fillRect(this.x,this.y,this.size,this.size)}}
     class IceCrystal{constructor(){this.reset()} reset(){this.x=Math.random()*W;this.y=H*0.86+Math.random()*40;this.size=12+Math.random()*18;this.angle=Math.random()*Math.PI*2;this.rotSpeed=(Math.random()-0.5)*0.006;this.opacity=0;this.maxOpacity=0.015+Math.random()*0.02;this.fadeIn=true;this.life=0;this.maxLife=260+Math.random()*180} update(){this.angle+=this.rotSpeed;this.life++;if(this.fadeIn){this.opacity+=0.0006;if(this.opacity>=this.maxOpacity)this.fadeIn=false}else if(this.life>this.maxLife*0.7)this.opacity-=0.0003;if(this.life>this.maxLife)this.reset()} draw(){ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.angle);ctx.strokeStyle=`rgba(255,255,255,${this.opacity})`;ctx.lineWidth=0.5;const arms=6;for(let i=0;i<arms;i++){ctx.save();ctx.rotate((Math.PI*2/arms)*i);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(this.size,0);ctx.stroke();ctx.restore()}ctx.restore()}}
     class FrostLine{constructor(){this.x1=Math.random()*W;this.y=H*0.86;this.length=0;this.maxLength=40+Math.random()*55;this.angle=(Math.random()-0.5)*0.4;this.opacity=0;this.growing=true} update(){if(this.growing){this.length+=0.35;this.opacity+=0.0012;if(this.length>=this.maxLength)this.growing=false}else this.opacity-=0.0006;return this.opacity>0} draw(){ctx.save();ctx.translate(this.x1,this.y);ctx.rotate(this.angle);ctx.strokeStyle=`rgba(255,255,255,${this.opacity*0.06})`;ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(this.length,0);ctx.stroke();ctx.restore()}}
-    const particles=Array.from({length:42},()=>new Particle())
-    const crystals=Array.from({length:3},()=>new IceCrystal())
+    const particles=Array.from({length:24},()=>new Particle())
+    const crystals=Array.from({length:2},()=>new IceCrystal())
     const frostLines=[]
     const loop=(now)=>{
       if(now-last<50){raf=requestAnimationFrame(loop);return} last=now

@@ -17,10 +17,10 @@ export default function CosmosBackground() {
     function rand(a, b) { return Math.random() * (b - a) + a }
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches
-    const STAR_COUNT = isMobile ? 140 : 300
-    // perf: menos cometas/partículas — la cascada se sigue viendo continua
-    const MAX_COMETS = isMobile ? 8 : 20
-    const MAX_P = isMobile ? 160 : 260
+    const STAR_COUNT = isMobile ? 100 : 180
+    // perf/speed-fix: -40% cometas/partículas + throttle 30fps — incógnito rápido, pestaña normal con extensiones no se arrastra
+    const MAX_COMETS = isMobile ? 5 : 12
+    const MAX_P = isMobile ? 80 : 120
 
     const staticCanvas = document.createElement('canvas')
     const sCtx = staticCanvas.getContext('2d')
@@ -220,7 +220,10 @@ export default function CosmosBackground() {
     // Spawn denso en desktop (cascada continua), espaciado en móvil
     let spawnTimer = 0, nextSpawn = isMobile ? rand(16, 27) : rand(2.4, 5.6), frame = 0
     let lastMx = -1, lastMy = -1
-    function loop() {
+    let lastLoop = 0
+    function loop(now) {
+      if (now - lastLoop < 33) { animationId = requestAnimationFrame(loop); return }
+      lastLoop = now
       frame++
       ctx.drawImage(staticCanvas, 0, 0, W, H)
       drawStars(frame)
@@ -249,14 +252,15 @@ export default function CosmosBackground() {
     let rzT = 0
     const onResize = () => { clearTimeout(rzT); rzT = setTimeout(resize, 150) }
     window.addEventListener('resize', onResize)
-    // perf: pausa total en pestaña oculta (ahorra CPU/batería)
+    // perf: pausa total en pestaña oculta (ahorra CPU/batería) + en saveData/batería baja
     let running = true
     const onVis = () => {
       if (document.hidden) { running = false; cancelAnimationFrame(animationId) }
-      else if (!running) { running = true; animationId = requestAnimationFrame(loop) }
+      else if (!running) { running = true; lastLoop = performance.now(); animationId = requestAnimationFrame(loop) }
     }
     document.addEventListener('visibilitychange', onVis)
-    loop()
+    lastLoop = performance.now()
+    loop(lastLoop)
 
     return () => {
       cancelAnimationFrame(animationId)
