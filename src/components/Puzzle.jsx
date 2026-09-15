@@ -27,11 +27,12 @@ export default function Puzzle({ onNext, onPrev }) {
   const [moves, setMoves] = useState(0)
   const [started, setStarted] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [previewWin, setPreviewWin] = useState(false)
   const boardRef = useRef(null)
 
   const isSolved = board.every((t, i) => t === i)
   const solved = isSolved && started
-  const showWin = solved
+  const showWin = solved || previewWin
 
   const moveTile = useCallback((idx) => {
     if (isSolved) return
@@ -42,7 +43,7 @@ export default function Puzzle({ onNext, onPrev }) {
     if (adj) { const n = [...board];[n[idx], n[empty]] = [n[empty], n[idx]]; setBoard(n); setMoves(m => m + 1) }
   }, [board, isSolved])
 
-  const handleShuffle = () => { setBoard(shuffleBoard()); setMoves(0); setStarted(false) }
+  const handleShuffle = () => { setBoard(shuffleBoard()); setMoves(0); setStarted(false); setPreviewWin(false) }
 
   useEffect(() => {
     const h = (e) => {
@@ -134,6 +135,13 @@ export default function Puzzle({ onNext, onPrev }) {
             <button onMouseDown={() => setShowPreview(true)} onMouseUp={() => setShowPreview(false)} onMouseLeave={() => setShowPreview(false)} onTouchStart={() => setShowPreview(true)} onTouchEnd={() => setShowPreview(false)} className="group relative flex-1 max-w-[170px] px-5 py-3 font-bold text-gold-light uppercase tracking-wider text-xs rounded-2xl bg-[#0a0a0f] border-b-[5px] border-gold/20 active:border-b-0 active:translate-y-[5px] transition-[transform,box-shadow,background-color,border-color] duration-100 shadow-[0_8px_16px_-6px_rgba(212,175,55,0.12)]"><span className="relative flex items-center justify-center gap-1.5" style={{ fontFamily: 'Cormorant Garamond,serif' }}>Vista previa</span></button>
           </div>
         </div>
+
+        <button onClick={onNext} className="mt-4 glass px-4 py-1.5 rounded-full text-white/25 text-[11px] tracking-widest uppercase hover:text-white/50 border border-transparent hover:border-gold/20 transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
+          Saltar puzzle → <FlowerIcon className="w-3 h-3 text-gold/30" />
+        </button>
+        <button onClick={() => setPreviewWin(true)} className="glass px-4 py-1.5 rounded-full text-white/20 text-[10px] tracking-widest uppercase hover:text-white/40 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto" title="Vista previa del aviso">
+          Ver aviso
+        </button>
 
         <AnimatePresence>
           {showWin && (
