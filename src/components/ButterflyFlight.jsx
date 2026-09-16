@@ -201,29 +201,79 @@ export default function ButterflyFlight({ onDone }) {
       }
       scene.add(vase)
 
-      // ── 2 candelabros con llama viva (esquinas traseras, fuera del circuito) ──
-      const flames = []
-      for (const [cx, cz, phase] of [[6.3, -3.9, 0], [-6.3, -3.7, 2.1]]) {
+      // ── Libro adicional abierto ──
+      const openBook = new THREE.Group()
+      openBook.position.set(2.5, 0.15, 0.8)
+      const openBookCover = std(0x141014, 0.9)
+      const openBookPages = std(0xd8cbaa, 0.9)
+      const openBookBack = solid(new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.1, 3.0), openBookCover))
+      openBookBack.position.z = -1.5
+      const openBookFront = solid(new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.1, 3.0), [openBookPages, openBookCover, openBookCover, openBookCover, openBookPages, openBookPages]))
+      openBookFront.position.z = 1.5
+      openBook.add(openBookBack, openBookFront)
+      // páginas simuladas con bandas
+      for (let i = 0; i < 4; i++) {
+        const pg = solid(new THREE.Mesh(new THREE.BoxGeometry(2.15, 0.05, 2.9), openBookPages))
+        pg.position.z = (i - 1.5) * 0.35
+        pg.position.y = 0.025
+        openBook.add(pg)
+      }
+      scene.add(openBook)
+
+      // ── Mesa decorada: velas extras, confeti dorado, tarjeta y anillo ──
+      // 4 velas adicionales en los bordes de la mesa
+      for (const [x, z, color] of [[8.0, 0.2, 0xd4af37], [-8.0, 0.2, 0xd4af37], [8.0, -4.5, 0xf9e076], [-8.0, -4.5, 0xf9e076]]) {
         const g = new THREE.Group()
-        g.position.set(cx, 0, cz)
-        const holder = solid(new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.26, 0.08, 12),
-          new THREE.MeshStandardMaterial({ color: 0xb8941f, metalness: 0.7, roughness: 0.35, flatShading: true })))
-        holder.position.y = 0.04
+        g.position.set(x, 0.1, z)
+        const holder = solid(new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.1, 10), std(color, 0.4)))
+        holder.position.y = 0.05
         g.add(holder)
-        const stick = solid(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.9, 8), std(0xe8dcc8, 0.6)))
-        stick.position.y = 0.53
-        g.add(stick)
-        const flame = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6),
-          new THREE.MeshBasicMaterial({ color: 0xffc46b }))
-        flame.position.y = 1.04
-        flame.scale.y = 1.5
+        const flame = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffc46b }))
+        flame.position.y = 0.16
         g.add(flame)
-        const light = new THREE.PointLight(0xff9a40, 11, 9, 2)
-        light.position.y = 1.1
-        g.add(light)
-        flames.push({ light, phase })
+        const pl = new THREE.PointLight(color, 3, 5, 2)
+        pl.position.y = 0.18
+        g.add(pl)
         scene.add(g)
       }
+
+      // ── Sobre la mesa: tarjeta y anillo sobre terciado sutil ──
+      const token = new THREE.Group()
+      token.position.set(0, 0.5, -2.5)
+      // tarjeta enrollada
+      const cardMat = new THREE.MeshStandardMaterial({ color: 0xf9e076, roughness: 0.6, metalness: 0.1 })
+      const card = solid(new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.05, 2.0), cardMat), true, false)
+      card.position.y = 0.025
+      token.add(card)
+      // anillo delgado sobre soporte invisible
+      const ringGroup = new THREE.Group()
+      ringGroup.position.y = 0.15
+      const ringMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 })
+      const ring = solid(new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.02, 8, 32), ringMat), true, false)
+      ring.rotation.x = Math.PI / 2
+      ringGroup.add(ring)
+      // pequeña esfera central del anillo
+      const center = solid(new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 8), ringMat), true, false)
+      center.position.set(0, 0.12, 0)
+      ringGroup.add(center)
+      token.add(ringGroup)
+      scene.add(token)
+
+      // ── Confeti dorado adicional (solo visual, suspendido) ──
+      const extraConfettiCount = isSoftware ? 20 : isMobile ? 40 : 70
+      const extraConfettiPos = new Float32Array(extraConfettiCount * 3)
+      for (let i = 0; i < extraConfettiCount; i++) {
+        extraConfettiPos[i * 3] = (Math.random() - 0.5) * 12
+        extraConfettiPos[i * 3 + 1] = 0.5 + Math.random() * 3
+        extraConfettiPos[i * 3 + 2] = (Math.random() - 0.5) * 8
+      }
+      const extraConfettiGeo = new THREE.BufferGeometry()
+      extraConfettiGeo.setAttribute('position', new THREE.BufferAttribute(extraConfettiPos, 3))
+      const extraConfetti = new THREE.Points(extraConfettiGeo, new THREE.PointsMaterial({
+        color: 0xd4af37, size: 0.03, transparent: true, opacity: 0.4,
+        depthWrite: false, sizeAttenuation: true,
+      }))
+      scene.add(extraConfetti)
 
       // ── Polvo dorado suspendido (1 draw call) ──
       const dustCount = isSoftware ? 30 : isMobile ? 50 : 90
