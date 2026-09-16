@@ -4,7 +4,8 @@ import * as THREE from 'three'
  * Danaus aurum — mariposa origami en abanico (placa de vuelo)
  * - Modelo: 2 alas en abanico (4 venas fore + 3 hind) + cuerpo 8 anillos + antenas articuladas
  * - Vuelo: flapWave asimétrico + camber con retardo + hindwing desfasado
- * - Uso: Letter.jsx mueve la caja por pantalla (Bézier 6 tramos); aquí solo aletea 148×148
+ * - Uso: ButterflyFlight.jsx importa { makeMats, buildButterfly, poseFlap } para el
+ *   circuito 3D; mountOrigamiButterfly sigue para vista cercana aislada
  * - Demo: opts.demo=true activa variación natural ráfaga/planeo/cernido (no lana)
  * @see Letter.jsx:241 mountOrigamiButterfly(canvas,{size:148})
  */
@@ -16,6 +17,7 @@ const CRIMSON = 0xdc143c // vino alas traseras
 const WINE = 0x8b0000 // vino oscuro cuerpo/acentos
 const EDGE = 0xb8941f // filo pliegue
 const FLAP_HZ = 12.5 // Hz biológico real Danaus — no seno puro
+export { FLAP_HZ }
 
 /** Onda asimétrica: subida 35% más rápida que bajada — delata flap falso si es seno puro */
 function flapWave(t) {
@@ -89,7 +91,7 @@ function makeFoldPanel({ inner, outer, hinge, fold, mats, edge, edgeOp = 0.5, fl
   return { group: grp, meshF: mF, meshB: mB }
 }
 
-function makeMats() {
+export function makeMats() {
   const std = (o) => new THREE.MeshStandardMaterial({ flatShading: true, side: THREE.FrontSide, ...o })
   return {
     goldF: std({ color: GOLD, metalness: .58, roughness: .42, envMapIntensity: .8 }),
@@ -191,7 +193,7 @@ function buildWing(mats, s) {
   return { root, fore, hind }
 }
 
-function buildButterfly(mats) {
+export function buildButterfly(mats) {
   const butterfly = new THREE.Group(), body = new THREE.Group()
   body.add(buildBody(mats))
   const wR = buildWing(mats, 1), wL = buildWing(mats, -1)
@@ -207,7 +209,7 @@ function buildButterfly(mats) {
  * - fore/hind desfasados 0.55 rad — hind sigue con retardo
  * - camber: puntas se arquean proporcional a velocidad
  */
-function poseFlap(P, phase, k, o = {}) {
+export function poseFlap(P, phase, k, o = {}) {
   const amp = o.amp ?? 1, base = o.base ?? 0.30, asL = o.asL ?? 1, asR = o.asR ?? 1, vel = o.vel ?? 0
   const w = flapWave(phase), wH = flapWave(phase - .55)
   // +55% amplitud vs original 0.78 — ahora 26°→89° en vez de 17°→62°

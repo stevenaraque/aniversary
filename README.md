@@ -18,7 +18,7 @@
 | 2 | **Countdown** | `Countdown.jsx:7` | Desde **26.08.2024** calendario real, 6 bloques `gold/crimson` con anillo SVG + watermark `II`, `pebble-button` bat, `Mi Canelita` badge |
 | 3 | **Puzzle 4×4** | `Puzzle.jsx:64` | 16 piezas, board `glass-deep` + spotlight, fix `isSolvable` |
 | 4 | **MemoryLane** | `MemoryLane.jsx:17` | Carrusel swipe `drag x` |
-| 5 | **Letter** | `Letter.jsx:8` | Sobre `rotateY` |
+| 5 | **Letter** | `Letter.jsx:7` | Carta papyrus + vuelo 3D mariposa (`ButterflyFlight`) |
 | 6 | **Collage** | `Collage.jsx:39` | Masonry `columns` |
 | 7 | **Playlist** | `Playlist.jsx:153` | Reproductor gótico: disco giratorio + lista panel + shuffle/repeat + visualizer |
 

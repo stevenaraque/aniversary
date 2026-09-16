@@ -1,263 +1,23 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useCallback, lazy, Suspense } from 'react'
 import { motion } from 'motion/react'
 import { Feather, ArrowLeft } from 'lucide-react'
 import { springs } from '../lib/motion-tokens'
 
-// ── Carta + Mariposa origami Three.js — vuelo pantalla completa optimizado ──
+// Vuelo 3D gótico en chunk perezoso (three queda fuera del bundle inicial)
+const ButterflyFlight = lazy(() => import('./ButterflyFlight.jsx'))
+
+// ── Carta + vuelo 3D (ButterflyFlight) — carta papyrus ──
 export default function Letter({ onNext, onPrev }) {
   const [phase, setPhase] = useState('idle') // idle | flying | open
-  const bfRef = useRef(null)
-  const bfInnerRef = useRef(null)
-  const lightRef = useRef(null)
   const envelopeRef = useRef(null)
-  const origamiHostRef = useRef(null)
-  const origamiDisposeRef = useRef(null)
-  const rafRef = useRef(0)
-  const trailsRef = useRef([])
   const containerRef = useRef(null)
-  // ángulo suavizado sin regex cada frame
-  const angleRef = useRef(0)
-  const smoothPosRef = useRef({ x: null, y: null })
 
   const startFlight = useCallback(() => {
     if (phase !== 'idle') return
     setPhase('flying')
   }, [phase])
 
-  // ── VUELO PANTALLA COMPLETA NATURAL + 60fps optimizado ──
-  useEffect(() => {
-    if (phase !== 'flying') return
-    const bf = bfRef.current
-    const bfInner = bfInnerRef.current
-    const light = lightRef.current
-    const host = containerRef.current
-    if (!bf || !bfInner || !light || !host) return
-
-    const W = window.innerWidth
-    const H = window.innerHeight
-    const BF_W = 180, BF_H = 180
-    const sc = W < 480 ? 0.78 : W < 768 ? 0.88 : 0.88
-    const cx = W * 0.5, cy = H * 0.46
-
-    // ── Trayectoria PANTALLA COMPLETA — 6 arcos amplios ida y vuelta ──
-    const segs = [
-      // despegue centro → esquina sup-izq
-      { x0: cx, y0: cy + 32, x1: cx - 90, y1: cy - 18, x2: W * 0.10, y2: H * 0.08, x3: W * 0.18, y3: H * 0.14 },
-      // cruce largo sup → sup-der
-      { x0: W * 0.18, y0: H * 0.14, x1: W * 0.38, y1: -H * 0.04, x2: W * 0.66, y2: -H * 0.02, x3: W * 0.84, y3: H * 0.16 },
-      // bajada der → centro-der
-      { x0: W * 0.84, y0: H * 0.16, x1: W * 0.98, y1: H * 0.36, x2: W * 0.98, y2: H * 0.62, x3: W * 0.72, y3: H * 0.72 },
-      // cruce inferior → inf-izq
-      { x0: W * 0.72, y0: H * 0.72, x1: W * 0.52, y1: H * 0.88, x2: W * 0.18, y2: H * 0.82, x3: W * 0.14, y3: H * 0.62 },
-      // subida izq → centro
-      { x0: W * 0.14, y0: H * 0.62, x1: W * 0.06, y1: H * 0.42, x2: W * 0.22, y2: H * 0.30, x3: W * 0.40, y3: H * 0.40 },
-      // aterrizaje hover centro
-      { x0: W * 0.40, y0: H * 0.40, x1: W * 0.46, y1: H * 0.48, x2: W * 0.48, y2: H * 0.48, x3: cx, y3: cy - 4 },
-    ]
-    const NS = segs.length
-    const FLY = 10800
-    const SD = FLY / NS
-
-    const bez = (t, a, b, c, d) => {
-      const m = 1 - t
-      return m * m * m * a + 3 * m * m * t * b + 3 * m * t * t * c + t * t * t * d
-    }
-    const easeSine = t => -(Math.cos(Math.PI * t) - 1) / 2
-    const easeCubic = t => 1 - Math.pow(1 - t, 3)
-    const lerp = (a, b, t) => a + (b - a) * t
-
-    const flightPt = (elapsed) => {
-      const si = Math.min(Math.floor(elapsed / SD), NS - 1)
-      const rawT = Math.min((elapsed - si * SD) / SD, 1)
-      const lt = easeSine(rawT)
-      const s = segs[si]
-      let x = bez(lt, s.x0, s.x1, s.x2, s.x3)
-      let y = bez(lt, s.y0, s.y1, s.y2, s.y3)
-      const gt = elapsed / FLY
-      const envelope = Math.sin(gt * Math.PI) // 0 inicio/fin, 1 centro
-      // flutter elegante muy contenido
-      const flutterX = Math.sin(gt * Math.PI * 3.8 + Math.sin(gt * 1.9) * 0.8) * (6.5 * envelope)
-      const flutterY = Math.cos(gt * Math.PI * 2.7 + Math.cos(gt * 1.6) * 0.6) * (4 * envelope)
-      x += flutterX
-      y += flutterY
-      if (si === NS - 1 && rawT > 0.70) {
-        const st = (rawT - 0.70) / 0.30
-        const r = lerp(12, 0, easeCubic(st))
-        x += Math.cos(st * Math.PI * 2) * r
-        y += Math.sin(st * Math.PI * 4) * r * 0.42
-      }
-      return { x, y }
-    }
-
-    // Trails ultra-ligeros
-    const trails = trailsRef.current
-    const MT = 18
-    let trailAccum = 0
-    const spawnTrail = (x, y) => {
-      const el = document.createElement('div')
-      const sz = 1.4 + Math.random() * 2.8
-      const isDot = Math.random() > 0.35
-      el.className = 'bf-trail'
-      el.style.width = sz + 'px'
-      el.style.height = sz + 'px'
-      el.style.borderRadius = isDot ? '50%' : '1px'
-      // polvo de estrellas dorado-neon
-      el.style.background = isDot
-        ? 'radial-gradient(circle,rgba(249,224,118,0.88) 0%,rgba(212,175,55,0.45) 36%,transparent 72%)'
-        : `rgba(212,175,55,${0.18 + Math.random() * 0.14})`
-      el.style.boxShadow = isDot ? '0 0 5px rgba(212,175,55,0.55),0 0 9px rgba(220,20,60,0.22)' : 'none'
-      // usar translate3d desde el inicio para GPU
-      el.style.transform = `translate3d(${x}px,${y}px,0)`
-      host.appendChild(el)
-      trails.push({ el, x, y, vx: (Math.random() - 0.5) * 0.28, vy: 0.10 + Math.random() * 0.22, life: 1, dec: 0.010 + Math.random() * 0.007, rot: Math.random() * 360, rv: (Math.random() - 0.5) * 1.4 })
-      if (trails.length > MT) trails.shift().el.remove()
-    }
-    const updTrails = () => {
-      for (let i = trails.length - 1; i >= 0; i--) {
-        const p = trails[i]
-        p.life -= p.dec
-        p.x += p.vx; p.y += p.vy; p.vy += 0.010; p.rot += p.rv
-        if (p.life <= 0) { p.el.remove(); trails.splice(i, 1) }
-        else {
-          p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0) rotate(${p.rot}deg) scale(${p.life})`
-          p.el.style.opacity = String(p.life * 0.5)
-        }
-      }
-    }
-    const sparkles = (cx0, cy0, n) => {
-      for (let i = 0; i < n; i++) {
-        const s = document.createElement('div')
-        s.className = 'bf-sparkle'
-        const ang = (Math.PI * 2 * i) / n + Math.random() * 0.35
-        const dist = 30 + Math.random() * 68
-        const tx = cx0 + Math.cos(ang) * dist
-        const ty = cy0 + Math.sin(ang) * dist
-        const sz = 2 + Math.random() * 3.2
-        s.style.width = sz + 'px'; s.style.height = sz + 'px'
-        s.style.left = cx0 + 'px'; s.style.top = cy0 + 'px'
-        host.appendChild(s)
-        const dur = 540 + Math.random() * 420
-        const t0 = performance.now()
-        const anim = (now) => {
-          const p = Math.min((now - t0) / dur, 1)
-          const e = 1 - Math.pow(1 - p, 3)
-          s.style.transform = `translate3d(${(tx - cx0) * e}px,${(ty - cy0) * e}px,0) scale(${1 - p})`
-          s.style.opacity = String((1 - p) * 0.88)
-          if (p < 1) requestAnimationFrame(anim); else s.remove()
-        }
-        requestAnimationFrame(anim)
-      }
-    }
-
-    let startTs = null
-    let phaseInner = 'fadeIn'
-    let prevPt = null
-    let curAngle = 0
-    const T_IN = 380, T_SET = 580, T_OUT = 660, T_SP = 240
-
-    // estado inicial sin layout thrash — RESETEA ALETEO (fix vuelo 2 en adelante)
-    bf.style.opacity = '0'
-    light.style.opacity = '0'
-    bf.style.willChange = 'transform,opacity'
-    light.style.willChange = 'transform,opacity'
-    bf.style.transition = 'opacity 0.42s ease'
-    light.style.transition = 'opacity 0.42s ease'
-    bfInner.style.transformOrigin = 'center center'
-    bfInner.style.transform = `scale(${sc}) rotate(0deg)`
-    smoothPosRef.current = { x: null, y: null }
-    angleRef.current = 0
-    curAngle = 0
-    // fade in próximo frame
-    requestAnimationFrame(() => { bf.style.opacity = '1'; light.style.opacity = '1' })
-
-    let lastTrailFrame = 0
-    const loop = (ts) => {
-      if (!startTs) startTs = ts
-      const el = ts - startTs
-
-      if (phaseInner === 'fadeIn') {
-        if (el >= T_IN) { phaseInner = 'flying'; startTs = ts }
-      } else if (phaseInner === 'flying') {
-        const ce = Math.min(el, FLY)
-        const raw = flightPt(ce)
-        const sp = smoothPosRef.current
-        if (sp.x === null) { sp.x = raw.x; sp.y = raw.y }
-        else { sp.x = lerp(sp.x, raw.x, 0.16); sp.y = lerp(sp.y, raw.y, 0.16) }
-        const pt = { x: sp.x, y: sp.y }
-
-        if (prevPt) {
-          const dx = pt.x - prevPt.x
-          const dy = pt.y - prevPt.y
-          const speed = Math.hypot(dx, dy)
-          // Calibración rumbo: -90 mapea math->CSS (0=>270 este, 90=>0 sur)
-          const RAW_OFFSET = -90
-          const targetAngle = Math.atan2(dy, dx) * 180 / Math.PI + RAW_OFFSET
-          let delta = targetAngle - curAngle
-          if (delta > 180) delta -= 360
-          if (delta < -180) delta += 360
-          curAngle += delta * 0.065
-          angleRef.current = curAngle
-          const bank = Math.max(-13, Math.min(13, dx * 0.55))
-          const pitch = Math.max(-5, Math.min(5, -dy * 0.22))
-          bfInner.style.transform = `scale(${sc}) rotate(${curAngle}deg) rotateZ(${bank * 0.28}deg) rotateX(${pitch}deg)`
-          // estela muy espaciada para no cargar
-          if (speed > 1.1 && (ts - lastTrailFrame) > 42) {
-            trailAccum += (speed - 1.1) * 0.04
-            if (trailAccum > 1) { spawnTrail(pt.x, pt.y); trailAccum = 0; lastTrailFrame = ts }
-          }
-        }
-        // translate3d GPU
-        bf.style.transform = `translate3d(${pt.x - BF_W * sc / 2}px,${pt.y - BF_H * sc / 2}px,0)`
-        light.style.transform = `translate3d(${pt.x - 100}px,${pt.y - 100}px,0)`
-        prevPt = { x: pt.x, y: pt.y }
-        if (ce >= FLY) {
-          phaseInner = 'settling'; startTs = ts
-        }
-      } else if (phaseInner === 'settling') {
-        // Endereza la mariposa antes de desvanecer — no termina al revés
-        curAngle += (0 - curAngle) * 0.08
-        angleRef.current = curAngle
-        bfInner.style.transform = `scale(${sc}) rotate(${curAngle}deg) rotateZ(0deg) rotateX(0deg)`
-        // Mantén posición en el centro de aterrizaje
-        bf.style.transform = `translate3d(${cx - BF_W * sc / 2}px,${cy - 4 - BF_H * sc / 2}px,0)`
-        light.style.transform = `translate3d(${cx - 100}px,${cy - 4 - 100}px,0)`
-        if (el >= T_SET) {
-          phaseInner = 'fadeOut'; startTs = ts
-          bf.style.transition = 'opacity 0.72s ease, transform 0.72s ease'
-          bf.style.opacity = '0'; bf.style.transform += ' scale(0.94)'
-          light.style.transition = 'opacity 0.72s ease'; light.style.opacity = '0'
-          setTimeout(() => sparkles(W * 0.5, H * 0.46, 12), T_SP)
-        }
-      } else if (phaseInner === 'fadeOut') {
-        if (el >= T_OUT + T_SP) { setPhase('open'); return }
-      }
-      updTrails()
-      rafRef.current = requestAnimationFrame(loop)
-    }
-    rafRef.current = requestAnimationFrame(loop)
-    return () => {
-      cancelAnimationFrame(rafRef.current)
-      trails.forEach(t => t.el.remove()); trailsRef.current = []
-      smoothPosRef.current = { x: null, y: null }
-    }
-  }, [phase])
-
-  // Mariposa origami Three.js: carga perezosa SOLO durante el vuelo.
-  // three.js queda en un chunk separado — el bundle inicial no crece.
-  useEffect(() => {
-    if (phase !== 'flying') return
-    let alive = true
-    import('./origamiButterfly.js').then((m) => {
-      if (!alive) return
-      const canvas = origamiHostRef.current
-      if (!canvas) return
-      origamiDisposeRef.current = m.mountOrigamiButterfly(canvas, { size: 180 })
-    }).catch(() => {})
-    return () => {
-      alive = false
-      if (origamiDisposeRef.current) { origamiDisposeRef.current(); origamiDisposeRef.current = null }
-    }
-  }, [phase])
+  // ── Vuelo 3D: lo renderiza <ButterflyFlight> durante phase==='flying' ──
 
   const envRaf = useRef(0)
   const handleEnvelopeMove = (e) => {
@@ -284,11 +44,9 @@ export default function Letter({ onNext, onPrev }) {
       className="main-wrapper relative flex flex-col items-center justify-center py-6 sm:py-8"
       style={{ minHeight: '100dvh', background: 'transparent', fontFamily: "'Lora',serif", overflow: 'hidden' }}
     >
-      {/* ── ESTILOS — carta Uiverse + papyrus (mariposa: canvas origami Three.js) ── */}
+      {/* ── ESTILOS — carta Uiverse + papyrus ── */}
       <style>{`
         /* perf: fuentes (Dancing Script/Lora) precargadas en index.html, sin @import bloqueante */
-        .bf-trail{position:fixed;left:0;top:0;pointer-events:none;z-index:5;will-change:transform,opacity}
-        .bf-sparkle{position:fixed;pointer-events:none;z-index:15;border-radius:9999px;background:radial-gradient(circle,rgba(212,175,55,0.95) 0%,rgba(220,20,60,0.65) 45%,transparent 70%);will-change:transform,opacity;box-shadow:0 0 6px rgba(212,175,55,0.6),0 0 12px rgba(220,20,60,0.25)}
         #letterWrap{opacity:0;transform:translate(-50%,-50%) scale(0.88);pointer-events:none;transition:opacity 0.95s ease, transform 1.15s cubic-bezier(0.22,1,0.36,1)}
         #letterWrap.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
         .ltxt{opacity:0;transform:translateY(14px);transition:opacity 0.65s ease, transform 0.65s ease}
@@ -316,21 +74,16 @@ export default function Letter({ onNext, onPrev }) {
       {/* Viñeta ultra sutil — no tapa cometas */}
       <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,0.32) 100%)' }} />
 
-      {/* Luz neon dorado-roja que sigue mariposa */}
-      <div ref={lightRef} className="fixed pointer-events-none z-[1] rounded-full" style={{ width: 220, height: 220, background: 'radial-gradient(circle,rgba(212,175,55,0.10) 0%,rgba(220,20,60,0.06) 38%,transparent 68%)', filter: 'blur(12px)', opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.45s ease' }} />
-
-      {/* ── MARIPOSA ORIGAMI 180×180 — canvas Three.js transparente (180 evita recorte alas con escala 1.55) ── */}
-      <div ref={bfRef} className="fixed left-0 top-0 z-10 pointer-events-none" style={{ opacity: phase === 'flying' ? 1 : 0, transition: 'opacity 0.42s ease', filter: phase === 'flying' ? 'drop-shadow(0 0 10px rgba(212,175,55,0.45)) drop-shadow(0 0 18px rgba(220,20,60,0.32))' : 'none', overflow: 'visible' }} aria-hidden>
-        <div ref={bfInnerRef} className="relative" style={{ width: 180, height: 180, overflow: 'visible' }}>
-          {phase === 'flying' && (
-            <canvas ref={origamiHostRef} width={180} height={180} style={{ width: 180, height: 180, display: 'block', overflow: 'visible' }} />
-          )}
-        </div>
-      </div>
+      {/* ── Vuelo 3D gótico a pantalla completa (1 vuelta y abre la carta) ── */}
+      {phase === 'flying' && (
+        <Suspense fallback={null}>
+          <ButterflyFlight onDone={() => setPhase('open')} />
+        </Suspense>
+      )}
 
       {/* Flecha atrás — vuelve a MemoryLane */}
       {onPrev && (
-        <button onClick={onPrev} aria-label="Volver" className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors">
+        <button onClick={onPrev} aria-label="Volver" className={`absolute top-4 left-4 sm:top-6 sm:left-6 ${phase === 'flying' ? 'z-40' : 'z-20'} w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10 hover:border-gold/25 hover:text-gold-light text-white/60 transition-colors`}>
           <ArrowLeft className="w-5 h-5" />
         </button>
       )}
@@ -361,11 +114,6 @@ export default function Letter({ onNext, onPrev }) {
           </motion.div>
         )}
 
-        {phase === 'flying' && (
-          <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-sm tracking-[0.20em] uppercase" style={{ color: 'rgba(34,211,238,0.52)', fontFamily: 'Sora,sans-serif' }}>
-            viene una mariposa...
-          </motion.p>
-        )}
       </div>
 
       {/* ── CARTA ABIERTA papyrus — idéntica al snippet ── */}
