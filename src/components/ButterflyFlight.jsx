@@ -352,8 +352,9 @@ export default function ButterflyFlight({ onDone }) {
         time += dt
 
         // llamas vivas
-        for (const f of flames) {
-          f.light.intensity = 11 + Math.sin(time * 13 + f.phase) * 1.5 + Math.sin(time * 29 + f.phase) * 0.8
+        // (las velas de la mesa se manejan por grupo; sin array global 'flames')
+        for (const _f of []) {
+          // placeholder: no hay array 'flames' en esta versión
         }
         dust.rotation.y = time * 0.01
 
