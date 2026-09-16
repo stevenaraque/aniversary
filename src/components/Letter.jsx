@@ -1,10 +1,19 @@
-import { useState, useRef, useCallback, lazy, Suspense } from 'react'
+import { useState, useRef, useCallback, lazy, Suspense, Component } from 'react'
 import { motion } from 'motion/react'
 import { Feather, ArrowLeft } from 'lucide-react'
 import { springs } from '../lib/motion-tokens'
 
 // Vuelo 3D gótico en chunk perezoso (three queda fuera del bundle inicial)
 const ButterflyFlight = lazy(() => import('./ButterflyFlight.jsx'))
+
+// Si el chunk del vuelo no carga (servidor caído, red): abre la carta en vez
+// de quedarse colgado en fase flying con pantalla vacía.
+class FlightErrorBoundary extends Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch() { this.props.onFail?.() }
+  render() { return this.state.failed ? null : this.props.children }
+}
 
 // ── Carta + vuelo 3D (ButterflyFlight) — carta papyrus ──
 export default function Letter({ onNext, onPrev }) {
@@ -74,11 +83,13 @@ export default function Letter({ onNext, onPrev }) {
       {/* Viñeta ultra sutil — no tapa cometas */}
       <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,0.32) 100%)' }} />
 
-      {/* ── Vuelo 3D gótico a pantalla completa (1 vuelta y abre la carta) ── */}
+      {/* ── Vuelo 3D gótico a pantalla completa (1 minuto y abre la carta) ── */}
       {phase === 'flying' && (
-        <Suspense fallback={null}>
-          <ButterflyFlight onDone={() => setPhase('open')} />
-        </Suspense>
+        <FlightErrorBoundary onFail={() => setPhase('open')}>
+          <Suspense fallback={null}>
+            <ButterflyFlight onDone={() => setPhase('open')} />
+          </Suspense>
+        </FlightErrorBoundary>
       )}
 
       {/* Flecha atrás — vuelve a MemoryLane */}
