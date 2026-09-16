@@ -4,7 +4,8 @@
 
 **Repositorio:** https://github.com/stevenaraque/aniversary  
 **Ramas:**
-- `main` @ `c7eb44d` — **estable, producción en Vercel** (UMBRA + origami Three.js + perf 30fps)
+- `main` @ `04010f3` — **estable, producción en Vercel** (UMBRA + origami Three.js + perf 30fps + mariposa Danaus)
+- Rama de trabajo: solo `main` (acordado con Alejandro, 16-09-2026)
 - `reflect/spacious-glass` @ `129afef` — experimental spacious (desactualizada, no usar)
 - Backup físico: `anniversary-app-backup-pre-reflect/` en `Template/`
 
@@ -90,8 +91,7 @@ git log --oneline -5
 - **Botón fix 28-08 v2** `Collage.jsx:64` `index.css:434` — pegado en computador + animación no se veía. `main-wrapper pb-16 sm:pb-20` + spacer `h-10 sm:h-14` (~1cm extra scroll) para que no quede pegado al borde y deje hacer scroll. Animación: `handleMusicPress` `Collage.jsx:67` con `isPressing` + `setTimeout 220ms` antes de `onNext`, botón con clase `.pressed` `index.css:434` `rotateX(13deg) translateY(4.5px)` preservando perspectiva, se ve hundirse y luego navega.
 - **Navegación atrás** `App.jsx:42` `Countdown.jsx:52` `Puzzle.jsx:25` `MemoryLane.jsx:35` `Letter.jsx:7` `Collage.jsx:61` `Playlist.jsx:45` — agregado `goPrev` a todas las secciones (excepto `Intro` que es inicio). Botón glass `ArrowLeft` `absolute top-4 left-4 sm:top-6 sm:left-6 z-20 w-10 h-10 rounded-full glass border-white/10 hover:border-gold/25` consistente en todas las páginas, `Letter.jsx:342` ya tenía y se mantiene. Build OK 62kB CSS / 450kB JS.
 - **Persistencia sessionStorage** `App.jsx:16` `App.jsx:33` `Playlist.jsx:45` — `STORAGE_KEY='aniversary:section'`, `useState` lazy lee `sessionStorage`, `useEffect` guarda cada cambio. Reload mantiene sección. Cerrar navegador/pestaña borra → vuelve a `intro`. `Playlist.jsx` `onReset` limpia storage.
-- **Página Final** `Final.jsx:1` `App.jsx:15` `index.html:11` — convertida de HTML a React con `motion` reveal `whileInView`, `HERO` Elena&Matteo `/ DECLARATION / TIMELINE 5 / GALLERY 5 + lightbox / VOW ∞ / FOOTER`, `Marcellus` agregada `index.html:11`, `SECTIONS` 7→8, `Playlist` ahora `onNext`→`final`, `Final` con `onPrev`/`onReset` + `CosmosBackground` global visible, scroll `100vh` hero + `section` 100px. Build OK 63kB CSS / 466kB JS.
-- Push pendiente
+- **Página Final** `Final.jsx:1` `App.jsx:15` `index.html:11` — convertida de HTML a React con `motion` reveal `whileInView`, `HERO` Elena&Matteo `/ DECLARATION / TIMELINE 5 / GALLERY 5 + lightbox / VOW ∞ / FOOTER`, `Marcellus` agregada `index.html:11`, `SECTIONS` 7→8, `Playlist` ahora `onNext`→`final`, `Final` con `onPrev`/`onReset` + `CosmosBackground` global visible, scroll `100vh` hero + `section` 100px. Build OK 63kB CSS / 466kB JS (subido).
 
 ## Update 28-08-2026 (limpieza + rendimiento + tipografía)
 - **Lint limpio (0/0)** `oxlint`: quitados imports sin usar (`Intro Heart/Unlock`, `Countdown motionTokens`, `MemoryLane var x`), eliminado hook muerto `useInViewOnce.js`, `Puzzle.jsx` `setSolved` en effect → derivado `solved = isSolved && started` (sin setState en effect).
@@ -101,9 +101,9 @@ git log --oneline -5
 ## Update 28-08-2026 (refix cosmos + cascada)
 - **Fix cometas estáticos** `CosmosBackground.jsx`: revertido freeze por `prefers-reduced-motion` (dejaba las estrellas/cometas quietas) → el cosmos siempre corre `loop()`. Ver punto 4.
 - **Efecto cascada continua** `CosmosBackground.jsx:159` `CosmosBackground.jsx:204`: `createComet` más rápido (speed 4-8) con `tailLen 240-420`, estela triple (halo 0.32 / mid 0.6 / core full), `MAX_COMETS` desktop 18→26 con spawn denso `rand(2,5)` frames → lluvia dorada continua en toda la página (canvas `fixed` visible en todas las secciones). Móvil: 8 cometas, spawn espaciado `rand(20,32)`, flash solo bajo 50% del máximo.
-- Build OK 61.8kB CSS / 468kB JS. Push pendiente.
+- Build OK 61.8kB CSS / 468kB JS (subido).
 - **Tipografía → Cormorant Garamond (delicada/fineza)** `index.html:6` `src/index.css`: reemplazado `Cinzel`/`Cinzel Decorative` por Cormorant en títulos, botones, badges, números countdown; body y `p` ahora Cormorant 300 (antes Sora). Cargados pesos Cormorant 300-700 + italic 300. Quitados Cinzel/Cinzel Decorative de Google Fonts. Sora queda solo micro-etiquetas.
-- Build OK 61.8kB CSS / 468kB JS. Push pendiente.
+- Build OK 61.8kB CSS / 468kB JS (subido).
 
 ## Update 28-08-2026 (reproductor gótico nuevo diseño)
 - **`Playlist.jsx` reescrito** con el diseño gótico del reproductor que el usuario aportó: panel izquierdo lista (ornamentos dorados, ecualizador animado 3 barras rojas en canción activa, línea activa rojo-dorado, número/hover-play) + panel derecho tarjeta con disco giratorio + aura pulsante (vino), esquinas doradas, glow superior, título `Cinzel Decorative`, artista `Philosopher` italic, visualizador de barras, barra de progreso rojo→dorado con knob, controles play 3D con borde cónico + shuffle/prev/next/repeat, toast, partículas doradas (canvas, solo desktop), viñeta. Botón volver + footer CTA se mantienen.
@@ -115,7 +115,7 @@ git log --oneline -5
 - **Fix scroll real** `Playlist.jsx`: causa = `.goth-layout{min-height:100vh}` + `.goth-player` con `min-h` (crecía al alto del contenido → scroll de página). Ahora: `.goth-player` `h-[100dvh] overflow-hidden` + `.goth-layout{flex:1;min-height:0}` + footer en fila (`.goth-footer` flex-shrink:0) + padding del player 56px top/12px bottom. **Verificado en Chrome headless**: `documentElement.scrollHeight == innerHeight` (pageScrollable:false) en playlist y en las 8 secciones, incluso a 673px de alto.
 - **Móvil super responsive** `Playlist.jsx`: lista compactada 45vh→30vh; disco proporcional `min(30vh,34vw,128px)`; paddings/textos en escala; en ≤900px el `.goth-player` pasa a `height:auto;overflow-y:auto`. **Verificado en Chrome headless** (iPhoneSE 320, iPhone 390, Galaxy 360, Pixel 412, Tablet 768, laptop): card+playBtn+footer caben (fitsViewport:true).
 - **Reescrito con metodología de encapsulación flex-wrap (sin breakpoints de layout)** `Playlist.jsx`: `.goth-layout{display:flex;flex-wrap:wrap}`, `.goth-left{flex:1 1 340px;min-width:0;max-width:100%}`, `.goth-right{flex:0 1 440px;min-width:0;max-width:100%}`. El div interno se adapta al contenedor padre: en ancho <780px los paneles **se apilan** (lista arriba, player abajo); en ≥780px quedan lado a lado. Se eliminó el `flex-direction:column` del media 900 (ya lo hace flex-wrap). `.goth-player{width:100%;max-width:100vw;overflow-x:hidden!important}`. **Verificado en Chrome headless en 9 tamaños: `scrollW==clientW` y `horizOverflow:false` en todos** (cero scroll horizontal), con apilamiento correcto en celular/tablet y lado a lado en laptop/desktop.
-- Build OK. Push pendiente.
+- Build OK (subido).
 
 
 ## Update 15-09-2026 — perf/speed-fix + origami en main

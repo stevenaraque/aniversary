@@ -86,7 +86,7 @@ anniversary-app/
 ## Local
 
 ```powershell
-cd "C:\Users\USER\Desktop\2 years\agente\Template\anniversary-app"
+cd "C:\Users\USER\Desktop\anniversary-app"
 git checkout main; npm install; npm run dev   # http://localhost:5173
 npm run build
 ```
