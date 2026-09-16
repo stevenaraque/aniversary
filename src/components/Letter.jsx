@@ -101,6 +101,7 @@ export default function Letter({ onNext, onPrev }) {
 
       {/* ── CONTENIDO usa .container para responsivo ── */}
       <div className="container relative z-10 flex flex-col items-center justify-center w-full text-center gap-6 px-4">
+          {phase !== 'flying' && (
           <motion.div initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={springs.gentle} className="flex flex-col items-center gap-3 pb-1">
           <Feather className="w-9 h-9 text-crimson/30 mx-auto" />
           <h2 className="text-4xl md:text-5xl font-bold leading-tight" style={{ fontFamily: "'Cormorant Garamond',serif" }}>
@@ -108,6 +109,7 @@ export default function Letter({ onNext, onPrev }) {
           </h2>
           <div className="w-12 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent mt-1" />
         </motion.div>
+          )}
 
         {phase === 'idle' && (
           <motion.div className="mt-2 flex justify-center p-3 overflow-visible" initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...springs.gentle, delay: 0.16 }} role="button" tabIndex={0} onClick={startFlight} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && startFlight()} aria-label="Abrir carta con mariposa">

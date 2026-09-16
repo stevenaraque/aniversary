@@ -9,9 +9,9 @@ import { makeMats, buildButterfly, poseFlap } from './origamiButterfly.js'
 // Perf: DPR cap 1.5, throttle 30fps, sombras 1024 solo desktop, pausa en
 // pestaña oculta, dispose total al desmontar, chunk perezoso (React.lazy).
 const LAP_TIME = 14 // segundos por vuelta
-const LAPS = 4 // vueltas por vuelo: ~1 minuto total con despegue y fundido
+const LAPS = 1 // 1 recorrido completo y abre la carta (~16s con despegue y fundido)
 const TAKEOFF_TIME = 2.2
-const SAFETY_TIMEOUT = 90000 // salida garantizada a la carta aunque algo falle
+const SAFETY_TIMEOUT = 45000 // salida garantizada a la carta aunque algo falle
 const FLAP_HZ = 7 // aleteo legible a 30fps (12.5Hz real haría strobing)
 
 // Circuito del demo: despegue en libros + doble rizo sobre las flores
@@ -415,12 +415,6 @@ export default function ButterflyFlight({ onDone }) {
       aria-hidden
     >
       <canvas ref={canvasRef} className="absolute inset-0 block h-full w-full" />
-      <p
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm tracking-[0.20em] uppercase whitespace-nowrap"
-        style={{ color: 'rgba(34,211,238,0.52)', fontFamily: "'Sora',sans-serif" }}
-      >
-        viene una mariposa...
-      </p>
       <button
         onClick={toggleFollow}
         aria-pressed={follow}
