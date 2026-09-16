@@ -108,3 +108,10 @@
 - **Causa:** `new THREE.Mesh(geo, [matF, matB])` sin `geometry.groups` → el renderer no pinta ningún grupo.
 - **Solución:** en `makeFoldPanel` (`origamiButterfly.js`): `geo.addGroup(0, N, 0)` (frentes) + `geo.addGroup(0, N, 1)` (reversos) sobre todos los vértices.
 - **Regla:** todo mesh con array de materiales lleva sus `addGroup` explícitos.
+
+## 18. Cleanup de useEffect fuera del `try` no ve handlers del `try`
+
+- **Síntoma:** pantalla negra al terminar el vuelo 3D (la carta abría y la página moría).
+- **Causa:** en `ButterflyFlight.jsx` los handlers `onResize`/`onVis` eran `const` dentro del `try`, pero el `return` de limpieza quedó fuera del bloque → `ReferenceError` al desmontar.
+- **Solución:** handlers en `let` externos con guardas (`if (onResize)...`, `if (!renderer) return` dentro).
+- **Regla:** todo lo que toque el cleanup vive fuera del `try` o con guarda nula.
