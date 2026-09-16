@@ -39,7 +39,7 @@
 | Countdown | `Countdown.jsx:7` | Fecha **26.08.2024** calendario real, `TimeBlock` 6 con anillo `gold/crimson` + watermark `II`, `pebble-button` bat, `Mi Canelita` badge |
 | Puzzle | `Puzzle.jsx:64` | 4×4 premium, `Saltar puzzle`/`Ver aviso` solo con `?debug=1` `src/components/Puzzle.jsx:138` |
 | MemoryLane | `MemoryLane.jsx:17` | Swipe drag x 80/vel 400 |
-| Letter | `Letter.jsx:7` | Carta papyrus + **vuelo 3D gótico** `ButterflyFlight.jsx:1` (Danaus reutilizada + circuito CatmullRom 1 vuelta + follow-cam, fondo transparente sobre cosmos) |
+| Letter | `Letter.jsx:7` | Carta papyrus + **vuelo 3D gótico** `ButterflyFlight.jsx:1` (Danaus reutilizada + circuito CatmullRom 4 vueltas (~1 min) + follow-cam, fondo transparente sobre cosmos) |
 | Collage | `Collage.jsx:39` | Masonry 13 fotos sin hueco |
 | Playlist | `Playlist.jsx:153` | Reproductor gótico (disco + lista panel, 30 partículas desktop) + `onNext`→`final` |
 | Final | `Final.jsx:1` | Hero Elena&Matteo + declaración + timeline 5 + gallery 5 + vow ∞ + lightbox, scroll, Marcellus |
@@ -127,10 +127,11 @@ git log --oneline -5
 
 ## Update 16-09-2026 — vuelo 3D en carta (recorrido 2D retirado)
 
-- **Cambio:** fase `flying` de `Letter.jsx` ya no usa recorrido 2D (Bézier DOM + trails). Ahora monta `src/components/ButterflyFlight.jsx:1` (React.lazy): escena gótica transparente sobre el cosmos (mesa oscura + libros + jarrón vino + 2 candelabros + polvo dorado), Danaus actual reutilizada (`origamiButterfly.js` ahora exporta `makeMats/buildButterfly/poseFlap/FLAP_HZ`), circuito del demo 1 vuelta (~14s) + despegue, follow-cam con botón Seguir, sin panel ni telemetría.
+- **Cambio:** fase `flying` de `Letter.jsx` ya no usa recorrido 2D (Bézier DOM + trails). Ahora monta `src/components/ButterflyFlight.jsx:1` (React.lazy): escena gótica transparente sobre el cosmos (mesa oscura + libros + jarrón vino + 2 candelabros + polvo dorado), Danaus actual reutilizada (`origamiButterfly.js` ahora exporta `makeMats/buildButterfly/poseFlap/FLAP_HZ`), circuito del demo 4 vueltas (~1 min, `LAPS`) + despegue, follow-cam con botón Seguir, sin panel ni telemetría.
 - **Perf:** DPR cap 1.5, throttle 30fps, sombras 1024 solo desktop, pausa en pestaña oculta, dispose total, three sigue en chunk separado (`ButterflyFlight` 13.6kB lazy). Main inicial baja 359→353kB.
 - **Bugs cazados con capturas:** `cleanup` fuera del `try` no veía `onResize` (pantalla negra al abrir carta) → handlers en `let` externos con guardas. Móvil vertical quedaba dentro de la mesa → FOV 58 + distancia follow ×2.2 en portrait.
 - **Verificado:** lint 0/0, build OK, capturas headless desktop (vuelo + carta abierta, 0 errores) y móvil (encuadre + 0 errores). Scripts: `shot-flight.cjs` / `probe-flight*.cjs` en `AppData/Local/Temp/opencode`.
+- **Update posterior:** vuelo a 4 vueltas (~1 min, `SAFETY_TIMEOUT` 90s) + `webglcontextlost` avanza a la carta (pantalla negra si el navegador pierde el contexto).
 
 ## Rama perf/no-jank — histórico (ya mergeado en main)
 

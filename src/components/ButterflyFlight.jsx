@@ -9,8 +9,9 @@ import { makeMats, buildButterfly, poseFlap } from './origamiButterfly.js'
 // Perf: DPR cap 1.5, throttle 30fps, sombras 1024 solo desktop, pausa en
 // pestaña oculta, dispose total al desmontar, chunk perezoso (React.lazy).
 const LAP_TIME = 14 // segundos por vuelta
+const LAPS = 4 // vueltas por vuelo: ~1 minuto total con despegue y fundido
 const TAKEOFF_TIME = 2.2
-const SAFETY_TIMEOUT = 45000 // salida garantizada a la carta aunque algo falle
+const SAFETY_TIMEOUT = 90000 // salida garantizada a la carta aunque algo falle
 const FLAP_HZ = 7 // aleteo legible a 30fps (12.5Hz real haría strobing)
 
 // Circuito del demo: despegue en libros + doble rizo sobre las flores
@@ -48,6 +49,7 @@ export default function ButterflyFlight({ onDone }) {
     let fadeTimer = 0
     let onResize = null
     let onVis = null
+    let onCtxLost = null
 
     const finish = () => {
       if (disposed) return
@@ -73,6 +75,10 @@ export default function ButterflyFlight({ onDone }) {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
       renderer.setSize(W, H, false)
       renderer.setClearColor(0x000000, 0) // transparente: cosmos global detrás
+      // Si el navegador pierde el contexto WebGL: avanza a la carta en vez de
+      // dejar la escena en negro hasta el temporizador de seguridad.
+      onCtxLost = (e) => { e.preventDefault(); finish() }
+      canvas.addEventListener('webglcontextlost', onCtxLost)
       renderer.toneMapping = THREE.ACESFilmicToneMapping
       renderer.toneMappingExposure = 1.1
       const useShadows = !isMobile
@@ -253,6 +259,7 @@ export default function ButterflyFlight({ onDone }) {
       let mode = 'takeoff'
       let modeT = 0
       let lapT = 0
+      let lapsDone = 0
       let running = true
       const speedK = reduceMotion ? 0.7 : 1
 
@@ -328,7 +335,10 @@ export default function ButterflyFlight({ onDone }) {
             bob: 0.02 * Math.sin(flapPhase - 1.3), pitchBob: 0.04 * Math.cos(flapPhase - 1.1),
           })
 
-          if (lapT >= 1) { finish(); return }
+          if (lapT >= lapsDone + 1) {
+            lapsDone += 1
+            if (lapsDone >= LAPS) { finish(); return }
+          }
         }
 
         // cámara: sigue a la mariposa o plano general
@@ -362,6 +372,7 @@ export default function ButterflyFlight({ onDone }) {
       window.clearTimeout(fadeTimer)
       if (onResize) window.removeEventListener('resize', onResize)
       if (onVis) document.removeEventListener('visibilitychange', onVis)
+      if (onCtxLost) canvas.removeEventListener('webglcontextlost', onCtxLost)
       if (renderer) {
         try {
           renderer.dispose()
