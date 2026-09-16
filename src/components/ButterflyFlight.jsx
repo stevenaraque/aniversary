@@ -51,8 +51,14 @@ export default function ButterflyFlight({ onDone }) {
     let onVis = null
     let onCtxLost = null
 
-    const finish = () => {
+    // Diagnóstico con ?bfdebug=1 (ver consola). Silencioso en producción.
+    const bfDebug = new URLSearchParams(window.location.search).has('bfdebug')
+    const bfLog = (...a) => { if (bfDebug) console.log('[bf]', ...a) }
+    bfLog('mount')
+
+    const finish = (reason = '?') => {
       if (disposed) return
+      bfLog('finish:', reason)
       disposed = true
       cancelAnimationFrame(raf)
       window.clearTimeout(safetyTimer)
@@ -60,28 +66,37 @@ export default function ButterflyFlight({ onDone }) {
       wrap.style.opacity = '0'
       fadeTimer = window.setTimeout(() => onDoneRef.current?.(), 800)
     }
-    safetyTimer = window.setTimeout(finish, SAFETY_TIMEOUT)
+    safetyTimer = window.setTimeout(() => finish('safety'), SAFETY_TIMEOUT)
 
     try {
       const gl = canvas.getContext('webgl2') || canvas.getContext('webgl')
       if (!gl) throw new Error('WebGL no disponible')
+      // Render por software (SwiftShader/llvmpipe): baja la presión GPU para
+      // no perder el contexto en máquinas sin aceleración por hardware.
+      let isSoftware = false
+      try {
+        const dbg = gl.getExtension('WEBGL_debug_renderer_info')
+        const gpuName = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : ''
+        isSoftware = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(gpuName)
+        bfLog('gpu:', gpuName || '(oculto)', 'software:', isSoftware)
+      } catch { /* noop */ }
 
       const W = window.innerWidth
       const H = window.innerHeight
       const isMobile = W < 768
       const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: !isSoftware, alpha: true })
+      renderer.setPixelRatio(isSoftware ? 1 : Math.min(window.devicePixelRatio || 1, 1.5))
       renderer.setSize(W, H, false)
       renderer.setClearColor(0x000000, 0) // transparente: cosmos global detrás
       // Si el navegador pierde el contexto WebGL: avanza a la carta en vez de
       // dejar la escena en negro hasta el temporizador de seguridad.
-      onCtxLost = (e) => { e.preventDefault(); finish() }
+      onCtxLost = (e) => { e.preventDefault(); finish('contextlost') }
       canvas.addEventListener('webglcontextlost', onCtxLost)
       renderer.toneMapping = THREE.ACESFilmicToneMapping
       renderer.toneMappingExposure = 1.1
-      const useShadows = !isMobile
+      const useShadows = !isMobile && !isSoftware
       renderer.shadowMap.enabled = useShadows
       if (useShadows) renderer.shadowMap.type = THREE.PCFShadowMap
 
@@ -211,7 +226,7 @@ export default function ButterflyFlight({ onDone }) {
       }
 
       // ── Polvo dorado suspendido (1 draw call) ──
-      const dustCount = isMobile ? 50 : 90
+      const dustCount = isSoftware ? 30 : isMobile ? 50 : 90
       const dustPos = new Float32Array(dustCount * 3)
       for (let i = 0; i < dustCount; i++) {
         dustPos[i * 3] = (Math.random() - 0.5) * 16
@@ -305,10 +320,12 @@ export default function ButterflyFlight({ onDone }) {
           poseFlap(P, flapPhase, 1, { amp: 1.3, base: 0.42, vel: 0.5, bob: 0, pitchBob: 0 })
           if (k >= 1) { mode = 'fly'; modeT = 0 }
         } else {
-          // frena en curvas cerradas, acelera en rectas (del demo)
+          // frena en curvas cerradas, acelera en rectas (del demo) — lapT va más
+          // allá de 1 en varias vueltas: todo muestreo con t envuelto en [0,1)
           const e = 0.004
-          const t0 = curve.getTangentAt(lapT)
-          const t1 = curve.getTangentAt((lapT + e) % 1)
+          const lt = lapT % 1
+          const t0 = curve.getTangentAt(lt)
+          const t1 = curve.getTangentAt((lt + e) % 1)
           const factor = THREE.MathUtils.clamp(1.6 - (t0.angleTo(t1) / (e * curveLen)) * 9, 0.55, 1.5)
           const ds = cruiseV * speedK * factor * dt
           lapT += ds / curveLen
@@ -337,7 +354,8 @@ export default function ButterflyFlight({ onDone }) {
 
           if (lapT >= lapsDone + 1) {
             lapsDone += 1
-            if (lapsDone >= LAPS) { finish(); return }
+            bfLog('vuelta:', lapsDone)
+            if (lapsDone >= LAPS) { finish('laps'); return }
           }
         }
 
@@ -361,11 +379,13 @@ export default function ButterflyFlight({ onDone }) {
       raf = requestAnimationFrame(loop)
       // fundido de entrada
       requestAnimationFrame(() => { if (!disposed) wrap.style.opacity = '1' })
-    } catch {
+    } catch (err) {
+      bfLog('init-fallo:', err?.message)
       window.setTimeout(() => { if (!disposed) { disposed = true; onDoneRef.current?.() } }, 1200)
     }
 
     return () => {
+      bfLog('unmount')
       disposed = true
       cancelAnimationFrame(raf)
       window.clearTimeout(safetyTimer)
@@ -375,8 +395,10 @@ export default function ButterflyFlight({ onDone }) {
       if (onCtxLost) canvas.removeEventListener('webglcontextlost', onCtxLost)
       if (renderer) {
         try {
+          // Sin forceContextLoss: la app se remonta sola al inicio (preexistente)
+          // y en dev StrictMode monta doble — matar el contexto aquí envenena
+          // la creación inmediata del siguiente. dispose() + GC bastan.
           renderer.dispose()
-          renderer.forceContextLoss()
         } catch { /* noop */ }
         renderer = null
       }
