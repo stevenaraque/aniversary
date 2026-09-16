@@ -3,8 +3,8 @@ import { motion } from 'motion/react'
 import { Feather, ArrowLeft } from 'lucide-react'
 import { springs } from '../lib/motion-tokens'
 
-// Vuelo 3D gótico en chunk perezoso (three queda fuera del bundle inicial)
-const ButterflyFlight = lazy(() => import('./ButterflyFlight.jsx'))
+// Bodegón 3D — mariposa de papel (port mesa.txt) en chunk perezoso
+const MesaFlight = lazy(() => import('./MesaFlight.jsx'))
 
 // Si el chunk del vuelo no carga (servidor caído, red): abre la carta en vez
 // de quedarse colgado en fase flying con pantalla vacía.
@@ -83,11 +83,11 @@ export default function Letter({ onNext, onPrev }) {
       {/* Viñeta ultra sutil — no tapa cometas */}
       <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,0.32) 100%)' }} />
 
-      {/* ── Vuelo 3D gótico a pantalla completa (1 minuto y abre la carta) ── */}
+      {/* ── Bodegón 3D — mariposa corazón sobre mesa (mesa.txt port) ── */}
       {phase === 'flying' && (
         <FlightErrorBoundary onFail={() => setPhase('open')}>
           <Suspense fallback={null}>
-            <ButterflyFlight onDone={() => setPhase('open')} />
+            <MesaFlight onDone={() => setPhase('open')} />
           </Suspense>
         </FlightErrorBoundary>
       )}
@@ -120,8 +120,8 @@ export default function Letter({ onNext, onPrev }) {
                 <polyline points="22,6 12,13 2,6" />
               </svg>
               <div className="textBox">
-                <p className="head">Viene una mariposa</p>
-                <span>toca para abrir</span>
+                <p className="head">Un anillo, una carta y un ramo</p>
+                <span>la mesa está puesta — toca para descubrir</span>
               </div>
             </div>
           </motion.div>

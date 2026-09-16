@@ -133,6 +133,15 @@ git log --oneline -5
 - **Verificado:** lint 0/0, build OK, capturas headless desktop (vuelo + carta abierta, 0 errores) y móvil (encuadre + 0 errores). Scripts: `shot-flight.cjs` / `probe-flight*.cjs` en `AppData/Local/Temp/opencode`.
 - **Update posterior:** vuelo a 1 recorrido (~16s, `LAPS=1`, `SAFETY_TIMEOUT` 45s) + `webglcontextlost` avanza a la carta (pantalla negra si el navegador pierde el contexto) + `FlightErrorBoundary` abre la carta si el chunk no carga.
 
+## Update 16-09-2026 — bodegón 3D reemplaza vuelo gótico (mesa.txt)
+
+- **Cambio:** `Letter.jsx:7` fase `flying` ya no monta `ButterflyFlight.jsx` (Danaus gótico sobre cosmos). Ahora `src/components/MesaFlight.jsx:1` (React.lazy): port fiel de `mesa.txt` — bodegón romántico Three.js. Mesa redonda + mantel lino con pliegues físicos (`LatheGeometry` prof 19) + 2 doilies encaje, anillo cojín vino con `Torus` + gema `Cone` + destello `Sprite` + burst 22★, 2 velas `PointLight` + `Sprite` glow + humo 12, ramo 5 rosas `Plane petalGeo` 22pétalos/rosa + kraft + ribbon, carta con `envelopeTexture` + `noteTex` Caveat + lacre corazón, bombones 7 surtido corazón `Extrude` + drizzle + roseta `Tube`, pluma, 15 pétalos quietos + 34 lluvia `fallPool`, polvo 110 `Points`, mariposa origami papel washi ala `fore/hind` `wingTexture` + corazón `HEART_ROUTE` 20pts CatmullRom + `routeLine` dashed + escamas 26 `fleckPool`.
+- **Mariposa:** posada en ramo `perchPos -1.09,0.83,-0.63` → `takeoff` 2s `QuadraticBezier` → `fly` corazones 2 laps. `applyWings` fase 25/13Hz shape `pow(0.72)`, frena en curvas `factorS 0.55-1.5` via `tangent angle`. Tras 2 corazones + 1.4s → `finish` abre carta papyrus (`Letter.jsx` `phase open`). `letter` click también hace `finish` tras 1.2s.
+- **UI:** canvas full `fixed inset-0` fondo cálido `#F2E9DA` + vignette, brand `Fraunces/Instrument Sans` header, botones `Seguir` (followRef) + `Abrir carta` (fade+onDone), `tip` raycaster hover `NAMES`, `toasts` paper, hint `Arrastra...`. Controles `OrbitControls` autoRotate 0.5, `Raycaster` picks `interactives` 6 objetos, `VIEWS` 7 presets `flyTo` 1.5s easeIO, atajos 1-7/P/L, mood día/noche lerp `hemi/sun/fill/envMap`.
+- **Perf/robustez:** igual que ButterflyFlight — DPR cap 2 (1 si software), throttle 30fps `now-lastLoop<33`, `safety 45s`, `webglcontextlost` → `finish`, `FlightErrorBoundary` → open, `visibilitychange` keep, `resize` fit, dispose total + remove fontLink + clear toasts, `PMREM RoomEnvironment`. Chunk lazy `MesaFlight 40.8kB (15.5 gzip)` + `three 534kB (136 gzip)`, `index 353kB (99.7 gzip)`, lint 0/0, build OK.
+- **Letter:** `Letter.jsx:6` ahora `MesaFlight`, card head `Viene una mariposa` → `Un anillo, una carta y un ramo`. `ButterflyFlight.jsx` conservado como histórico no usado.
+- **Build:** `61kB CSS / 353kB JS (99.7 gzip) + 534kB three (136) + 129kB motion (42) + 40.8kB MesaFlight (15.5)` lint 0/0.
+
 ## Rama perf/no-jank — histórico (ya mergeado en main)
 
 Auditoría sección por sección: lo que trababa el navegador era cantidad de capas animadas simultáneas, no el diseño. Cambios aplicados (lint 0/0 + build OK 58.6kB CSS / 488.4kB JS):
