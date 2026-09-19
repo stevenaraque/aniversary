@@ -708,7 +708,7 @@ export default function MesaFlight({ onDone }) {
 
         /* kraft aplastado y churruscado (igual al demo nuevo) */
         const wrapGroup = new THREE.Group()
-        wrapGroup.position.set(0, 0.25, -0.53)
+        wrapGroup.position.set(0, 0.20, -0.53)
         wrapGroup.rotation.x = -0.10
         wrapGroup.scale.set(1.46, 0.50, 1.01)
         bouquet.add(wrapGroup)
