@@ -759,14 +759,46 @@ export default function MesaFlight({ onDone }) {
         const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.40, 0.024, 8, 30), mat(0xCE452C, 0.7)))
         ribbon.position.set(0, 0, 0.14)
         wrapGroup.add(ribbon)
-        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), mat(0xCE452C, 0.7)))
-        knot.position.set(0, -0.12, 0.53); wrapGroup.add(knot)
+        /* ---------- MOÑO (reemplaza el knot y los loops antiguos) ---------- */
+        const bowGroup = new THREE.Group()
+        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.65, side:THREE.DoubleSide })
+        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0xB23A20, roughness:0.70, side:THREE.DoubleSide })
+
+        /* las dos lazadas — toros parciales aplastados e inclinados */
         for(const s of [1,-1]){
-          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 6), mat(0xCE452C, 0.7)))
-          loop.position.set(0.11*s, -0.13, 0.51)
-          loop.rotation.set(1.2, 0, s*0.5)
-          wrapGroup.add(loop)
+          const loop = shadows(new THREE.Mesh(
+            new THREE.TorusGeometry(0.085, 0.030, 10, 24, Math.PI*1.25), ribbonMat))
+          loop.scale.set(1, 0.62, 0.5)
+          loop.position.set(0.085*s, 0.02, 0)
+          loop.rotation.set(0.15, s*0.35, s*0.45)
+          bowGroup.add(loop)
         }
+
+        /* nudo central achatado */
+        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.042, 12, 10), ribbonMat))
+        knot.scale.set(1, 0.8, 0.75)
+        bowGroup.add(knot)
+
+        /* colas con punta en V (cinta cortada en pico) */
+        const tailShape = new THREE.Shape()
+        tailShape.moveTo(-0.035, 0)
+        tailShape.lineTo( 0.035, 0)
+        tailShape.lineTo( 0.035, -0.16)
+        tailShape.lineTo( 0,     -0.125)
+        tailShape.lineTo(-0.035, -0.16)
+        tailShape.closePath()
+        const tailGeo = new THREE.ShapeGeometry(tailShape, 4)
+        for(const s of [1,-1]){
+          const tail = shadows(new THREE.Mesh(tailGeo, ribbonMatDark))
+          tail.position.set(0.028*s, -0.01, 0.008)
+          tail.rotation.set(0.10, s*0.5, s*0.28)
+          bowGroup.add(tail)
+        }
+
+        /* posición: al frente del kraft (dentro de wrapGroup) */
+        bowGroup.position.set(0, -0.12, 0.53)
+        bowGroup.scale.setScalar(1.0)   /* sube o baja este valor para agrandar/achicar */
+        wrapGroup.add(bowGroup)
 
         /* boca, eje y perpendiculares del papel aplastado, en coords del ramo */
         bouquet.updateMatrixWorld(true)
