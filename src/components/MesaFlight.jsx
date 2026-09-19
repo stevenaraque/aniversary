@@ -526,7 +526,7 @@ export default function MesaFlight({ onDone }) {
       // ── ramo de girasoles: port fiel del demo (20 flores en domo + kraft) ──
       const bouquet = new THREE.Group()
       bouquet.position.set(-0.75, 0.03, -1.15) // orilla trasera, entre vela y anillo
-      bouquet.rotation.y = 1.15 // flores hacia la derecha
+      bouquet.rotation.y = 2.72 // +90° a la derecha
       const roses = []
       const petalMats = []
       {
@@ -714,30 +714,30 @@ export default function MesaFlight({ onDone }) {
           loop.rotation.z = s*1.9
           wrapGroup.add(loop)
         }
-        const MOUTH = new THREE.Vector3(0, 0.38, 0.09)
+        const MOUTH = new THREE.Vector3(0, 0.36, 0.09)
 
         /* 20 girasoles en domo: 1 centro + 7 + 12 */
         const defs = [
-          { p:[ 0.00, 0.72, 0.32], s:0.85, d:[ 0.00, 0.18] },
-          { p:[ 0.43, 0.64, 0.40], s:0.62, d:[ 0.21, 0.22] },
-          { p:[ 0.19, 0.64, 0.66], s:0.62, d:[ 0.10, 0.46] },
-          { p:[-0.19, 0.64, 0.66], s:0.62, d:[-0.10, 0.46] },
-          { p:[-0.43, 0.64, 0.40], s:0.62, d:[-0.21, 0.22] },
-          { p:[-0.34, 0.63, 0.08], s:0.60, d:[-0.17,-0.09] },
-          { p:[ 0.00, 0.63,-0.06], s:0.60, d:[ 0.00,-0.14] },
-          { p:[ 0.34, 0.63, 0.08], s:0.60, d:[ 0.17,-0.09] },
-          { p:[ 0.00, 0.54, 0.98], s:0.50, d:[ 0.00, 0.50] },
-          { p:[ 0.40, 0.54, 0.89], s:0.50, d:[ 0.20, 0.43] },
-          { p:[ 0.69, 0.54, 0.65], s:0.50, d:[ 0.35, 0.25] },
-          { p:[ 0.80, 0.54, 0.32], s:0.48, d:[ 0.40, 0.00] },
-          { p:[ 0.69, 0.53,-0.01], s:0.48, d:[ 0.35,-0.14] },
-          { p:[ 0.40, 0.53,-0.25], s:0.46, d:[ 0.20,-0.25] },
-          { p:[ 0.00, 0.53,-0.34], s:0.46, d:[ 0.00,-0.30] },
-          { p:[-0.40, 0.53,-0.25], s:0.46, d:[-0.20,-0.25] },
-          { p:[-0.69, 0.53,-0.01], s:0.48, d:[-0.35,-0.14] },
-          { p:[-0.80, 0.54, 0.32], s:0.48, d:[-0.40, 0.00] },
-          { p:[-0.69, 0.54, 0.65], s:0.50, d:[-0.35, 0.25] },
-          { p:[-0.40, 0.54, 0.89], s:0.50, d:[-0.20, 0.43] },
+    { p:[ 0.00, 0.57, 0.32], s:0.85, d:[ 0.00, 0.18] },
+    { p:[ 0.43, 0.49, 0.40], s:0.62, d:[ 0.21, 0.22] },
+    { p:[ 0.19, 0.49, 0.66], s:0.62, d:[ 0.10, 0.46] },
+    { p:[-0.19, 0.49, 0.66], s:0.62, d:[-0.10, 0.46] },
+    { p:[-0.43, 0.49, 0.40], s:0.62, d:[-0.21, 0.22] },
+    { p:[-0.34, 0.48, 0.08], s:0.60, d:[-0.17,-0.09] },
+    { p:[ 0.00, 0.48,-0.06], s:0.60, d:[ 0.00,-0.14] },
+    { p:[ 0.34, 0.48, 0.08], s:0.60, d:[ 0.17,-0.09] },
+    { p:[ 0.00, 0.39, 0.98], s:0.50, d:[ 0.00, 0.50] },
+    { p:[ 0.40, 0.39, 0.89], s:0.50, d:[ 0.20, 0.43] },
+    { p:[ 0.69, 0.39, 0.65], s:0.50, d:[ 0.35, 0.25] },
+    { p:[ 0.80, 0.39, 0.32], s:0.48, d:[ 0.40, 0.00] },
+    { p:[ 0.69, 0.38,-0.01], s:0.48, d:[ 0.35,-0.14] },
+    { p:[ 0.40, 0.38,-0.25], s:0.46, d:[ 0.20,-0.25] },
+    { p:[ 0.00, 0.38,-0.34], s:0.46, d:[ 0.00,-0.30] },
+    { p:[-0.40, 0.38,-0.25], s:0.46, d:[-0.20,-0.25] },
+    { p:[-0.69, 0.38,-0.01], s:0.48, d:[-0.35,-0.14] },
+    { p:[-0.80, 0.39, 0.32], s:0.48, d:[-0.40, 0.00] },
+    { p:[-0.69, 0.39, 0.65], s:0.50, d:[-0.35, 0.25] },
+    { p:[-0.40, 0.39, 0.89], s:0.50, d:[-0.20, 0.43] },
         ]
         const FACE = new THREE.Vector3(0,0,1)
         const D = new THREE.Vector3()
@@ -757,7 +757,7 @@ export default function MesaFlight({ onDone }) {
         }
 
         /* capullos cerrados entre las flores */
-        for(const [bx,by,bz,ba] of [[-0.55,0.62,0.50,0.5],[0.58,0.62,0.44,-0.6],[0.10,0.62,1.02,0.15]]){
+        for(const [bx,by,bz,ba] of [[-0.55,0.47,0.50,0.5],[0.58,0.47,0.44,-0.6],[0.10,0.47,1.02,0.15]]){
           const bud = new THREE.Group()
           const pod = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 8), calyxMat))
           pod.scale.set(1, 0.85, 1); bud.add(pod)
@@ -1175,7 +1175,7 @@ export default function MesaFlight({ onDone }) {
       const wingL = buildWingSide(); wingL.group.position.y = 0.10; wingL.group.scale.x = -1
       butterfly.add(wingR.group, wingL.group)
 
-      const perchPos = new THREE.Vector3(-0.44, 0.95, -1.00)
+      const perchPos = new THREE.Vector3(-0.60, 0.80, -1.42)
       butterfly.position.copy(perchPos)
       butterfly.rotation.y = 0.62
       scene.add(butterfly)
@@ -1272,7 +1272,7 @@ export default function MesaFlight({ onDone }) {
         butterfly:{ p:[2.6, 3.4, 4.8],   t:[0, 2.0, -0.4] },
         ring:     { p:[-0.1, 1.25, 2.6], t:[-1.25, 0.45, 1.05] },
         letter:   { p:[0.95, 1.7, 3.1],  t:[0.72, 0.12, 1.18] },
-        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.46, 0.7, -1.02] },
+        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.62, 0.55, -1.44] },
         candles:  { p:[3.2, 1.5, 1.2],   t:[1.55, 0.7, -0.85] },
         box:      { p:[3.0, 1.35, 1.9],  t:[2.25, 0.15, 0.55] },
       }
