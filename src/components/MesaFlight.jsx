@@ -523,9 +523,12 @@ export default function MesaFlight({ onDone }) {
         }
       }
 
-      // ── ramo de girasoles: 20 flores en domo + kraft + lazo ──
+      // ── ramo de girasoles: 31 flores, ACOSTADO sobre la mesa ──
+      // El grupo se construye en pie (domo +y) y se acuesta -90° en X:
+      // el domo mira al fondo, las caras quedan hacia arriba, lo bajo toca mesa.
       const bouquet = new THREE.Group()
-      bouquet.position.set(-0.52, 0.03, -0.89) // entre vela-anillo, hacia la orilla
+      bouquet.position.set(-0.45, 0.43, -0.60) // lo más bajo (y local -0.40) apoya en 0.03
+      bouquet.rotation.x = -Math.PI/2 // entre vela-anillo, hacia la orilla
       const roses = []
       const petalMats = []
       {
@@ -809,22 +812,22 @@ export default function MesaFlight({ onDone }) {
           bouquet.add(bud)
         }
 
-        /* hojas en cascada desde el borde del kraft */
-        for(let i=0;i<7;i++){
-          const a0 = i/7*6.2832 + 0.3
+        /* hojas recogidas a los costados del domo */
+        for(let i=0;i<4;i++){
+          const a0 = i/4*6.2832 + 0.7
           const arm = new THREE.Group()
-          arm.position.set(0.55*Math.cos(a0), 0.55, 0.25 + 0.55*Math.sin(a0))
+          arm.position.set(0.80*Math.cos(a0), 0.55, 0.30 + 0.55*Math.sin(a0))
           arm.rotation.y = Math.atan2(-Math.cos(a0), -Math.sin(a0))
           const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
-          leaf.scale.setScalar(0.95 + (i%3)*0.08)
-          leaf.rotation.x = -2.2 + (i%2)*0.15
+          leaf.scale.setScalar(0.7)
+          leaf.rotation.x = -2.0
           leaf.castShadow = true
           arm.add(leaf)
           bouquet.add(arm)
         }
       }
       scene.add(bouquet)
-      register('bouquet', bouquet, 0.95)
+      register('bouquet', bouquet, 1.15)
 
       // ── carta ──
       const letterGroup = new THREE.Group()
@@ -1200,7 +1203,7 @@ export default function MesaFlight({ onDone }) {
       const wingL = buildWingSide(); wingL.group.position.y = 0.10; wingL.group.scale.x = -1
       butterfly.add(wingR.group, wingL.group)
 
-      const perchPos = new THREE.Vector3(-0.47, 0.98, -0.52)
+      const perchPos = new THREE.Vector3(-0.43, 0.95, -1.30)
       butterfly.position.copy(perchPos)
       butterfly.rotation.y = 0.62
       scene.add(butterfly)
@@ -1297,7 +1300,7 @@ export default function MesaFlight({ onDone }) {
         butterfly:{ p:[2.6, 3.4, 4.8],   t:[0, 2.0, -0.4] },
         ring:     { p:[-0.1, 1.25, 2.6], t:[-1.25, 0.45, 1.05] },
         letter:   { p:[0.95, 1.7, 3.1],  t:[0.72, 0.12, 1.18] },
-        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.52, 0.75, -0.54] },
+        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.45, 0.85, -1.25] },
         candles:  { p:[3.2, 1.5, 1.2],   t:[1.55, 0.7, -0.85] },
         box:      { p:[3.0, 1.35, 1.9],  t:[2.25, 0.15, 0.55] },
       }
