@@ -821,39 +821,7 @@ export default function MesaFlight({ onDone }) {
           bouquet.add(strut(start, end, 0.030, 0.016, stemMat))
         }
 
-        /* collar de hojas rastreras junto a la boca */
-        for(let i=0;i<9;i++){
-          const a = i/9*6.2832 + rnd(0, 0.4)
-          const arm = new THREE.Group()
-          arm.position.set(Math.cos(a)*0.72, 0.28 + Math.sin(a)*0.07, -0.04 + Math.sin(a)*0.55)
-          const dir = new THREE.Vector3(Math.cos(a)*0.95, 0.30, Math.sin(a)*0.75 + 0.15).normalize()
-          arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir)
-          const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
-          leaf.scale.setScalar(rnd(0.70, 0.95))
-          leaf.castShadow = true
-          arm.add(leaf)
-          bouquet.add(arm)
-        }
-        /* hojas intermedias entre anillos */
-        const midLeafDefs = [
-          { p:[ 0.55, 0.18, 0.60], d:[ 0.75, 0.30, 0.55], rx:-1.3, s:0.9 },
-          { p:[-0.55, 0.18, 0.60], d:[-0.75, 0.30, 0.55], rx:-1.3, s:0.9 },
-          { p:[ 0.30, 0.24, 0.85], d:[ 0.35, 0.45, 0.80], rx:-1.2, s:0.8 },
-          { p:[-0.30, 0.24, 0.85], d:[-0.35, 0.45, 0.80], rx:-1.2, s:0.8 },
-          { p:[ 0.70, 0.14, 0.15], d:[ 0.90, 0.18, 0.10], rx:-1.4, s:1.0 },
-          { p:[-0.70, 0.14, 0.15], d:[-0.90, 0.18, 0.10], rx:-1.4, s:1.0 },
-        ]
-        for(const L of midLeafDefs){
-          const arm = new THREE.Group()
-          arm.position.set(...L.p)
-          arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(...L.d).normalize())
-          const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
-          leaf.scale.setScalar(L.s)
-          leaf.rotation.x = L.rx
-          leaf.castShadow = true
-          arm.add(leaf)
-          bouquet.add(arm)
-        }
+        /* (collar e intermedias eliminados: atravesaban el kraft) */
 
         /* nube blanca (ramitas sin sombra: diminutas, ahorro de shadow pass) */
         const makeSprig = () => {
