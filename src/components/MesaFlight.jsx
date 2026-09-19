@@ -688,9 +688,9 @@ export default function MesaFlight({ onDone }) {
 
         /* envoltura kraft (igual al demo) */
         const wrapGroup = new THREE.Group()
-        wrapGroup.position.set(0, 0.21, -0.52)
+        wrapGroup.position.set(0, 0.28, -0.52)
         wrapGroup.rotation.x = -0.28
-        wrapGroup.scale.setScalar(1.5) // base grande, fondo tocando mesa
+        wrapGroup.scale.set(1.5, 0.55, 1.5) // aplastado: bajo y pegado al nivel de flores/hojas
         bouquet.add(wrapGroup)
         const kraft = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
         const mkWrap = (rT, rB, len, twist) => {
