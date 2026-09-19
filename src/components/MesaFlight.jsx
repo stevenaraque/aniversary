@@ -688,9 +688,9 @@ export default function MesaFlight({ onDone }) {
 
         /* envoltura kraft (igual al demo) */
         const wrapGroup = new THREE.Group()
-        wrapGroup.position.set(0, 0.28, -0.52)
+        wrapGroup.position.set(0, 0.18, -0.52)
         wrapGroup.rotation.x = -0.28
-        wrapGroup.scale.set(1.5, 0.55, 1.5) // aplastado: bajo y pegado al nivel de flores/hojas
+        wrapGroup.scale.set(1.5, 0.7, 1.5) // cono: boca ancha arriba, punta abajo
         bouquet.add(wrapGroup)
         const kraft = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
         const mkWrap = (rT, rB, len, twist) => {
@@ -698,12 +698,12 @@ export default function MesaFlight({ onDone }) {
           geo.rotateY(twist); geo.rotateX(Math.PI/2)
           return shadows(new THREE.Mesh(sanitizeGeometry(geo), kraft))
         }
-        wrapGroup.add(mkWrap(0.42, 0.18, 0.84, 0.4))
-        wrapGroup.add(mkWrap(0.38, 0.16, 0.74, 2.1))
-        const innerGeo = new THREE.CylinderGeometry(0.20, 0.15, 0.5, 10)
+        wrapGroup.add(mkWrap(0.50, 0.03, 0.84, 0.4))
+        wrapGroup.add(mkWrap(0.46, 0.03, 0.74, 2.1))
+        const innerGeo = new THREE.CylinderGeometry(0.12, 0.10, 0.30, 10)
         innerGeo.rotateX(Math.PI/2)
         const inner = new THREE.Mesh(sanitizeGeometry(innerGeo), mat(0x6E5638, 1))
-        inner.position.set(0, 0, 0.22); wrapGroup.add(inner)
+        inner.position.set(0, 0, 0.05); wrapGroup.add(inner)
         const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.022, 8, 26), mat(0xCE452C, 0.7)))
         ribbon.position.set(0, 0, 0.02); wrapGroup.add(ribbon)
         const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), mat(0xCE452C, 0.7)))
@@ -714,7 +714,7 @@ export default function MesaFlight({ onDone }) {
           loop.rotation.z = s*1.9
           wrapGroup.add(loop)
         }
-        const MOUTH = new THREE.Vector3(0, 0.36, 0.09)
+        const MOUTH = new THREE.Vector3(0, 0.35, 0.09)
 
         /* 20 girasoles en domo: 1 centro + 7 + 12 */
         const defs = [
