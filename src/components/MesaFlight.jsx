@@ -795,9 +795,9 @@ export default function MesaFlight({ onDone }) {
           bowGroup.add(tail)
         }
 
-        /* posición: al frente del kraft (dentro de wrapGroup) */
-        bowGroup.position.set(0, -0.12, 0.53)
-        bowGroup.scale.setScalar(1.0)   /* sube o baja este valor para agrandar/achicar */
+        /* posición: encima del kraft, delante de la boca (fuera del tubo) */
+        bowGroup.position.set(0, 0.55, 0.45)
+        bowGroup.scale.setScalar(1.6)   /* sube o baja este valor para agrandar/achicar */
         wrapGroup.add(bowGroup)
 
         /* boca, eje y perpendiculares del papel aplastado, en coords del ramo */
