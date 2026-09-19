@@ -3,7 +3,7 @@
 > Regalo interactivo por 2 años juntos (26.08.2024 → 26.08.2026). Web inmersiva en React con **Liquid Glass Gótico**, **Motion** y patrón **Container/Wrapper** sin scroll.
 
 **Repo:** `stevenaraque/aniversary` (`main` estable)  
-**Stack:** React 19 + Vite 8 + Tailwind 4 + Motion + Lucide  
+**Stack:** React 19 + Vite 8 + Tailwind 4 + Motion + Lucide + Three 0.160 + animejs
 **Paleta:** Negro `#050505` Obsidian `#0a0a0f` / Vino `#8b0000→#dc143c` / Dorado `#d4af37→#f9e076` / Bone `#e8dcc8`
 
 > **Para retomar en otro chat:** lee `CONTEXT.md` en la raíz — contiene ramas, decisiones, stack y pendientes.
@@ -18,7 +18,7 @@
 | 2 | **Countdown** | `Countdown.jsx:7` | Desde **26.08.2024** calendario real, 6 bloques `gold/crimson` con anillo SVG + watermark `II`, `pebble-button` bat, `Mi Canelita` badge |
 | 3 | **Puzzle 4×4** | `Puzzle.jsx:64` | 16 piezas, board `glass-deep` + spotlight, fix `isSolvable` |
 | 4 | **MemoryLane** | `MemoryLane.jsx:17` | Carrusel swipe `drag x` |
-| 5 | **Letter** | `Letter.jsx:7` | Carta papyrus + vuelo 3D mariposa (`ButterflyFlight`) |
+| 5 | **Letter** | `Letter.jsx:7` | Carta papyrus + bodegón 3D (`MesaFlight`): ramo 20 girasoles + onda de luz al clic |
 | 6 | **Collage** | `Collage.jsx:39` | Masonry `columns` |
 | 7 | **Playlist** | `Playlist.jsx:153` | Reproductor gótico: disco giratorio + lista panel + shuffle/repeat + visualizer |
 
@@ -28,14 +28,14 @@
 
 ```html
 <section class="main-wrapper">  <!-- 100% flex center min-h-[100dvh] h-[100dvh] overflow-hidden bg-transparent -->
-  <div class="container-lg">      <!-- 1280px grid [1.05fr_0.95fr] gap-14 px-6→8 -->
+  <div class="shell-lg">      <!-- 1280px grid [1.05fr_0.95fr] gap-14 px-6→8 -->
     <div class="content">...</div>
     <div class="photo gothic-prism">...</div>
   </div>
 </section>
 ```
 
-- `src/index.css:280` → `.main-wrapper`, `.container` 1200, `.container-lg` 1280, `.container-sm` 880, `px 20→16` móvil
+- `src/index.css:280` → `.main-wrapper`, `.shell` 1200, `.shell-lg` 1280, `.shell-sm` 880, `px 20→16` móvil
 - Fondo global `CosmosBackground.jsx:1` `fixed inset-0` 300★ + 18☄ `spawn 2-8` visible detrás (`bg-transparent` en secciones)
 - Intro/Coundown `100dvh` sin scroll, centrado, `Cormorant Garamond` (delicada), `will-change` GPU
 
@@ -72,6 +72,7 @@ anniversary-app/
 │   │   ├── Puzzle.jsx
 │   │   ├── MemoryLane.jsx
 │   │   ├── Letter.jsx
+│   │   ├── MesaFlight.jsx     # bodegón 3D: girasoles + kraft + moño
 │   │   ├── Collage.jsx
 │   │   └── Playlist.jsx
 │   ├── data/
@@ -113,4 +114,6 @@ Hecho con amor por **Steven** — 2 años juntos. Diseño: Liquid Glass Gótico 
 
 
 > Update 25-08-2026: MemoryLane responsive + puzzle centrado + margenes invisibles
+
+> Update 19-09-2026 (`ea992ff`): auditoría (dead code fuera, `.shell`, reset `@layer`, perf 30fps) + ramo girasoles doble corona con onda de luz + moño gota. Detalle en `CONTEXT.md`.
 

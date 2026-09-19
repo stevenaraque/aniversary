@@ -158,3 +158,13 @@ Auditoría sección por sección: lo que trababa el navegador era cantidad de ca
 - **Bug:** `addGroup(0,N,0)+addGroup(0,N,1)` sin groups no dibuja
 - Ahora en `main` `75f805f`
 
+## Update 19-09-2026 — auditoría + ramo girasoles (main `ea992ff`)
+
+- **Auditoría general** `01d57fc`: lint 0/0. Borrados `ButterflyFlight.jsx` + `origamiButterfly.js` (0 imports, `Letter` usa `MesaFlight`). `MesaFlight`: pausa hidden, throttle 30fps, pick 120ms, dispose total escena, timers con id. `Collage`: fuera `filter:blur` en entrada.
+- **Calidad** (mismo commit): `.container/.container-lg/.container-sm` → `.shell/.shell-lg/.shell-sm` (colisión Tailwind), reset `*` → `@layer base` box-sizing (¡activa 68 utilidades m-/p- muertas, revisar visual!), neon global → solo `h1,h2,h3`, clave Intro → `VITE_INTRO_CODE` + `.env.example`, fuera `motionTokens`/`glassTokens`.
+- **Rendimiento**: Cosmos halo pre-renderizado por paleta (1 drawImage + 1 gradiente por cometa), Playlist partículas 30fps, Intro `blur(28→8px)` móvil, MesaFlight DPR 1.5 móvil.
+- **Ramo girasoles** (demo `girasoles.txt` v2, tirado a ras): 20 cabezas doble corona + kraft churruscado `(1.46,0.50,1.01)` + tallos en abanico desde boca calculada por matriz + nube blanca (sin sombras) + 7 hojas al mantel + 3 capullos. Sin collar/intermedias (atravesaban el kraft `e404998`). Posición orilla trasera `(-0.65,0.03,-1.00)`, `rotation.y=-0.91` (miran izquierda).
+- **Cinta + moño** `ea992ff`: lazo torus SIN rotación (el tubo va en Z, el toro por defecto ya abraza — rotarlo lo pone de canto). Moño: lazadas gota `TubeGeometry` + nudo con venda + colas V curvas. Perillas: `bowGroup.scale`, `RIBBON_Y`, coef `3.0` colas.
+- **Onda de luz**: click → `lightRipple` + pétalos + `flyTo` (conservada del demo, sin toasts).
+- **Build:** `63kB CSS / 172kB JS + 538kB three + 130kB motion`, lint 0/0.
+

@@ -1,7 +1,7 @@
 # ERRORES Y LECCIONES — anniversary-app
 
 > Bitácora de errores reales del proyecto y cómo no repetirlos.
-> Última actualización: 2026-09-15 — `main` `c7eb44d` (origami + perf 30fps)
+> Última actualización: 2026-09-19 — `main` `ea992ff` (ramo girasoles + moño)
 
 ---
 
@@ -115,3 +115,38 @@
 - **Causa:** en `ButterflyFlight.jsx` los handlers `onResize`/`onVis` eran `const` dentro del `try`, pero el `return` de limpieza quedó fuera del bloque → `ReferenceError` al desmontar.
 - **Solución:** handlers en `let` externos con guardas (`if (onResize)...`, `if (!renderer) return` dentro).
 - **Regla:** todo lo que toque el cleanup vive fuera del `try` o con guarda nula.
+
+## 19. Reset `*` sin capa: quitarlo activa utilidades muertas en TODO el sitio
+
+- **Síntoma:** tras mover el reset a `@layer base`, 68 utilidades `m-/p-` antes muertas empezaron a aplicar de golpe.
+- **Causa:** el sitio se compuso visualmente con esas utilidades en 0 (ver #1).
+- **Solución:** cambio aplicado + revisión visual obligada sección por sección en dev antes de dar por listo.
+- **Regla:** todo fix global de CSS exige pasada visual completa, sin excepción.
+
+## 20. Giro rígido de grupo preserva contactos (pero nada más)
+
+- **Síntoma:** al acostar el ramo con `rotation.x=-PI/2`, tallos y flores seguían conectados pero la mariposa dormía en el aire y la cámara apuntaba al vacío.
+- **Causa:** la rotación mueve todo junto; `perchPos`, `VIEWS` y el marker usan coordenadas de mundo y quedan obsoletos.
+- **Solución:** recalcular `perchPos` (cabeza central + offset), `VIEWS.bouquet` y radio de `register` en cada reposicionamiento.
+- **Regla:** mover un grupo 3D = actualizar perch + cámara + marker siempre (revertido el acostado por feo, `ce445dd`).
+
+## 21. `TorusGeometry` por defecto ya abraza un tubo en Z
+
+- **Síntoma:** propuesta de agregar `rotation.x=PI/2` al lazo del kraft "para que abrace".
+- **Causa:** el toro vive en el plano XY (agujero en Z); el tubo del kraft corre en Z tras `rotateX(PI/2)` → ya lo abraza sin rotación.
+- **Solución:** no se aplicó la rotación (habría puesto el aro de canto, atravesando el cono).
+- **Regla:** antes de "corregir" orientación 3D, verificar el eje real del tubo vs el plano del toro.
+
+## 22. Hojas que intersectan el kraft: quitar, no mover a ciegas
+
+- **Síntoma:** collar e intermedias atravesaban el papel en varias vistas.
+- **Causa:** el kraft escalado no-uniforme + tilt mueve las paredes; calcular a ciegas qué hoja roza es imposible sin ver.
+- **Solución:** eliminadas collar + intermedias (`e404998`), quedan las 7 del mantel + brácteas.
+- **Regla:** vegetación que clippea sin prueba visual → fuera; re-agregar solo con captura que lo pida.
+
+## 23. Elementos diminutos sin sombras (ahorro gratis)
+
+- **Síntoma:** nube blanca (12 ramitas × ~15 meshes) en el shadow pass por defecto.
+- **Causa:** `strut()`/`shadows()` activan sombras en todo; en buds de 2-3cm la sombra es invisible.
+- **Solución:** ramitas con `Mesh` pelado (sin `shadows()`), ahorro de ~180 dibujos en sombra.
+- **Regla:** lo que mida <5cm en escena no lleva sombras.
