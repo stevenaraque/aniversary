@@ -755,49 +755,92 @@ export default function MesaFlight({ onDone }) {
         mass.position.set(0, 0, 0.28)
         wrapGroup.add(mass)
 
-        /* lazo rojo alrededor del kraft + moño */
-        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.40, 0.024, 8, 30), mat(0xCE452C, 0.7)))
-        ribbon.position.set(0, 0, 0.14)
-        wrapGroup.add(ribbon)
-        /* ---------- MOÑO (reemplaza el knot y los loops antiguos) ---------- */
-        const bowGroup = new THREE.Group()
-        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.65, side:THREE.DoubleSide })
-        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0xB23A20, roughness:0.70, side:THREE.DoubleSide })
+        /* ============ CINTA + MOÑO ============ */
 
-        /* las dos lazadas — toros parciales aplastados e inclinados */
+        /* materiales unificados (cinta y moño del mismo tono exacto) */
+        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.65, side:THREE.DoubleSide })
+        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0xA93820, roughness:0.70, side:THREE.DoubleSide })
+
+        /* constantes compartidas: así el moño SIEMPRE queda sobre la cinta */
+        const RIBBON_Y = -0.05   /* altura del lazo          */
+        const RIBBON_Z =  0.14   /* empuje frontal (kraft inclinado) */
+        const RIBBON_R =  0.40   /* radio = ancho del kraft ahí */
+
+        /* --- cinta que abraza el kraft --- */
+        /* NOTA: sin rotation.x — el tubo va en Z y el toro por defecto ya lo abraza
+           (tu captura lo confirma: la banda roja actual sí ciñe el kraft) */
+        const ribbon = shadows(new THREE.Mesh(
+          new THREE.TorusGeometry(RIBBON_R, 0.024, 14, 72), ribbonMat))
+        ribbon.position.set(0, RIBBON_Y, RIBBON_Z)
+        wrapGroup.add(ribbon)
+
+        /* --- moño --- */
+        const bowGroup = new THREE.Group()
+
+        /* lazadas: tubo con forma de gota (mucho mejor que toros parciales) */
+        function loopGeometry(side){
+          const pts = [
+            new THREE.Vector3(0.000, 0.000,  0.022),
+            new THREE.Vector3(0.075, 0.014,  0.030),
+            new THREE.Vector3(0.138, 0.062,  0.012),
+            new THREE.Vector3(0.098, 0.118, -0.012),
+            new THREE.Vector3(0.024, 0.092, -0.020)
+          ].map(p => new THREE.Vector3(p.x * side, p.y, p.z))  /* espejo real, sin scale negativo */
+          const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 64, 0.020, 10, true)
+          geo.scale(1, 1, 0.55)   /* aplana el tubo → parece cinta, no manguera */
+          return geo
+        }
+
         for(const s of [1,-1]){
-          const loop = shadows(new THREE.Mesh(
-            new THREE.TorusGeometry(0.085, 0.030, 10, 24, Math.PI*1.25), ribbonMat))
-          loop.scale.set(1, 0.62, 0.5)
-          loop.position.set(0.085*s, 0.02, 0)
-          loop.rotation.set(0.15, s*0.35, s*0.45)
+          const loop = shadows(new THREE.Mesh(loopGeometry(s), ribbonMat))
+          loop.position.set(0, 0.02, 0.02)
+          loop.rotation.set(0.12, -s * 0.28, -s * 0.10)
           bowGroup.add(loop)
         }
 
-        /* nudo central achatado */
-        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.042, 12, 10), ribbonMat))
-        knot.scale.set(1, 0.8, 0.75)
+        /* nudo central + venda que lo aprieta (detalle que suma realismo) */
+        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.048, 20, 14), ribbonMat))
+        knot.scale.set(1.2, 0.9, 0.75)
+        knot.position.set(0, 0.02, 0.015)
         bowGroup.add(knot)
 
-        /* colas con punta en V (cinta cortada en pico) */
-        const tailShape = new THREE.Shape()
-        tailShape.moveTo(-0.035, 0)
-        tailShape.lineTo( 0.035, 0)
-        tailShape.lineTo( 0.035, -0.16)
-        tailShape.lineTo( 0,     -0.125)
-        tailShape.lineTo(-0.035, -0.16)
-        tailShape.closePath()
-        const tailGeo = new THREE.ShapeGeometry(tailShape, 4)
+        const cinch = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.047, 0.012, 10, 28), ribbonMatDark))
+        cinch.rotation.x = Math.PI / 2
+        cinch.scale.set(1.18, 0.85, 1)
+        cinch.position.copy(knot.position)
+        bowGroup.add(cinch)
+
+        /* colas con punta en V y caída curvada hacia el kraft */
+        function tailGeometry(){
+          const sh = new THREE.Shape()
+          sh.moveTo(-0.030,  0)
+          sh.lineTo( 0.030,  0)
+          sh.lineTo( 0.040, -0.21)
+          sh.lineTo( 0.000, -0.155)
+          sh.lineTo(-0.040, -0.21)
+          sh.closePath()
+          const g = new THREE.ShapeGeometry(sh, 8)
+          const p = g.attributes.position
+          for(let i = 0; i < p.count; i++){
+            const y = p.getY(i)
+            p.setZ(i, -3.0 * y * y + 0.006)   /* curva de caída (sube/baja el 3.0) */
+          }
+          g.computeVertexNormals()
+          return g
+        }
+
+        const tailGeo = tailGeometry()
         for(const s of [1,-1]){
           const tail = shadows(new THREE.Mesh(tailGeo, ribbonMatDark))
-          tail.position.set(0.028*s, -0.01, 0.008)
-          tail.rotation.set(0.10, s*0.5, s*0.28)
+          tail.position.set(0.018 * s, -0.015, 0.03)
+          tail.rotation.set(0.10, -s * 0.35, s * 0.22)
+          if(s === 1) tail.scale.set(0.94, 0.9, 1)   /* asimetría sutil = más natural */
           bowGroup.add(tail)
         }
 
-        /* posición: al frente del kraft (dentro de wrapGroup) */
-        bowGroup.position.set(0, -0.12, 0.53)
-        bowGroup.scale.setScalar(1.0)   /* sube o baja este valor para agrandar/achicar */
+        /* posición: calcada de la cinta → quedan pegados siempre */
+        bowGroup.position.set(0, RIBBON_Y, RIBBON_Z + RIBBON_R - 0.01)
+        bowGroup.scale.setScalar(1.1)   /* ← tamaño del moño */
         wrapGroup.add(bowGroup)
 
         /* boca, eje y perpendiculares del papel aplastado, en coords del ramo */
