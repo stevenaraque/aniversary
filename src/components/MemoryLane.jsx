@@ -72,7 +72,7 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
         <FlowerIcon className="w-5 h-5 text-gold" />
       </div>
 
-      <div className="container-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8 overflow-visible">
+      <div className="shell-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8 overflow-visible">
         <motion.div className="text-center w-full max-w-3xl mx-auto" initial={{y:-14,opacity:0}} animate={{y:0,opacity:1}} transition={springs.gentle}>
           <Camera className="w-8 h-8 sm:w-10 sm:h-10 text-crimson/25 mx-auto mb-3" />
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold" style={{fontFamily:'Cormorant Garamond,serif'}}><span className="text-gradient-blood">Paseo de</span> <span className="text-white">recuerdos</span></h2>

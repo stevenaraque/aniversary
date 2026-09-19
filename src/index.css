@@ -20,10 +20,10 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
 }
 
 body {
@@ -64,8 +64,8 @@ p {
   text-shadow: 0 1px 12px rgba(0,0,0,0.75), 0 0 18px rgba(255,255,255,0.06);
 }
 
-/* ─── Tenue Neon global — luz muy sutil para legibilidad sobre #050505 ─── */
-h1, h2, h3, span, p, a, li {
+/* ─── Tenue Neon global — solo titulares (perf: evita costo GPU en cada nodo de texto) ─── */
+h1, h2, h3 {
   text-shadow: 0 1px 10px rgba(0,0,0,0.65), 0 0 16px rgba(255,255,255,0.05);
 }
 .text-gold, .text-gold-light, .text-gold-dark, [class*="text-gold"] {
@@ -311,21 +311,21 @@ h1, h2, h3, span, p, a, li {
   align-items: center;
 }
 
-.container {
+.shell {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-.container-lg {
+.shell-lg {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-.container-sm {
+.shell-sm {
   width: 100%;
   max-width: 880px;
   margin: 0 auto;
@@ -367,7 +367,7 @@ h1, h2, h3, span, p, a, li {
 
 @media (max-width: 768px) {
   .section-wrapper { padding: 48px 5vw; }
-  .container, .container-lg, .container-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
+  .shell, .shell-lg, .shell-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
   .main-wrapper {
     padding-left: 5vw !important; padding-right: 5vw !important;
     height: auto !important; min-height: 100dvh !important;
@@ -376,7 +376,7 @@ h1, h2, h3, span, p, a, li {
     padding-bottom: 24px !important;
     align-items: flex-start !important;
   }
-  .main-wrapper .container, .main-wrapper .container-lg, .main-wrapper .container-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
+  .main-wrapper .shell, .main-wrapper .shell-lg, .main-wrapper .shell-sm { padding-left: 5vw !important; padding-right: 5vw !important; }
   .main-wrapper .umbra-hero { height: auto !important; min-height: 100dvh !important; align-items: flex-start !important; padding-top: 12px; padding-bottom: 12px; }
 }
 

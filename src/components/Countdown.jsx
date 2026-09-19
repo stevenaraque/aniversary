@@ -90,7 +90,7 @@ export default function Countdown({ onNext, onPrev }) {
       <div className="absolute top-[18%] left-[6%] opacity-[0.03] hidden lg:block count-drift-a"><Crown className="w-5 h-5 text-gold" /></div>
       <div className="absolute bottom-[18%] right-[6%] opacity-[0.03] hidden lg:block count-drift-b"><Gem className="w-5 h-5 text-crimson" /></div>
 
-      <div className="container relative z-10 flex flex-col items-center justify-center min-h-[100dvh] h-[100dvh] py-5 sm:py-6 text-center gap-4 sm:gap-5 px-4 overflow-hidden">
+      <div className="shell relative z-10 flex flex-col items-center justify-center min-h-[100dvh] h-[100dvh] py-5 sm:py-6 text-center gap-4 sm:gap-5 px-4 overflow-hidden">
         <motion.div initial={{y:-14, opacity:0}} animate={{y:0, opacity:1}} transition={springs.gentle} className="flex flex-col items-center gap-3 w-full">
           <div className="flex items-center justify-center gap-2 glass px-4 py-1.5 rounded-full border border-gold/30 outline outline-1 outline-offset-[3px] outline-gold/20 shadow-[0_0_18px_rgba(212,175,55,0.15),inset_0_1px_0_rgba(255,255,255,0.07)]">
             <Crown className="w-3 h-3 text-gold/70" /><span className="text-[10px] tracking-[0.22em] uppercase text-gold-light/80">Mi Canelita</span><Gem className="w-3 h-3 text-crimson/60" />

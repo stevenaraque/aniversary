@@ -177,6 +177,20 @@ export default function CosmosBackground() {
       { head: '#ffffff', mid: '#ffeaa7', tail: 'rgba(199,139,30,0)' },
       { head: '#fff0d0', mid: '#e8941a', tail: 'rgba(139,94,15,0)' },
     ]
+    // perf: halo pre-renderizado por paleta — evita crear 1 gradiente + 1 stroke ancho por cometa por frame
+    const TAIL_LEN = 440, TAIL_H = 64
+    const tailSprites = COMET_PALETTES.map((pal) => {
+      const cv = document.createElement('canvas'); cv.width = TAIL_LEN; cv.height = TAIL_H
+      const g = cv.getContext('2d')
+      const grad = g.createLinearGradient(0, 0, TAIL_LEN, 0)
+      grad.addColorStop(0, pal.mid); grad.addColorStop(0.3, 'rgba(212,175,55,0.26)'); grad.addColorStop(1, pal.tail)
+      g.fillStyle = grad; g.fillRect(0, 0, TAIL_LEN, TAIL_H)
+      g.globalCompositeOperation = 'destination-in'
+      const soft = g.createLinearGradient(0, 0, 0, TAIL_H)
+      soft.addColorStop(0, 'rgba(0,0,0,0)'); soft.addColorStop(0.5, 'rgba(0,0,0,1)'); soft.addColorStop(1, 'rgba(0,0,0,0)')
+      g.fillStyle = soft; g.fillRect(0, 0, TAIL_LEN, TAIL_H)
+      return cv
+    })
     function createComet() {
       const baseAngle = -Math.PI * 0.22, angle = baseAngle + rand(-0.16, 0.16)
       const speed = rand(4, 8), vx = Math.cos(angle) * speed, vy = Math.sin(angle) * speed
@@ -185,17 +199,17 @@ export default function CosmosBackground() {
       if (edge < 0.5) { x = rand(-150, W); y = -rand(0, H * 0.4) }
       else if (edge < 0.75) { x = rand(-150, W * 0.6); y = H + rand(10, 200) }
       else { x = rand(-200, -10); y = rand(H * 0.1, H + 150) }
-      const pal = COMET_PALETTES[(Math.random() * COMET_PALETTES.length) | 0]
-      return { x, y, vx, vy, tailLen: rand(240, 420), w: rand(1.2, 2.8), alive: true, brightness: rand(0.6, 1), sparkTimer: 0, head: pal.head, mid: pal.mid, tail: pal.tail, spriteIdx: (Math.random() * 3) | 0 }
+      const palIdx = (Math.random() * COMET_PALETTES.length) | 0
+      const pal = COMET_PALETTES[palIdx]
+      return { x, y, vx, vy, tailLen: rand(240, 420), w: rand(1.2, 2.8), alive: true, brightness: rand(0.6, 1), sparkTimer: 0, head: pal.head, mid: pal.mid, tail: pal.tail, palIdx, spriteIdx: (Math.random() * 3) | 0 }
     }
     function updateComet(c) { c.x += c.vx; c.y += c.vy; c.sparkTimer++; if (c.sparkTimer % 5 === 0) spawnParticle(c.x, c.y); if (c.y < -300 || c.x > W + 300) c.alive = false }
     function drawComet(c) {
       const spd = Math.sqrt(c.vx * c.vx + c.vy * c.vy), dx = -c.vx / spd, dy = -c.vy / spd, tx = c.x + dx * c.tailLen, ty = c.y + dy * c.tailLen
-      // perf: 2 pasadas (halo + núcleo) en vez de 3 — mismo look, 1 gradiente menos por cometa
-      const gHalo = ctx.createLinearGradient(c.x, c.y, tx, ty)
-      gHalo.addColorStop(0, c.mid); gHalo.addColorStop(0.3, 'rgba(212,175,55,0.26)'); gHalo.addColorStop(1, c.tail)
-      ctx.globalAlpha = c.brightness * 0.4; ctx.strokeStyle = gHalo; ctx.lineWidth = c.w * 7; ctx.lineCap = 'round'
-      ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke()
+      // perf: halo desde sprite (mismo look, sin gradiente ni stroke ancho por frame)
+      const spr = tailSprites[c.palIdx], hh = c.w * 7
+      ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(Math.atan2(c.vy, c.vx) + Math.PI)
+      ctx.globalAlpha = c.brightness * 0.4; ctx.drawImage(spr, 0, -hh / 2, c.tailLen, hh); ctx.restore()
       const gCore = ctx.createLinearGradient(c.x, c.y, tx, ty)
       gCore.addColorStop(0, c.head); gCore.addColorStop(0.15, c.mid); gCore.addColorStop(1, c.tail)
       ctx.globalAlpha = c.brightness; ctx.strokeStyle = gCore; ctx.lineWidth = c.w; ctx.lineCap = 'round'

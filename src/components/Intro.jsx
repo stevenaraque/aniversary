@@ -110,7 +110,8 @@ export default function Intro({ onNext }) {
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [shake, setShake] = useState(false)
-  const CORRECT = '654321'
+  // Gate UX, no seguridad: la clave vive en el bundle. Personalizable con VITE_INTRO_CODE.
+  const CORRECT = import.meta.env.VITE_INTRO_CODE ?? '654321'
   const handleUnlock = () => {
     if (code === CORRECT) { setError(''); onNext() }
     else { setError('Clave incorrecta'); setShake(true); setTimeout(()=>setShake(false), 400) }
@@ -177,7 +178,7 @@ export default function Intro({ onNext }) {
         </div>
         <div className="umbra-ink" style={{left:'19%'}}></div><div className="umbra-ink" style={{left:'44%',animationDelay:'3s'}}></div><div className="umbra-ink" style={{left:'71%',animationDelay:'6s'}}></div><div className="umbra-ink" style={{left:'87%',animationDelay:'2s'}}></div>
 
-        <div className="container-lg relative z-10 grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-14 items-center w-full px-6 lg:px-8 py-8">
+        <div className="shell-lg relative z-10 grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-14 items-center w-full px-6 lg:px-8 py-8">
           <div className="flex flex-col items-center text-center gap-5 order-1">
             <motion.div initial={{opacity:0,y:-12}} animate={{opacity:1,y:0}} transition={{delay:0.2,...springs.gentle}} className="flex items-center justify-center gap-2 glass px-5 py-1.5 rounded-full border border-gold/20 w-auto mx-auto text-center">
               <Crown className="w-3.5 h-3.5 text-gold shrink-0" />
@@ -244,7 +245,7 @@ export default function Intro({ onNext }) {
               .frame-caption-prism{position:absolute;bottom:12px;left:12px;right:12px;z-index:10;text-align:center;pointer-events:none;background:linear-gradient(to top,rgba(10,10,15,0.65),transparent);padding:10px 0 4px;border-radius:0 0 2px 2px}
               .frame-caption-prism .line-prism{width:40px;height:1px;margin:0 auto 8px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent)}
               .frame-caption-prism span{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(232,220,200,0.45)}
-              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px;max-height:48dvh}.image-area-prism img{height:auto;max-height:48dvh}}
+              @media(max-width:640px){.gothic-prism{max-width:100%; margin:0 auto}.corner{width:52px;height:52px}.gothic-arch{height:42px}.image-area-prism{margin:14px;max-height:48dvh}.image-area-prism img{height:auto;max-height:48dvh}.crystal-frame{backdrop-filter:blur(8px) saturate(1.2);-webkit-backdrop-filter:blur(8px) saturate(1.2)}}
             `}</style>
             <div className="gothic-prism">
               <div className="prism-border"></div>

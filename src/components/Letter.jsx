@@ -15,7 +15,7 @@ class FlightErrorBoundary extends Component {
   render() { return this.state.failed ? null : this.props.children }
 }
 
-// ── Carta + vuelo 3D (ButterflyFlight) — carta papyrus ──
+// ── Carta + vuelo 3D (MesaFlight) — carta papyrus ──
 export default function Letter({ onNext, onPrev }) {
   const [phase, setPhase] = useState('idle') // idle | flying | open
   const envelopeRef = useRef(null)
@@ -26,7 +26,7 @@ export default function Letter({ onNext, onPrev }) {
     setPhase('flying')
   }, [phase])
 
-  // ── Vuelo 3D: lo renderiza <ButterflyFlight> durante phase==='flying' ──
+  // ── Vuelo 3D: lo renderiza <MesaFlight> durante phase==='flying' ──
 
   const envRaf = useRef(0)
   const handleEnvelopeMove = (e) => {
@@ -99,8 +99,8 @@ export default function Letter({ onNext, onPrev }) {
         </button>
       )}
 
-      {/* ── CONTENIDO usa .container para responsivo ── */}
-      <div className="container relative z-10 flex flex-col items-center justify-center w-full text-center gap-6 px-4">
+      {/* ── CONTENIDO usa .shell para responsivo ── */}
+      <div className="shell relative z-10 flex flex-col items-center justify-center w-full text-center gap-6 px-4">
           {phase !== 'flying' && (
           <motion.div initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={springs.gentle} className="flex flex-col items-center gap-3 pb-1">
           <Feather className="w-9 h-9 text-crimson/30 mx-auto" />

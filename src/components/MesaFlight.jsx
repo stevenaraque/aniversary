@@ -42,10 +42,15 @@ export default function MesaFlight({ onDone }) {
     let renderer = null
     let safetyTimer = 0
     let fadeTimer = 0
+    let autoStartTimer = 0
+    let noteTimer = 0
     let onResize = null
     let onVis = null
     let onCtxLost = null
     let onKey = null
+    let sceneRef = null
+    let controlsRef = null
+    let envTexRef = null
 
     // ── fonts ──
     const fontHref = 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Instrument+Sans:wght@400;500;600&family=Caveat:wght@600&display=swap'
@@ -68,8 +73,11 @@ export default function MesaFlight({ onDone }) {
       bfLog('finish:', reason)
       disposed = true
       cancelAnimationFrame(raf)
+      raf = 0
       window.clearTimeout(safetyTimer)
       window.clearTimeout(fadeTimer)
+      window.clearTimeout(autoStartTimer)
+      window.clearTimeout(noteTimer)
       wrap.style.opacity = '0'
       fadeTimer = window.setTimeout(() => onDoneRef.current?.(), 800)
     }
@@ -96,13 +104,14 @@ export default function MesaFlight({ onDone }) {
       const mat = (c, r=0.9, extra={}) => new THREE.MeshStandardMaterial({ color:c, roughness:r, flatShading:true, ...extra })
 
       // ── scene ── transparente para ver Cosmos estrellado (fondo bonito) + niebla sutil
-      const scene = new THREE.Scene()
+      sceneRef = new THREE.Scene()
+      const scene = sceneRef
       scene.background = null
       scene.fog = new THREE.Fog(0x050505, 14, 42)
 
       const W0 = window.innerWidth
       const H0 = window.innerHeight
-      const DPRcap = isSoftware ? 1 : 2
+      const DPRcap = isSoftware ? 1 : (window.matchMedia('(max-width: 768px)').matches ? 1.5 : 2)
       const camera = new THREE.PerspectiveCamera(42, W0/H0, 0.1, 120)
       camera.position.set(9.5, 6.5, 11.5)
 
@@ -115,7 +124,8 @@ export default function MesaFlight({ onDone }) {
       renderer.toneMapping = THREE.ACESFilmicToneMapping
       renderer.toneMappingExposure = 1.10
 
-      const controls = new OrbitControls(camera, renderer.domElement)
+      controlsRef = new OrbitControls(camera, renderer.domElement)
+      const controls = controlsRef
       controls.enableDamping = true
       controls.dampingFactor = 0.06
       controls.minDistance = 1.2
@@ -127,7 +137,8 @@ export default function MesaFlight({ onDone }) {
       controls.addEventListener('start', () => controls.autoRotate = false)
 
       const pmrem = new THREE.PMREMGenerator(renderer)
-      const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+      envTexRef = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+      const envTex = envTexRef
       pmrem.dispose()
 
       // ── luces oscuras y cálidas — +20% iluminación ──
@@ -213,9 +224,9 @@ export default function MesaFlight({ onDone }) {
       }
       drawNote()
       if(document.fonts?.load){
-        document.fonts.load('600 88px Caveat').then(drawNote).catch(()=>{})
+        document.fonts.load('600 88px Caveat').then(() => { if (!disposed) drawNote() }).catch(()=>{})
       }
-      setTimeout(drawNote, 1600)
+      noteTimer = window.setTimeout(() => { if (!disposed) drawNote() }, 1600)
       function petalTexture(){
         const cv = document.createElement('canvas'); cv.width = cv.height = 128
         const g = cv.getContext('2d')
@@ -1120,19 +1131,28 @@ export default function MesaFlight({ onDone }) {
         renderer.setSize(W, H, false)
       }
       window.addEventListener('resize', onResize)
+      let lastLoop = 0
+      let lastPick = 0
+      // loop se declara abajo; onVis lo usa por closure solo cuando el evento dispara
+      let loopFn = null
       onVis = () => {
-        // pause hidden not needed for mesa? but keep
-        if (document.hidden) { /* keep rendering but slower */ }
+        if (document.hidden) {
+          if (raf) { cancelAnimationFrame(raf); raf = 0 }
+        } else if (!disposed && !raf && loopFn) {
+          lastLoop = performance.now()
+          try { clock.getDelta() } catch {}
+          raf = requestAnimationFrame(loopFn)
+        }
       }
       document.addEventListener('visibilitychange', onVis)
 
-      setTimeout(() => { if(!disposed && bf.mode === 'perch') startFlight() }, 2200)
+      autoStartTimer = window.setTimeout(() => { if(!disposed && bf.mode === 'perch') startFlight() }, 2200)
 
-      let lastLoop = 0
       const loop = (now) => {
+        loopFn = loop
         if (disposed) return
         raf = requestAnimationFrame(loop)
-        if (now - lastLoop < 16) return // 60fps — dt compensa en móviles lentos
+        if (now - lastLoop < 33) return // 30fps como Cosmos/Butterfly — dt compensa, mismo diseño
         lastLoop = now
         const dt = Math.min(clock.getDelta(), 0.08) // cap 80ms → velocidad estable en cualquier dispositivo
         time += dt
@@ -1411,9 +1431,9 @@ export default function MesaFlight({ onDone }) {
         bfHalo.material.opacity = 0.36 + 0.18*Math.sin(bf.phase*0.7)
         bfHalo.scale.setScalar(0.92 + 0.12*Math.sin(bf.phase))
 
-        // hover + marker sutil (sin tip textual)
-        hoverId = null
-        if(mouseOn) hoverId = pickAt(mx, my)
+        // hover + marker sutil (sin tip textual) — pick throttled 120ms, mismo diseño
+        if(mouseOn && now - lastPick > 120){ lastPick = now; hoverId = pickAt(mx, my) }
+        else if(!mouseOn) hoverId = null
         const active = hoverId || legendHover
         if(active){
           const it = interactives.find(i => i.id === active)
@@ -1436,6 +1456,7 @@ export default function MesaFlight({ onDone }) {
       // helpers for roll quaternion target
       const qTarget = new THREE.Quaternion()
 
+      loopFn = loop
       raf = requestAnimationFrame(loop)
       // intro sin texto
       flyTo(VIEWS.general, 1.9)
@@ -1450,8 +1471,11 @@ export default function MesaFlight({ onDone }) {
       bfLog('unmount')
       disposed = true
       cancelAnimationFrame(raf)
+      raf = 0
       window.clearTimeout(safetyTimer)
       window.clearTimeout(fadeTimer)
+      window.clearTimeout(autoStartTimer)
+      window.clearTimeout(noteTimer)
       if (onResize) window.removeEventListener('resize', onResize)
       if (onVis) document.removeEventListener('visibilitychange', onVis)
       if (onKey) window.removeEventListener('keydown', onKey)
@@ -1465,10 +1489,23 @@ export default function MesaFlight({ onDone }) {
           renderer.domElement?.removeEventListener('pointerleave', onPointerLeave)
         }
       } catch {}
+      try { controlsRef?.dispose?.() } catch {}
+      if (sceneRef) {
+        sceneRef.traverse((o) => {
+          try {
+            if (o.geometry) o.geometry.dispose?.()
+            const m = o.material
+            if (Array.isArray(m)) m.forEach((mm) => { try { mm.map?.dispose?.(); mm.dispose?.() } catch {} })
+            else if (m) { try { m.map?.dispose?.(); m.dispose?.() } catch {} }
+          } catch {}
+        })
+      }
+      try { envTexRef?.dispose?.() } catch {}
       if (renderer) {
         try { renderer.dispose() } catch {}
         renderer = null
       }
+      sceneRef = null; controlsRef = null; envTexRef = null
       if (fontLinkCreated && fontLink && fontLink.parentNode) fontLink.parentNode.removeChild(fontLink)
     }
   // onDone vive en ref: montar una sola vez por vuelo

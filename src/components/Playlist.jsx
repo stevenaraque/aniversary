@@ -13,7 +13,7 @@ const DEFAULT_SONGS = [
 ]
 
 const PLAYER_CSS = `
-.goth-player *{margin:0;padding:0;box-sizing:border-box}
+.goth-player *, .goth-player *::before, .goth-player *::after{box-sizing:border-box}
 .goth-player{--negro:#0a0606;--negro-rojizo:#120808;--rojo-profundo:#5a0a0a;--rojo-sangre:#8b1a1a;--rojo-vivo:#c41e1e;--rojo-brillante:#e63946;--dorado-antiguo:#b8860b;--dorado-medio:#d4a843;--dorado-claro:#f0d68a;--dorado-palido:#faebd7;--texto:#d4c5b0;--texto-claro:#f0e6d6;padding-top:56px;padding-bottom:12px;width:100%;max-width:100vw;overflow-x:hidden !important}
 .goth-layout{position:relative;z-index:10;display:flex;flex-wrap:wrap;flex:1;min-height:0;width:100%;max-width:100%;align-items:stretch}
 
@@ -396,8 +396,11 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
     for (let i = 0; i < COUNT; i++) particles.push(new Particle())
     let raf = 0
     let running = true
-    const animate = () => {
+    let lastFrame = 0
+    const animate = (now) => {
       if (!running) return
+      if (now - lastFrame < 33) { raf = requestAnimationFrame(animate); return } // 30fps como Cosmos
+      lastFrame = now
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       particles.forEach(p => { p.update(); p.draw() })
       raf = requestAnimationFrame(animate)
@@ -408,7 +411,7 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
       else if (!running) { running = true; raf = requestAnimationFrame(animate) }
     }
     document.addEventListener('visibilitychange', onVis)
-    animate()
+    raf = requestAnimationFrame(animate)
     return () => { running = false; cancelAnimationFrame(raf); window.removeEventListener('resize', resize); document.removeEventListener('visibilitychange', onVis) }
   }, [])
 

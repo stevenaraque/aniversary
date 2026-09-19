@@ -23,9 +23,6 @@ const TAG_LABELS = {
 }
 const FILTER_KEYS = ['all', ...TAGS]
 
-// perf/no-jank: marca si el collage ya se montó una vez (blur solo en la primera entrada)
-let collageEntered = false
-
 // Distribución de spans — orig estable (13 fotos = sin hueco, 12 = hueco 1 celda al final limpio)
 const SPANS = [
   'span-2x2', 'span-1x1', 'span-1x1', 'span-1x2',
@@ -67,13 +64,6 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
   const [selected, setSelected] = useState(null)
   const [isPressing, setIsPressing] = useState(false)
   const reduceMotion = useReducedMotion()
-  // perf: el blur de entrada solo la primera vez; al filtrar se anima opacity/y/scale
-  // (inicializador de estado, sin setState en efecto para lint limpio)
-  const [entered] = useState(() => {
-    if (collageEntered) return true
-    collageEntered = true
-    return false
-  })
 
   const handleMusicPress = useCallback(() => {
     if (isPressing) return
@@ -190,7 +180,7 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
         <FlowerIcon className="w-5 h-5 text-sunflower" />
       </div>
 
-      <div className="container-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8">
+      <div className="shell-lg relative z-10 w-full max-w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-col items-center gap-6 sm:gap-8">
         <motion.div
           className="text-center w-full max-w-3xl mx-auto pt-2 sm:pt-4"
           initial={{ y: -14, opacity: 0 }}
@@ -248,8 +238,8 @@ export default function Collage({ photos = PLACEHOLDER_PHOTOS, onNext, onPrev })
                 key={`${filter}-${item.id}`}
                 layout
                 className={`collage-item ${item.span} ${minH(item.span)}`}
-                initial={entered ? { opacity: 0, y: 18, scale: 0.96 } : { opacity: 0, y: 18, scale: 0.96, filter: 'blur(6px)' }}
-                animate={entered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                initial={{ opacity: 0, y: 18, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ ...springs.gentle, delay: Math.min(i * 0.04, 0.4) }}
                 onClick={() => setSelected(i)}
