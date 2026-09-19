@@ -698,8 +698,8 @@ export default function MesaFlight({ onDone }) {
           geo.rotateY(twist); geo.rotateX(Math.PI/2)
           return shadows(new THREE.Mesh(sanitizeGeometry(geo), kraft))
         }
-        wrapGroup.add(mkWrap(0.52, 0.18, 0.84, 0.4))
-        wrapGroup.add(mkWrap(0.48, 0.16, 0.74, 2.1))
+        wrapGroup.add(mkWrap(0.42, 0.18, 0.84, 0.4))
+        wrapGroup.add(mkWrap(0.38, 0.16, 0.74, 2.1))
         const innerGeo = new THREE.CylinderGeometry(0.20, 0.15, 0.5, 10)
         innerGeo.rotateX(Math.PI/2)
         const inner = new THREE.Mesh(sanitizeGeometry(innerGeo), mat(0x6E5638, 1))
