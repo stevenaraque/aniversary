@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { animate, createScope, stagger } from 'animejs'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 
 // ── Bodegón 3D — port de mesa.txt ──
 // Mesa puesta: anillo, carta, ramo, velas, bombones + mariposa de papel que
@@ -315,6 +316,18 @@ export default function MesaFlight({ onDone }) {
         m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.normalize())
         return shadows(m)
       }
+      // sanitiza valores no finitos (evita boundingSphere NaN en geos fusionadas)
+      function sanitizeGeometry(geo){
+        const p = geo.attributes.position
+        if(p){
+          for(let i=0;i<p.array.length;i++){
+            if(!Number.isFinite(p.array[i])) p.array[i] = 0
+          }
+          p.needsUpdate = true
+        }
+        geo.computeBoundingSphere()
+        return geo
+      }
       function heartGeometry(scale, depth, bevel){
         const s = new THREE.Shape()
         s.moveTo(25,25)
@@ -510,79 +523,316 @@ export default function MesaFlight({ onDone }) {
         }
       }
 
-      // ── ramo ──
+      // ── ramo de girasoles: 20 flores en domo + kraft + lazo ──
       const bouquet = new THREE.Group()
-      bouquet.position.set(-1.45, 0.03, -0.85)
+      bouquet.position.set(-0.52, 0.03, -0.89) // entre vela-anillo, hacia la orilla
       const roses = []
+      const petalMats = []
       {
-        const stemMat = mat(0x5F7A4E, 0.9)
-        const roseDefs = [
-          { p:[0,1.30,0],      s:0.62, c:0xB3252B, b:0x7E161C },
-          { p:[0.30,1.14,0.05], s:0.55, c:0xD96A73, b:0xA83F4C },
-          { p:[-0.28,1.10,0.16],s:0.52, c:0xE8A7A0, b:0xB56F6B },
-          { p:[-0.12,1.16,-0.28],s:0.55,c:0xCE452C, b:0x8F2B18 },
-          { p:[0.18,1.06,-0.20],s:0.5,  c:0xEFC9B8, b:0xC4937F },
-        ]
-        const LAYERS = [
-          { n:8, r:0.30,  lift:0.16, y:0.00, s:1.00 },
-          { n:6, r:0.225, lift:0.13, y:0.035,s:0.90 },
-          { n:5, r:0.155, lift:0.10, y:0.07, s:0.78 },
-          { n:3, r:0.09,  lift:0.06, y:0.10, s:0.60 },
-          { n:1, r:0.0,   lift:0.02, y:0.13, s:0.42 },
-        ]
-        for(const def of roseDefs){
-          const rose = new THREE.Group()
-          const pm = mat(def.c, 0.8, { side:THREE.DoubleSide })
-          LAYERS.forEach((L, li) => {
-            for(let i=0;i<L.n;i++){
-              const a = i/L.n*Math.PI*2 + li*0.55
-              const petal = new THREE.Mesh(petalGeo, pm)
-              petal.scale.setScalar(L.s)
-              petal.position.set(Math.cos(a)*L.r, L.y, Math.sin(a)*L.r)
-              petal.castShadow = true
-              rose.add(petal)
-              petal.lookAt(Math.cos(a)*L.r*0.1, L.y + L.lift, Math.sin(a)*L.r*0.1)
-            }
-          })
-          const bud = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.11, 6), mat(def.b, 0.85)))
-          bud.position.y = 0.16; rose.add(bud)
-          const calyx = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.1, 6), stemMat))
-          calyx.position.y = -0.01; rose.add(calyx)
+        /* texturas girasol */
+        const sunPetalTex = (() => {
+          const cv = document.createElement('canvas'); cv.width = 128; cv.height = 256
+          const g = cv.getContext('2d')
+          const gr = g.createLinearGradient(0,256,0,0)
+          gr.addColorStop(0,'#C97B1E'); gr.addColorStop(0.3,'#F2B32B')
+          gr.addColorStop(0.85,'#FFD84E'); gr.addColorStop(1,'#F0C43E')
+          g.fillStyle = gr; g.fillRect(0,0,128,256)
+          g.strokeStyle = 'rgba(150,90,15,0.28)'; g.lineWidth = 2
+          for(let i=0;i<5;i++){
+            g.beginPath()
+            g.moveTo(64+(i-2)*5, 250)
+            g.quadraticCurveTo(64+(i-2)*24, 130, 64+(i-2)*4, 14)
+            g.stroke()
+          }
+          const t = new THREE.CanvasTexture(cv)
+          t.colorSpace = THREE.SRGBColorSpace
+          return t
+        })()
+        const seedTex = (() => {
+          const cv = document.createElement('canvas'); cv.width = cv.height = 256
+          const g = cv.getContext('2d')
+          const gr = g.createRadialGradient(128,118,8, 128,128,126)
+          gr.addColorStop(0,'#5A3A16'); gr.addColorStop(0.75,'#3B2409'); gr.addColorStop(1,'#241505')
+          g.fillStyle = gr; g.fillRect(0,0,256,256)
+          const GA = 2.39996
+          for(let i=0;i<330;i++){
+            const r = 100*Math.sqrt(i/330), a = i*GA
+            const x = 128 + Math.cos(a)*r, y = 128 + Math.sin(a)*r
+            const s = 2.4 + 2.6*(r/100)
+            g.fillStyle = i%3===0 ? 'rgba(94,62,24,0.95)'
+                        : i%3===1 ? 'rgba(44,27,9,0.95)' : 'rgba(72,48,19,0.9)'
+            g.beginPath(); g.ellipse(x, y, s*0.72, s, a, 0, 6.29); g.fill()
+          }
+          g.strokeStyle = 'rgba(58,38,12,0.55)'; g.lineWidth = 3
+          g.beginPath(); g.arc(128,128,104,0,6.29); g.stroke()
+          for(let i=0;i<46;i++){
+            const a = i/46*6.2832 + (i%2)*0.07
+            const r = 109 + Math.random()*8
+            g.fillStyle = ['#D9A83C','#C2BE55','#E4C24E'][i%3]
+            g.beginPath()
+            g.ellipse(128+Math.cos(a)*r, 128+Math.sin(a)*r, 4.6, 6.4, a, 0, 6.29); g.fill()
+          }
+          g.strokeStyle = 'rgba(122,86,32,0.5)'; g.lineWidth = 5
+          g.beginPath(); g.arc(128,128,121,0,6.29); g.stroke()
+          const t = new THREE.CanvasTexture(cv)
+          t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8
+          return t
+        })()
+        const leafTex = (() => {
+          const cv = document.createElement('canvas'); cv.width = 128; cv.height = 256
+          const g = cv.getContext('2d')
+          const gr = g.createLinearGradient(0,256,0,0)
+          gr.addColorStop(0,'#4E6B34'); gr.addColorStop(1,'#71904A')
+          g.fillStyle = gr; g.fillRect(0,0,128,256)
+          g.strokeStyle = 'rgba(36,56,20,0.6)'; g.lineWidth = 4
+          g.beginPath(); g.moveTo(64,250); g.lineTo(64,10); g.stroke()
+          g.lineWidth = 2.5
+          for(let i=0;i<7;i++){
+            const y = 218 - i*30
+            g.beginPath(); g.moveTo(64,y); g.quadraticCurveTo(64+36, y-20, 64+54, y-44); g.stroke()
+            g.beginPath(); g.moveTo(64,y); g.quadraticCurveTo(64-36, y-20, 64-54, y-44); g.stroke()
+          }
+          const t = new THREE.CanvasTexture(cv)
+          t.colorSpace = THREE.SRGBColorSpace
+          return t
+        })()
 
-          rose.position.set(...def.p); rose.rotation.y = rnd(0, 6.28)
-          bouquet.add(rose)
-          roses.push({ g:rose, base:def.s, pulse:0, delay:0 })
-          rose.scale.setScalar(def.s)
+        /* materiales */
+        const mkPetalMat = tint => new THREE.MeshStandardMaterial({
+          map:sunPetalTex, color:tint, side:THREE.DoubleSide, roughness:0.82,
+          emissive:0xFF9E2E, emissiveIntensity:0 })
+        petalMats.push(mkPetalMat(0xFFFFFF), mkPetalMat(0xFFF0BE), mkPetalMat(0xFFE098))
+        const sunLeafMat = new THREE.MeshStandardMaterial({ map:leafTex,
+          side:THREE.DoubleSide, roughness:0.9 })
+        const seedSide = mat(0x2E1C08, 0.9)
+        const seedTop  = new THREE.MeshStandardMaterial({ map:seedTex, roughness:0.85 })
+        const calyxMat = mat(0x4E6B34, 0.9)
+        const bractMat = mat(0x53713A, 0.95)
+        const stemMat  = mat(0x5E7A3E, 0.9)
 
-          const from = new THREE.Vector3(def.p[0]*0.9, def.p[1]-0.06, def.p[2]*0.9)
-          const to   = new THREE.Vector3(def.p[0]*0.2, 0.5, def.p[2]*0.2)
-          bouquet.add(strut(from, to, 0.015, 0.011, stemMat))
+        /* geometrías base */
+        const sunPetalGeo = sanitizeGeometry((() => {
+          const g = new THREE.PlaneGeometry(0.15, 0.40, 3, 7)
+          const p = g.attributes.position
+          for(let i=0;i<p.count;i++){
+            const x0 = p.getX(i), y = p.getY(i)
+            const ny = (y + 0.20)/0.40
+            const w = (1 - Math.pow(ny, 2.2))*(0.5 + 0.5*Math.sin(Math.min(ny*1.35,1)*Math.PI))
+            p.setXYZ(i, x0*w, y, 0.055*ny - 0.02*ny*ny)
+          }
+          g.computeVertexNormals()
+          return g
+        })())
+        const sunLeafGeo = sanitizeGeometry((() => {
+          const g = new THREE.PlaneGeometry(0.34, 0.72, 4, 8)
+          const p = g.attributes.position
+          for(let i=0;i<p.count;i++){
+            const x0 = p.getX(i), y = p.getY(i)
+            const ny = (y + 0.36)/0.72
+            p.setXYZ(i, x0*(Math.sin(Math.min(ny*1.15,1)*Math.PI)*0.95 + 0.05),
+              y, 0.10*Math.sin(ny*Math.PI))
+          }
+          g.computeVertexNormals()
+          return g
+        })())
+
+        /* cabeza de girasol: brácteas + 1 corona de 22 pétalos + disco + cáliz */
+        /* full=false: versión liviana (sin brácteas ni cáliz) para relleno */
+        function makeHead(size, full=true){
+          const head = new THREE.Group()
+          const mPetalRot = new THREE.Matrix4().makeRotationZ(-Math.PI/2)
+          if(full){
+          const bractParts = []
+          for(let i=0;i<9;i++){
+            const a = i/9*6.2832 + rnd(0, 0.35)
+            const m = new THREE.Matrix4().makeRotationZ(a)
+              .multiply(new THREE.Matrix4().makeScale(0.62,0.62,0.62))
+              .multiply(new THREE.Matrix4().makeRotationY(0.55))
+              .multiply(new THREE.Matrix4().makeTranslation(0.15,0,0))
+              .multiply(mPetalRot)
+            bractParts.push(sunPetalGeo.clone().applyMatrix4(m))
+          }
+          const bracts = new THREE.Mesh(sanitizeGeometry(mergeGeometries(bractParts)), bractMat)
+          bracts.castShadow = true
+          head.add(bracts)
+          }
+          const phase = rnd(0, 6.28)
+          const partsA = [], partsB = []
+          for(let i=0;i<22;i++){
+            const a  = i/22*6.2832 + phase + (Math.random()-0.5)*0.05
+            const L  = 1.0*(0.92 + Math.random()*0.16)
+            const R0 = 0.245 + Math.random()*0.014
+            const T  = 0.12 + (Math.random()-0.5)*0.16
+            const m  = new THREE.Matrix4().makeRotationZ(a)
+              .multiply(new THREE.Matrix4().makeScale(L,L,L))
+              .multiply(new THREE.Matrix4().makeRotationY(-T))
+              .multiply(new THREE.Matrix4().makeTranslation(R0,0,0))
+              .multiply(mPetalRot)
+            ;(i%2 ? partsA : partsB).push(sunPetalGeo.clone().applyMatrix4(m))
+          }
+          for(const [parts, material] of [[partsA, petalMats[0]], [partsB, petalMats[1]]]){
+            const mesh = new THREE.Mesh(sanitizeGeometry(mergeGeometries(parts)), material)
+            mesh.castShadow = true
+            head.add(mesh)
+          }
+          const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.205, 0.19, 0.05, 24),
+            [seedSide, seedTop, seedSide])
+          disc.rotation.x = Math.PI/2
+          disc.position.z = 0.012; disc.castShadow = true
+          head.add(disc)
+          if(full){
+          const calyx = new THREE.Mesh(new THREE.ConeGeometry(0.20, 0.12, 10), calyxMat)
+          calyx.geometry.rotateX(-Math.PI/2)
+          calyx.position.z = -0.035; calyx.castShadow = true
+          head.add(calyx)
+          }
+          head.scale.setScalar(size)
+          return head
         }
-        for(let i=0;i<7;i++){
-          const a = i/7*Math.PI*2 + 0.3
-          const leaf = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.3, 5), mat(0x5F7A4E, 0.9)))
-          leaf.position.set(Math.cos(a)*0.38, 1.0, Math.sin(a)*0.38)
-          leaf.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),
-            new THREE.Vector3(Math.cos(a), 1.1, Math.sin(a)).normalize())
-          bouquet.add(leaf)
-        }
+
+        /* envoltura kraft */
+        const wrapGroup = new THREE.Group()
+        wrapGroup.position.set(0, 0.26, -0.52)
+        wrapGroup.rotation.x = -0.28
+        wrapGroup.scale.setScalar(1.55) // kraft proporcionado al domo de 20 flores
+        bouquet.add(wrapGroup)
         const kraft = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
-        const wrap1 = shadows(new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.17, 0.75, 10, 1, true), kraft))
-        wrap1.position.y = 0.42; bouquet.add(wrap1)
-        const wrap2 = shadows(new THREE.Mesh(new THREE.CylinderGeometry(0.41, 0.16, 0.7, 9, 1, true), kraft))
-        wrap2.position.y = 0.45; wrap2.rotation.y = 0.55; bouquet.add(wrap2)
-        const innerDark = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 0.5, 10), mat(0x6E5638, 1))
-        innerDark.position.y = 0.5; bouquet.add(innerDark)
-        const ribbonGeo = new THREE.TorusGeometry(0.28, 0.022, 8, 26); ribbonGeo.rotateX(Math.PI/2)
-        const ribbon = shadows(new THREE.Mesh(ribbonGeo, mat(0xCE452C, 0.7)))
-        ribbon.position.y = 0.33; bouquet.add(ribbon)
+        const mkWrap = (rT, rB, len, twist) => {
+          const geo = new THREE.CylinderGeometry(rT, rB, len, 12, 1, true)
+          geo.rotateY(twist); geo.rotateX(Math.PI/2)
+          return shadows(new THREE.Mesh(sanitizeGeometry(geo), kraft))
+        }
+        wrapGroup.add(mkWrap(0.52, 0.18, 1.05, 0.4))
+        wrapGroup.add(mkWrap(0.48, 0.16, 0.92, 2.1))
+        const innerGeo = new THREE.CylinderGeometry(0.20, 0.15, 0.5, 10)
+        innerGeo.rotateX(Math.PI/2)
+        const inner = new THREE.Mesh(sanitizeGeometry(innerGeo), mat(0x6E5638, 1))
+        inner.position.set(0, 0, 0.22); wrapGroup.add(inner)
+        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.022, 8, 26), mat(0xCE452C, 0.7)))
+        ribbon.position.set(0, 0, 0.02); wrapGroup.add(ribbon)
+        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), mat(0xCE452C, 0.7)))
+        knot.position.set(0, 0.33, 0.02); wrapGroup.add(knot)
         for(const s of [1,-1]){
-          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.13, 6), mat(0xCE452C, 0.7)))
-          loop.position.set(0.28*s, 0.35, 0.24); loop.rotation.z = s*1.4; bouquet.add(loop)
+          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.17, 6), mat(0xCE452C, 0.7)))
+          loop.position.set(0.14*s, 0.34, 0.02)
+          loop.rotation.z = s*1.9
+          wrapGroup.add(loop)
+        }
+        const MOUTH = new THREE.Vector3(0, 0.48, 0.26)
+
+        /* 20 girasoles en domo: 1 centro + 7 + 12 */
+        const defs = [
+          { p:[ 0.00, 0.72, 0.32], s:0.85, d:[ 0.00, 0.18] },
+          { p:[ 0.43, 0.64, 0.40], s:0.62, d:[ 0.21, 0.22] },
+          { p:[ 0.19, 0.64, 0.66], s:0.62, d:[ 0.10, 0.46] },
+          { p:[-0.19, 0.64, 0.66], s:0.62, d:[-0.10, 0.46] },
+          { p:[-0.43, 0.64, 0.40], s:0.62, d:[-0.21, 0.22] },
+          { p:[-0.34, 0.63, 0.08], s:0.60, d:[-0.17,-0.09] },
+          { p:[ 0.00, 0.63,-0.06], s:0.60, d:[ 0.00,-0.14] },
+          { p:[ 0.34, 0.63, 0.08], s:0.60, d:[ 0.17,-0.09] },
+          { p:[ 0.00, 0.54, 0.98], s:0.50, d:[ 0.00, 0.50] },
+          { p:[ 0.40, 0.54, 0.89], s:0.50, d:[ 0.20, 0.43] },
+          { p:[ 0.69, 0.54, 0.65], s:0.50, d:[ 0.35, 0.25] },
+          { p:[ 0.80, 0.54, 0.32], s:0.48, d:[ 0.40, 0.00] },
+          { p:[ 0.69, 0.53,-0.01], s:0.48, d:[ 0.35,-0.14] },
+          { p:[ 0.40, 0.53,-0.25], s:0.46, d:[ 0.20,-0.25] },
+          { p:[ 0.00, 0.53,-0.34], s:0.46, d:[ 0.00,-0.30] },
+          { p:[-0.40, 0.53,-0.25], s:0.46, d:[-0.20,-0.25] },
+          { p:[-0.69, 0.53,-0.01], s:0.48, d:[-0.35,-0.14] },
+          { p:[-0.80, 0.54, 0.32], s:0.48, d:[-0.40, 0.00] },
+          { p:[-0.69, 0.54, 0.65], s:0.50, d:[-0.35, 0.25] },
+          { p:[-0.40, 0.54, 0.89], s:0.50, d:[-0.20, 0.43] },
+        ]
+        const FACE = new THREE.Vector3(0,0,1)
+        const D = new THREE.Vector3()
+        for(const def of defs){
+          D.set(def.d[0], 1, def.d[1]).normalize()
+          const head = makeHead(def.s)
+          head.position.set(...def.p)
+          head.quaternion.setFromUnitVectors(FACE, D)
+          head.rotateZ(rnd(0, 6.28))
+          head.rotateX(rnd(-0.06, 0.06))
+          bouquet.add(head)
+          roses.push({ g:head, base:def.s, pulse:0, delay:0 })
+          const end = new THREE.Vector3(...def.p).addScaledVector(D, -0.12)
+          bouquet.add(strut(
+            MOUTH.clone().add(new THREE.Vector3(rnd(-0.10,0.10), rnd(-0.05,0.05), rnd(-0.05,0.05))),
+            end, 0.016, 0.010, stemMat))
+        }
+
+        /* relleno inferior: 7 cabezas livianas SOBRE el borde de la boca */
+        for(let i=0;i<7;i++){
+          const a = i/7*6.2832 + 0.22
+          const fp = [0.72*Math.cos(a), 0.50, 0.28 + 0.60*Math.sin(a)]
+          const fd = [0.55*Math.cos(a), 0.55*Math.sin(a)]
+          D.set(fd[0], 1, fd[1]).normalize()
+          const head = makeHead(0.44, false)
+          head.position.set(...fp)
+          head.quaternion.setFromUnitVectors(FACE, D)
+          head.rotateZ(rnd(0, 6.28))
+          bouquet.add(head)
+          roses.push({ g:head, base:0.44, pulse:0, delay:0 })
+          const fend = new THREE.Vector3(...fp).addScaledVector(D, -0.10)
+          bouquet.add(strut(MOUTH.clone(), fend, 0.014, 0.010, stemMat))
+        }
+
+        /* boca rellena: 4 cabezas mirando arriba, empacadas en lo redondo */
+        for(const [mx2,my2,mz2,ms] of [[0.30,0.55,0.35,0.46],[-0.30,0.55,0.35,0.46],[0,0.55,0.02,0.44],[0,0.55,0.58,0.44]]){
+          D.set(0, 1, 0)
+          const head = makeHead(ms, true)
+          head.position.set(mx2, my2, mz2)
+          head.quaternion.setFromUnitVectors(FACE, D)
+          head.rotateZ(rnd(0, 6.28))
+          bouquet.add(head)
+          roses.push({ g:head, base:ms, pulse:0, delay:0 })
+          const fend = new THREE.Vector3(mx2, my2, mz2).addScaledVector(D, -0.12)
+          bouquet.add(strut(MOUTH.clone(), fend, 0.014, 0.010, stemMat))
+        }
+
+        /* capullos cerrados entre las flores */
+        for(const [bx,by,bz,ba] of [[-0.55,0.62,0.50,0.5],[0.58,0.62,0.44,-0.6],[0.10,0.62,1.02,0.15]]){
+          const bud = new THREE.Group()
+          const pod = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 8), calyxMat))
+          pod.scale.set(1, 0.85, 1); bud.add(pod)
+          for(let i=0;i<5;i++){
+            const a = i/5*6.2832
+            const pt = new THREE.Mesh(sunPetalGeo, petalMats[2])
+            pt.scale.setScalar(0.5)
+            const arm = new THREE.Group()
+            arm.rotation.y = a
+            pt.rotation.x = -1.15
+            pt.position.y = 0.05
+            arm.add(pt); bud.add(arm)
+          }
+          bud.position.set(bx, by, bz)
+          bud.rotation.set(rnd(-0.3,0.3), ba, rnd(-0.3,0.3))
+          bouquet.add(bud)
+        }
+
+        /* hojas caídas pegadas al ramo */
+        const leafDefs = [
+          { p:[-1.00, 0.10, 0.30], a: 2.40, x:-1.55, s:1.15 },
+          { p:[ 1.05, 0.10, 0.40], a:-1.00, x:-1.62, s:1.05 },
+          { p:[-0.75, 0.10, 1.00], a: 3.00, x:-1.45, s:0.95 },
+          { p:[ 0.80, 0.10, 1.05], a:-2.40, x:-1.75, s:1.10 },
+          { p:[-0.15, 0.10, 1.35], a: 0.50, x:-1.50, s:0.90 },
+          { p:[ 1.35, 0.10, 0.75], a:-1.90, x:-1.70, s:1.00 },
+          { p:[-1.30, 0.10, 0.70], a: 1.60, x:-1.60, s:1.00 },
+        ]
+        for(const L of leafDefs){
+          const arm = new THREE.Group()
+          arm.position.set(...L.p)
+          arm.rotation.y = L.a
+          const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
+          leaf.scale.setScalar(L.s)
+          leaf.rotation.x = L.x
+          leaf.castShadow = true
+          arm.add(leaf)
+          bouquet.add(arm)
         }
       }
       scene.add(bouquet)
-      register('bouquet', bouquet, 0.62)
+      register('bouquet', bouquet, 0.95)
 
       // ── carta ──
       const letterGroup = new THREE.Group()
@@ -831,6 +1081,58 @@ export default function MesaFlight({ onDone }) {
       const lightPoints = new THREE.Points(lightGeo, lightMat)
       scene.add(lightPoints)
 
+      // ── onda de luz del ramo (glow + chispas + luz viajera, sin toasts) ──
+      const glowPool = [], sparkPool = []
+      for(let i=0;i<16;i++){
+        const m = new THREE.Sprite(new THREE.SpriteMaterial({ map:glowTex, color:0xFFC35E,
+          transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false }))
+        m.visible = false; scene.add(m)
+        glowPool.push({ m, life:0, max:1, s0:0.5 })
+      }
+      for(let i=0;i<28;i++){
+        const m = new THREE.Sprite(new THREE.SpriteMaterial({ map:starTex, color:0xFFDD8A,
+          transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false }))
+        m.visible = false; scene.add(m)
+        sparkPool.push({ m, life:0, max:1, vel:new THREE.Vector3(), s0:0.12 })
+      }
+      const pulseLight = new THREE.PointLight(0xFFC46B, 0, 7, 2)
+      scene.add(pulseLight)
+      let wash = 0
+      const rippleQueue = []
+      const _wv = new THREE.Vector3()
+      function glowAt(worldPos, scale){
+        const g = glowPool.find(g => g.life<=0)
+        if(g){
+          g.max = g.life = 0.75
+          g.s0 = 0.85*scale
+          g.m.position.copy(worldPos); g.m.position.y += 0.05
+          g.m.visible = true
+        }
+        let n = 3
+        for(const s of sparkPool){
+          if(n<=0) break
+          if(s.life>0) continue
+          n--
+          s.max = s.life = rnd(0.45, 0.8)
+          s.s0 = rnd(0.08, 0.16)*scale
+          s.m.position.copy(worldPos)
+          const a = rnd(0,6.28)
+          s.vel.set(Math.cos(a)*rnd(0.2,0.5), rnd(0.3,0.8), Math.sin(a)*rnd(0.2,0.5))
+          s.m.visible = true
+        }
+        pulseLight.position.copy(worldPos); pulseLight.position.y += 0.25
+        pulseLight.intensity = 2.4
+        wash = Math.min(1, wash + 0.45)
+      }
+      function lightRipple(origin){
+        bouquet.updateMatrixWorld(true)
+        for(const r of roses){
+          r.g.getWorldPosition(_wv)
+          rippleQueue.push({ r, at: time + _wv.distanceTo(origin)*0.32, pos:_wv.clone(), s:r.base })
+        }
+        wash = Math.max(wash, 0.2)
+      }
+
       // ── mariposa origami corazón ──
       function wingGeometry(verts, tris){
         let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9
@@ -906,7 +1208,7 @@ export default function MesaFlight({ onDone }) {
       const wingL = buildWingSide(); wingL.group.position.y = 0.10; wingL.group.scale.x = -1
       butterfly.add(wingR.group, wingL.group)
 
-      const perchPos = new THREE.Vector3(-1.09, 0.83, -0.63)
+      const perchPos = new THREE.Vector3(-0.47, 0.98, -0.52)
       butterfly.position.copy(perchPos)
       butterfly.rotation.y = 0.62
       scene.add(butterfly)
@@ -1003,7 +1305,7 @@ export default function MesaFlight({ onDone }) {
         butterfly:{ p:[2.6, 3.4, 4.8],   t:[0, 2.0, -0.4] },
         ring:     { p:[-0.1, 1.25, 2.6], t:[-1.25, 0.45, 1.05] },
         letter:   { p:[0.95, 1.7, 3.1],  t:[0.72, 0.12, 1.18] },
-        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-1.45, 1.1, -0.85] },
+        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.52, 0.75, -0.54] },
         candles:  { p:[3.2, 1.5, 1.2],   t:[1.55, 0.7, -0.85] },
         box:      { p:[3.0, 1.35, 1.9],  t:[2.25, 0.15, 0.55] },
       }
@@ -1066,6 +1368,8 @@ export default function MesaFlight({ onDone }) {
           flyTo(VIEWS.letter)
         },
         bouquet(){
+          bouquet.updateMatrixWorld(true)
+          lightRipple(bouquet.localToWorld(new THREE.Vector3(0, 0.6, 0.3)))
           roses.forEach((r,i) => r.delay = 0.07*i)
           for(let i=0;i<6;i++){
             roses[i%roses.length].g.getWorldPosition(TV)
@@ -1247,6 +1551,41 @@ export default function MesaFlight({ onDone }) {
         // box
         boxT += (boxTarget - boxT)*Math.min(1, dt*2.6)
         lid.rotation.x = 1.9*(boxTarget === 1 ? backOut(clamp01(boxT)) : easeIO(clamp01(boxT)))
+
+        // onda de luz: enciende cada flor cuando la luz llega
+        for(let i=rippleQueue.length-1; i>=0; i--){
+          const q = rippleQueue[i]
+          if(time >= q.at){
+            glowAt(q.pos, q.s)
+            q.r.pulse = 0.65
+            rippleQueue.splice(i,1)
+          }
+        }
+        // resplandores
+        for(const g of glowPool){
+          if(g.life<=0) continue
+          g.life -= dt
+          if(g.life<=0){ g.m.visible=false; g.m.material.opacity=0; continue }
+          const f = g.life/g.max
+          g.m.material.opacity = 0.85*Math.sin(f*Math.PI)
+          g.m.scale.setScalar(g.s0*(1.3 - 0.5*f))
+        }
+        // chispas
+        for(const s of sparkPool){
+          if(s.life<=0) continue
+          s.life -= dt
+          if(s.life<=0){ s.m.visible=false; s.m.material.opacity=0; continue }
+          const f = s.life/s.max
+          s.vel.y -= 0.6*dt
+          s.m.position.addScaledVector(s.vel, dt)
+          s.m.material.opacity = f
+          s.m.scale.setScalar(s.s0*(0.6 + f))
+          s.m.material.rotation += dt*3
+        }
+        // luz viajera + lavado dorado en pétalos
+        pulseLight.intensity *= Math.exp(-dt*5.5)
+        wash = Math.max(0, wash - dt*0.9)
+        for(const pm of petalMats) pm.emissiveIntensity = wash*0.35
 
         // bouquet pulse
         for(const r of roses){
