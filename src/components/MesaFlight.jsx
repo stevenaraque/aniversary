@@ -217,7 +217,7 @@ export default function MesaFlight({ onDone }) {
         g.strokeStyle = 'rgba(43,38,34,0.14)'; g.lineWidth = 2; g.setLineDash([7,7])
         g.strokeRect(16,16,480,328); g.setLineDash([])
         g.textAlign = 'center'; g.fillStyle = '#2B2622'
-        g.font = '600 88px Caveat, cursive'; g.fillText('Te quiero', 256, 160)
+        g.font = '600 88px Caveat, cursive'; g.fillText('Te amo', 256, 160)
         drawHeartPath(g, 256, 236, 26); g.fillStyle = '#CE452C'; g.fill()
         g.font = '36px Caveat, cursive'; g.fillStyle = 'rgba(43,38,34,0.72)'
         g.fillText('hoy, mañana y siempre', 256, 312)
@@ -378,6 +378,39 @@ export default function MesaFlight({ onDone }) {
         const floor = new THREE.Mesh(floorGeo, mat(0xE3D5BC, 1))
         floor.position.y = -2.55; floor.receiveShadow = true
         scene.add(floor)
+      }
+
+      // ── dos sillas enfrentadas (madera clara + cojín vino) ──
+      {
+        const wood = mat(0x7A4A26, 0.8)
+        const cushionM = mat(0xA62639, 0.6, { flatShading:false })
+        function makeChair(){
+          const g = new THREE.Group()
+          for(const sx of [1,-1]) for(const sz of [1,-1]){
+            const leg = shadows(new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.045, 1.5, 10), wood))
+            leg.position.set(0.38*sx, 0.75, 0.38*sz)
+            g.add(leg)
+          }
+          const seat = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.09, 0.95), wood))
+          seat.position.y = 1.545; g.add(seat)
+          const cushion = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.07, 0.80), cushionM))
+          cushion.position.y = 1.625; g.add(cushion)
+          for(const sx of [1,-1]){
+            const post = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.45, 0.07), wood))
+            post.position.set(0.38*sx, 2.225, -0.42); g.add(post)
+          }
+          const railTop = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.83, 0.28, 0.07), wood))
+          railTop.position.set(0, 2.80, -0.42); g.add(railTop)
+          const railMid = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.83, 0.10, 0.06), wood))
+          railMid.position.set(0, 2.10, -0.42); g.add(railMid)
+          return g
+        }
+        const chairA = makeChair()
+        chairA.position.set(0.3, -2.55, 4.35); chairA.rotation.y = Math.PI - 0.15
+        scene.add(chairA)
+        const chairB = makeChair()
+        chairB.position.set(-0.3, -2.55, -4.35); chairB.rotation.y = 0.15
+        scene.add(chairB)
       }
 
       // ── interactives registry ──
@@ -757,20 +790,20 @@ export default function MesaFlight({ onDone }) {
 
         /* ============ CINTA + MOÑO ============ */
 
-        /* materiales unificados (cinta y moño del mismo tono exacto) */
-        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.65, side:THREE.DoubleSide })
-        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0xA93820, roughness:0.70, side:THREE.DoubleSide })
+        /* materiales: rojo vivo de moño de regalo (antes terracota apagado) */
+        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xC81E2B, roughness:0.5, metalness:0.08, side:THREE.DoubleSide })
+        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0x8E1420, roughness:0.55, metalness:0.05, side:THREE.DoubleSide })
 
         /* constantes compartidas: así el moño SIEMPRE queda sobre la cinta */
         const RIBBON_Y = -0.05   /* altura del lazo          */
         const RIBBON_Z =  0.14   /* empuje frontal (kraft inclinado) */
-        const RIBBON_R =  0.40   /* radio = ancho del kraft ahí */
+        const RIBBON_R =  0.44   /* radio = ancho del kraft ahí + holgura para el churruscado */
 
         /* --- cinta que abraza el kraft --- */
         /* NOTA: sin rotation.x — el tubo va en Z y el toro por defecto ya lo abraza
            (tu captura lo confirma: la banda roja actual sí ciñe el kraft) */
         const ribbon = shadows(new THREE.Mesh(
-          new THREE.TorusGeometry(RIBBON_R, 0.024, 14, 72), ribbonMat))
+          new THREE.TorusGeometry(RIBBON_R, 0.030, 14, 72), ribbonMat))
         ribbon.position.set(0, RIBBON_Y, RIBBON_Z)
         wrapGroup.add(ribbon)
 
@@ -781,12 +814,12 @@ export default function MesaFlight({ onDone }) {
         function loopGeometry(side){
           const pts = [
             new THREE.Vector3(0.000, 0.000,  0.022),
-            new THREE.Vector3(0.075, 0.014,  0.030),
-            new THREE.Vector3(0.138, 0.062,  0.012),
-            new THREE.Vector3(0.098, 0.118, -0.012),
-            new THREE.Vector3(0.024, 0.092, -0.020)
+            new THREE.Vector3(0.095, 0.018,  0.034),
+            new THREE.Vector3(0.175, 0.078,  0.014),
+            new THREE.Vector3(0.124, 0.150, -0.014),
+            new THREE.Vector3(0.030, 0.116, -0.024)
           ].map(p => new THREE.Vector3(p.x * side, p.y, p.z))  /* espejo real, sin scale negativo */
-          const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 64, 0.020, 10, true)
+          const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 64, 0.024, 10, true)
           geo.scale(1, 1, 0.55)   /* aplana el tubo → parece cinta, no manguera */
           return geo
         }
@@ -794,36 +827,56 @@ export default function MesaFlight({ onDone }) {
         for(const s of [1,-1]){
           const loop = shadows(new THREE.Mesh(loopGeometry(s), ribbonMat))
           loop.position.set(0, 0.02, 0.02)
-          loop.rotation.set(0.12, -s * 0.28, -s * 0.10)
+          loop.rotation.set(0.12, -s * 0.32, -s * 0.14)
           bowGroup.add(loop)
         }
 
-        /* nudo central + venda que lo aprieta (detalle que suma realismo) */
-        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.048, 20, 14), ribbonMat))
-        knot.scale.set(1.2, 0.9, 0.75)
-        knot.position.set(0, 0.02, 0.015)
-        bowGroup.add(knot)
-
-        const cinch = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.047, 0.012, 10, 28), ribbonMatDark))
-        cinch.rotation.x = Math.PI / 2
-        cinch.scale.set(1.18, 0.85, 1)
-        cinch.position.copy(knot.position)
+        /* nudo real: anillo que estrangula (oscuro) + capuchón (rojo) */
+        const cinch = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.058, 0.015, 12, 24), ribbonMatDark))
+        cinch.geometry.rotateX(Math.PI / 2)
+        cinch.scale.set(1.22, 0.8, 1)
+        cinch.position.set(0, 0.025, 0.015)
         bowGroup.add(cinch)
 
-        /* colas con punta en V y caída curvada hacia el kraft */
+        const cap = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.042, 18, 12), ribbonMat))
+        cap.scale.set(1.3, 0.62, 1.0)
+        cap.position.set(0, 0.032, 0.018)
+        bowGroup.add(cap)
+
+        /* segunda lazada interior (más chica y parada) → moño doble, se ve real */
+        function innerLoopGeometry(side){
+          const pts = [
+            new THREE.Vector3(0.000, 0.030,  0.020),
+            new THREE.Vector3(0.062, 0.052,  0.026),
+            new THREE.Vector3(0.108, 0.098,  0.006),
+            new THREE.Vector3(0.070, 0.138, -0.014),
+            new THREE.Vector3(0.012, 0.100, -0.018)
+          ].map(p => new THREE.Vector3(p.x * side, p.y, p.z))
+          const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 48, 0.017, 10, true)
+          geo.scale(1, 1, 0.55)
+          return geo
+        }
+        for(const s of [1,-1]){
+          const inner = shadows(new THREE.Mesh(innerLoopGeometry(s), ribbonMatDark))
+          inner.position.set(0, 0.02, 0.03)
+          inner.rotation.set(-0.10, -s * 0.20, -s * 0.06)
+          bowGroup.add(inner)
+        }
+
+        /* colas sólidas con punta en V (extruidas: agarran luz, no son papel plano) */
         function tailGeometry(){
           const sh = new THREE.Shape()
-          sh.moveTo(-0.030,  0)
-          sh.lineTo( 0.030,  0)
-          sh.lineTo( 0.040, -0.21)
-          sh.lineTo( 0.000, -0.155)
-          sh.lineTo(-0.040, -0.21)
+          sh.moveTo(-0.038,  0)
+          sh.lineTo( 0.038,  0)
+          sh.lineTo( 0.038, -0.30)
+          sh.lineTo( 0.000, -0.245)
+          sh.lineTo(-0.038, -0.30)
           sh.closePath()
-          const g = new THREE.ShapeGeometry(sh, 8)
+          const g = new THREE.ExtrudeGeometry(sh, { depth:0.010, bevelEnabled:false })
           const p = g.attributes.position
           for(let i = 0; i < p.count; i++){
             const y = p.getY(i)
-            p.setZ(i, -3.0 * y * y + 0.006)   /* curva de caída (sube/baja el 3.0) */
+            p.setZ(i, p.getZ(i) - 2.2 * y * y + 0.006)   /* curva de caída */
           }
           g.computeVertexNormals()
           return g
@@ -832,15 +885,16 @@ export default function MesaFlight({ onDone }) {
         const tailGeo = tailGeometry()
         for(const s of [1,-1]){
           const tail = shadows(new THREE.Mesh(tailGeo, ribbonMatDark))
-          tail.position.set(0.018 * s, -0.015, 0.03)
+          tail.position.set(0.024 * s, -0.015, 0.03)
           tail.rotation.set(0.10, -s * 0.35, s * 0.22)
           if(s === 1) tail.scale.set(0.94, 0.9, 1)   /* asimetría sutil = más natural */
           bowGroup.add(tail)
         }
 
-        /* posición: calcada de la cinta → quedan pegados siempre */
-        bowGroup.position.set(0, RIBBON_Y, RIBBON_Z + RIBBON_R - 0.01)
-        bowGroup.scale.setScalar(1.1)   /* ← tamaño del moño */
+        /* posición: arriba de la cinta (punto superior del anillo) → pegados siempre
+           y visible desde la cámara del ramo; las colas caen sobre el kraft */
+        bowGroup.position.set(0, RIBBON_Y + RIBBON_R + 0.02, RIBBON_Z + 0.02)
+        bowGroup.scale.setScalar(1.55)   /* ← tamaño del moño */
         wrapGroup.add(bowGroup)
 
         /* boca, eje y perpendiculares del papel aplastado, en coords del ramo */
@@ -1013,133 +1067,337 @@ export default function MesaFlight({ onDone }) {
       register('letter', letterGroup, 0.72)
       let letterT = 0, letterTarget = 0
 
-      // ── bombones ──
+      // ── bombones: caja corazón borgoña (port fiel de CHOCOLATES.txt) ──
       const boxGroup = new THREE.Group()
-      boxGroup.position.set(2.25, 0.03, 0.55); boxGroup.rotation.y = Math.PI - 0.45
+      boxGroup.position.set(2.25, 0.03, 0.55); boxGroup.rotation.y = 0.51
       let lid
       {
-        const chocDark  = new THREE.MeshPhysicalMaterial({ color:0x3A2412, roughness:0.30,
-          clearcoat:1, clearcoatRoughness:0.22 })
-        const chocMilk  = new THREE.MeshPhysicalMaterial({ color:0x7A4A26, roughness:0.32,
-          clearcoat:1, clearcoatRoughness:0.25 })
-        const chocWhite = new THREE.MeshPhysicalMaterial({ color:0xF2E8D0, roughness:0.42,
-          clearcoat:0.7, clearcoatRoughness:0.35 })
-        const cocoaDark = new THREE.MeshStandardMaterial({ color:0x241505, roughness:0.95 })
-        const cocoaMilk = new THREE.MeshStandardMaterial({ color:0x8A5A30, roughness:0.92 })
-        const velvet = mat(0x8E2F38, 0.6, { flatShading:false })
-        const linerM = mat(0xF3E7CE, 0.9, { flatShading:false })
+        /* medidas verificadas del demo: s=0.075 → ancho 2.40 · z ∈ [−0.90,+1.275] */
+        const HBS = 0.075
+        const HB_HINGEZ = -0.90
+        const HB_HINGEY = 0.545
+        const HB_K = 0.276   /* escala demo→mesa: corazón ~20% más grande */
 
-        const base = shadows(new THREE.Mesh(heartGeometry(0.0055, 0.09, 0.012), velvet))
-        base.position.y = 0.012; boxGroup.add(base)
-        const liner = new THREE.Mesh(heartGeometry(0.0048, 0.006, 0.006), linerM)
-        liner.position.y = 0.108; boxGroup.add(liner)
-
-        function truffleGeo(r){
-          const g = new THREE.IcosahedronGeometry(r, 2)
-          const p = g.attributes.position
-          for(let i=0;i<p.count;i++){
-            const vx=p.getX(i), vy=p.getY(i), vz=p.getZ(i)
-            const L = Math.hypot(vx,vy,vz), nx=vx/L, ny=vy/L, nz=vz/L
-            const d = 1 + 0.07*Math.sin(nx*9.7)*Math.sin(ny*8.3)*Math.sin(nz*7.1)
-                        + 0.045*Math.sin(nx*21 + ny*17)
-            p.setXYZ(i, vx*d, vy*d*0.8, vz*d)
+        function hbHeartShape(s){
+          const shape = new THREE.Shape()
+          const N = 120
+          for(let i=0;i<=N;i++){
+            const t = i/N * Math.PI*2
+            const x = 16*Math.pow(Math.sin(t),3)
+            const y = 13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)
+            if(i===0) shape.moveTo(x*s, y*s); else shape.lineTo(x*s, y*s)
           }
-          g.computeVertexNormals()
+          shape.closePath()
+          return shape
+        }
+        function hbHeartExtrude(s, depth, bevel=0.015){
+          const geo = new THREE.ExtrudeGeometry(hbHeartShape(s),
+            { depth, bevelEnabled:true, bevelThickness:bevel, bevelSize:bevel,
+              bevelSegments:3, curveSegments:48 })
+          geo.rotateX(-Math.PI/2)
+          return geo
+        }
+        function hbHeartFlat(s, depth){
+          const geo = new THREE.ExtrudeGeometry(hbHeartShape(s),
+            { depth, bevelEnabled:false, curveSegments:48 })
+          geo.rotateX(-Math.PI/2)
+          return geo
+        }
+        function hbHeartFrame(sOuter, sInner, depth){
+          const shape = hbHeartShape(sOuter)
+          shape.holes.push(hbHeartShape(sInner))
+          const geo = new THREE.ExtrudeGeometry(shape,
+            { depth, bevelEnabled:false, curveSegments:48 })
+          geo.rotateX(-Math.PI/2)
+          return geo
+        }
+        function hbHeartPipe(s, y, r, inflate=1.005){
+          const pts = []
+          for(let i=0;i<=120;i++){
+            const t = i/120*Math.PI*2
+            const x = 16*Math.pow(Math.sin(t),3)*s*inflate
+            const yh = 13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)
+            pts.push(new THREE.Vector3(x, y, -yh*s*inflate))
+          }
+          const curve = new THREE.CatmullRomCurve3(pts, true)
+          return shadows(new THREE.Mesh(new THREE.TubeGeometry(curve, 200, r, 8, true), goldMat))
+        }
+
+        /* ---------- materiales ---------- */
+        const hbDark  = new THREE.MeshStandardMaterial({ color:0x3A2113, roughness:0.30 })
+        const hbMilk  = new THREE.MeshStandardMaterial({ color:0x6B3E1E, roughness:0.36 })
+        const hbWhite = new THREE.MeshStandardMaterial({ color:0xF2E3C8, roughness:0.46 })
+        const hbNut   = new THREE.MeshStandardMaterial({ color:0xC89A5B, roughness:0.72, flatShading:true })
+        const hbBurgTex = (() => {
+          const cv = document.createElement('canvas'); cv.width = cv.height = 256
+          const g = cv.getContext('2d')
+          g.fillStyle = '#6E1F2A'; g.fillRect(0,0,256,256)
+          for(let i=0;i<60;i++){
+            g.fillStyle = `rgba(40,8,14,${Math.random()*0.15})`
+            g.fillRect(Math.random()*256, Math.random()*256, rnd(6,26), rnd(2,5))
+          }
+          g.fillStyle = 'rgba(217,180,91,0.50)'
+          for(let y=0;y<256;y+=32){
+            for(let x=0;x<256;x+=32){
+              const ox = (y/32)%2 ? 16 : 0
+              g.beginPath(); g.arc(x+ox, y, 3.2, 0, 6.29); g.fill()
+            }
+          }
+          const t = new THREE.CanvasTexture(cv)
+          t.colorSpace = THREE.SRGBColorSpace
+          t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2,2)
+          return t
+        })()
+        const hbBurg   = new THREE.MeshStandardMaterial({ map:hbBurgTex, roughness:0.70 })
+        const hbVelvet = new THREE.MeshStandardMaterial({ color:0x8C1D2F, roughness:1.0 })
+        const hbDoilyM = new THREE.MeshStandardMaterial({ color:0xEFD9A8, roughness:0.9 })
+
+        const hb = new THREE.Group()
+        hb.scale.setScalar(HB_K)
+        boxGroup.add(hb)
+        const hbInner = new THREE.Group()
+        hbInner.position.set(0, 0.01, 0.02)
+        hb.add(hbInner)
+        const hbChocos = []
+
+        /* ---------- BASE: y ∈ [0, 0.33] ---------- */
+        const hbBase = shadows(new THREE.Mesh(hbHeartExtrude(HBS, 0.30, 0.015), hbBurg))
+        hbBase.position.y = 0.015
+        hbInner.add(hbBase)
+        const hbLip = shadows(new THREE.Mesh(hbHeartFrame(HBS*0.995, HBS*0.93, 0.012), hbVelvet))
+        hbLip.position.y = 0.33
+        hbInner.add(hbLip)
+        const hbCushion = shadows(new THREE.Mesh(hbHeartExtrude(HBS*0.94, 0.02, 0.005), hbVelvet))
+        hbCushion.position.y = 0.33
+        hbInner.add(hbCushion)
+        hbInner.add(hbHeartPipe(HBS, 0.16, 0.011, 1.012))
+        hbInner.add(hbHeartPipe(HBS, 0.328, 0.013, 1.01))
+        const hbClasp = shadows(new THREE.Mesh(hbHeartFlat(0.007, 0.015), goldMat))
+        hbClasp.position.set(0, 0.14, 1.283)
+        hbInner.add(hbClasp)
+
+        /* ---------- moño de satén (misma técnica que el ramo) ---------- */
+        const hbRibbonMat  = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.5, side:THREE.DoubleSide })
+        const hbRibbonDark = new THREE.MeshStandardMaterial({ color:0xA83018, roughness:0.55, side:THREE.DoubleSide })
+        function hbMakeLoop(sign){
+          const pts = [
+            new THREE.Vector3(0.012*sign, 0.006,  0.010),
+            new THREE.Vector3(0.070*sign, 0.042,  0.016),
+            new THREE.Vector3(0.150*sign, 0.060,  0.000),
+            new THREE.Vector3(0.185*sign, 0.036, -0.020),
+            new THREE.Vector3(0.125*sign, 0.010, -0.026),
+            new THREE.Vector3(0.045*sign,-0.004, -0.012),
+          ]
+          const curve = new THREE.CatmullRomCurve3(pts, true)
+          const loop = shadows(new THREE.Mesh(
+            new THREE.TubeGeometry(curve, 80, 0.026, 12, true), hbRibbonMat))
+          loop.scale.z = 0.38
+          loop.rotation.y = 0.20*sign
+          return loop
+        }
+        const hbTailShape = new THREE.Shape()
+        hbTailShape.moveTo(-0.032, 0)
+        hbTailShape.lineTo( 0.032, 0)
+        hbTailShape.lineTo( 0.032, 0.180)
+        hbTailShape.lineTo( 0,     0.138)
+        hbTailShape.lineTo(-0.032, 0.180)
+        hbTailShape.closePath()
+        const hbTailGeo = new THREE.ExtrudeGeometry(hbTailShape, { depth:0.007, bevelEnabled:false })
+        hbTailGeo.rotateX(Math.PI/2)
+        function hbMakeSatinBow(){
+          const bow = new THREE.Group()
+          bow.add(hbMakeLoop(1), hbMakeLoop(-1))
+          const cinchGeo = new THREE.TorusGeometry(0.030, 0.014, 12, 24)
+          cinchGeo.rotateX(Math.PI/2)
+          const hbCinch = shadows(new THREE.Mesh(cinchGeo, hbRibbonDark))
+          hbCinch.scale.y = 0.8
+          hbCinch.position.y = 0.006
+          bow.add(hbCinch)
+          const hbCap = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.022, 14, 10), hbRibbonMat))
+          hbCap.scale.set(1.25, 0.6, 1.0)
+          hbCap.position.y = 0.016
+          bow.add(hbCap)
+          for(const s of [1,-1]){
+            const tail = shadows(new THREE.Mesh(hbTailGeo, hbRibbonMat))
+            tail.position.set(0.017*s, 0.004, 0.012)
+            tail.rotation.y = 0.30*s
+            bow.add(tail)
+          }
+          return bow
+        }
+
+        /* ---------- tapa abisagrada: lid ES el pivote (lo anima el loop) ---------- */
+        lid = new THREE.Group()
+        lid.position.set(0, HB_HINGEY, HB_HINGEZ)
+        hbInner.add(lid)
+        const hbLidG = new THREE.Group()
+        hbLidG.position.z = -HB_HINGEZ
+        lid.add(hbLidG)
+        const HBSL = HBS*1.08
+        const hbSkirt = shadows(new THREE.Mesh(hbHeartFrame(HBSL, HBSL*0.958, 0.21), hbBurg))
+        hbSkirt.position.y = -0.21
+        hbLidG.add(hbSkirt)
+        const hbSlab = shadows(new THREE.Mesh(hbHeartExtrude(HBSL*1.001, 0.05, 0.008), hbBurg))
+        hbSlab.position.y = 0.008
+        hbLidG.add(hbSlab)
+        const hbLining = shadows(new THREE.Mesh(hbHeartFlat(HBSL*0.80, 0.012),
+          new THREE.MeshStandardMaterial({ color:0xF3E4CC, roughness:0.95 })))
+        hbLining.position.y = -0.012
+        hbLidG.add(hbLining)
+        const hbPlate = shadows(new THREE.Mesh(hbHeartFlat(HBSL*0.97, 0.012), goldMat))
+        hbPlate.position.y = 0.066
+        hbLidG.add(hbPlate)
+        const hbInlay = shadows(new THREE.Mesh(hbHeartFlat(HBSL*0.86, 0.014), hbBurg))
+        hbInlay.position.y = 0.078
+        hbLidG.add(hbInlay)
+        const hbMotif = shadows(new THREE.Mesh(hbHeartFlat(HBSL*0.26, 0.010), goldMat))
+        hbMotif.position.set(0, 0.092, -0.58)
+        hbLidG.add(hbMotif)
+        hbLidG.add(hbHeartPipe(HBSL, 0.066, 0.011, 1.0))
+        /* bandas cruzadas + moño sobre el cruce */
+        const hbBandA = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.005, 1.10), hbRibbonMat))
+        hbBandA.position.set(0, 0.0935, 0.15)
+        hbLidG.add(hbBandA)
+        const hbBandB = shadows(new THREE.Mesh(new THREE.BoxGeometry(1.30, 0.005, 0.085), hbRibbonMat))
+        hbBandB.position.set(0, 0.0935, 0.42)
+        hbLidG.add(hbBandB)
+        const hbBow = hbMakeSatinBow()
+        hbBow.scale.setScalar(1.2)
+        hbBow.position.set(0, 0.097, 0.42)
+        hbLidG.add(hbBow)
+
+        /* ---------- servilletas + 9 bombones (rejilla verificada del demo) ---------- */
+        function hbMakeDoily(r = 0.175){
+          const geo = new THREE.CylinderGeometry(r*0.915, r, 0.014, 28, 1, true)
+          const p = geo.attributes.position
+          for(let i=0;i<p.count;i++){
+            const x = p.getX(i), z = p.getZ(i)
+            const a = Math.atan2(z, x)
+            const f = 1 + 0.08*Math.sin(a*12)
+            p.setX(i, x*f); p.setZ(i, z*f)
+          }
+          geo.computeVertexNormals()
+          const g = new THREE.Group()
+          g.add(shadows(new THREE.Mesh(sanitizeGeometry(geo),
+            new THREE.MeshStandardMaterial({ color:0xEFD9A8, roughness:0.9, side:THREE.DoubleSide }))))
+          const floor = shadows(new THREE.Mesh(new THREE.CircleGeometry(r*0.915, 28), hbDoilyM))
+          floor.rotation.x = -Math.PI/2; floor.position.y = 0.002
+          g.add(floor)
+          const rim = shadows(new THREE.Mesh(new THREE.TorusGeometry(r*0.88, 0.007, 6, 42), hbDoilyM))
+          rim.rotation.x = Math.PI/2; rim.position.y = 0.007
+          g.add(rim)
           return g
         }
-        const domeGeo = r => new THREE.SphereGeometry(r, 24, 14, 0, 6.2832, 0, Math.PI/2)
-        const drizzleMat = color => new THREE.MeshStandardMaterial({ color, roughness:0.4 })
-        function addDrizzle(px, pz, color, phase){
-          const pts = []
-          for(let i=0;i<=16;i++){
-            const u = i/16
-            pts.push(new THREE.Vector3(
-              (u-0.5)*0.092,
-              0.040 + 0.020*Math.sin(u*Math.PI),
-              0.014*Math.sin(u*3*Math.PI + phase)))
+        function hbMakeTruffle(){
+          const g = new THREE.Group()
+          const body = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.095, 20, 14), hbDark))
+          body.position.y = 0.068; body.scale.y = 0.72
+          g.add(body)
+          for(const [rx, ry] of [[0.45, 0.3],[-0.4, 1.9]]){
+            const ring = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.006, 6, 26), hbWhite))
+            ring.rotation.set(rx, ry, 0)
+            ring.position.y = 0.068
+            g.add(ring)
           }
-          const tube = new THREE.Mesh(new THREE.TubeGeometry(
-            new THREE.CatmullRomCurve3(pts), 32, 0.0042, 6), drizzleMat(color))
-          tube.position.set(px, 0, pz)
-          boxGroup.add(tube)
+          return g
         }
-        function rosetteGeo(r){
-          const pts = []
-          for(let i=0;i<=64;i++){
-            const t = i/64, a = t*Math.PI*4.6, rr = r*(0.14 + 0.86*t)
-            pts.push(new THREE.Vector3(Math.cos(a)*rr, 0.024*(1 - t*0.45), Math.sin(a)*rr))
+        function hbMakeSquare(){
+          const g = new THREE.Group()
+          const body = shadows(new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.075, 4), hbMilk))
+          body.position.y = 0.038; body.rotation.y = Math.PI/4
+          g.add(body)
+          const sw = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.008, 6, 22), hbWhite))
+          sw.rotation.x = Math.PI/2; sw.position.y = 0.079
+          g.add(sw)
+          return g
+        }
+        function hbMakeDome(){
+          const g = new THREE.Group()
+          const dome = shadows(new THREE.Mesh(
+            new THREE.SphereGeometry(0.115, 20, 12, 0, 6.29, 0, Math.PI/2), hbDark))
+          g.add(dome)
+          const peak = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.032, 0.032, 12), hbMilk))
+          peak.position.y = 0.124
+          g.add(peak)
+          const bandr = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.082, 0.007, 6, 26), hbWhite))
+          bandr.rotation.x = Math.PI/2; bandr.position.y = 0.048
+          g.add(bandr)
+          return g
+        }
+        function hbMakeNut(){
+          const g = new THREE.Group()
+          const body = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.09, 18, 12), hbMilk))
+          body.position.y = 0.068; body.scale.y = 0.8
+          g.add(body)
+          for(let i=0;i<6;i++){
+            const nut = shadows(new THREE.Mesh(new THREE.DodecahedronGeometry(0.022), hbNut))
+            const a = rnd(0, 6.28), u = rnd(0.2, 0.8)
+            nut.position.set(Math.cos(a)*0.062*u, 0.068 + rnd(0.012, 0.05), Math.sin(a)*0.062*u)
+            nut.rotation.set(rnd(0,3), rnd(0,3), rnd(0,3))
+            g.add(nut)
           }
-          return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 100, 0.017, 7)
+          return g
         }
-
-        const chY = 0.108
-        const spots = [
-          { t: Math.PI - 2.16, kind:'truffleD' },
-          { t: Math.PI - 1.44, kind:'domeM'    },
-          { t: Math.PI - 0.72, kind:'squareM'  },
-          { t: Math.PI + 0.72, kind:'rosette'  },
-          { t: Math.PI + 1.44, kind:'truffleM' },
-          { t: Math.PI + 2.16, kind:'domeW'    },
+        function hbMakeRoll(){
+          const g = new THREE.Group()
+          const body = shadows(new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.16, 6, 18), hbMilk))
+          body.position.y = 0.07; body.rotation.z = Math.PI/2
+          g.add(body)
+          const stripe = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.006, 6, 26), hbWhite))
+          stripe.rotation.y = Math.PI/2; stripe.position.y = 0.07
+          stripe.position.x = 0.05
+          g.add(stripe)
+          return g
+        }
+        function hbMakeHeartChoco(){
+          const g = new THREE.Group()
+          const body = shadows(new THREE.Mesh(hbHeartExtrude(0.0125, 0.05, 0.007), hbDark))
+          body.position.y = 0.007
+          g.add(body)
+          const drizzle = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.006, 6, 28, Math.PI*1.2), hbWhite))
+          drizzle.rotation.set(-1.35, 0, 0.4)
+          drizzle.position.y = 0.062
+          g.add(drizzle)
+          return g
+        }
+        const hbMakers = { truffle:hbMakeTruffle, square:hbMakeSquare, dome:hbMakeDome,
+                           nut:hbMakeNut, roll:hbMakeRoll }
+        const hbPlan = [
+          [-0.66, -0.62, 'roll',    0.175],
+          [ 0.66, -0.62, 'nut',     0.175],
+          [-0.80, -0.10, 'truffle', 0.175],
+          [ 0.00, -0.10, 'heart',   0.20 ],
+          [ 0.80, -0.10, 'dome',    0.175],
+          [-0.48,  0.36, 'square',  0.175],
+          [ 0.00,  0.36, 'truffle', 0.175],
+          [ 0.48,  0.36, 'nut',     0.175],
+          [ 0.00,  0.76, 'square',  0.15 ],
         ]
-        for(const s of spots){
-          const hp = HEART(s.t)
-          const x = hp.x*0.0132, z = (hp.y + 2.5)*0.0132
-          let m
-          if(s.kind === 'truffleD'){
-            m = shadows(new THREE.Mesh(truffleGeo(0.046), cocoaDark))
-            m.position.set(x, chY + 0.034, z)
-          } else if(s.kind === 'truffleM'){
-            m = shadows(new THREE.Mesh(truffleGeo(0.046), cocoaMilk))
-            m.position.set(x, chY + 0.034, z)
-          } else if(s.kind === 'domeM'){
-            m = shadows(new THREE.Mesh(domeGeo(0.052), chocMilk))
-            m.position.set(x, chY, z)
-            addDrizzle(x, z, 0xF2E8D0, rnd(0,3))
-          } else if(s.kind === 'domeW'){
-            m = shadows(new THREE.Mesh(domeGeo(0.052), chocWhite))
-            m.position.set(x, chY, z)
-            addDrizzle(x, z, 0x3A2412, rnd(0,3))
-          } else if(s.kind === 'squareM'){
-            m = shadows(new THREE.Mesh(new THREE.BoxGeometry(0.076, 0.048, 0.076), chocMilk))
-            m.position.set(x, chY + 0.024, z)
-            m.rotation.y = Math.PI/4
-            const emb = new THREE.Mesh(heartGeometry(0.00075, 0.004, 0.0008), chocDark)
-            emb.position.set(x, chY + 0.050, z)
-            emb.rotation.y = Math.PI/4
-            boxGroup.add(emb)
-          } else {
-            const disk = shadows(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.056, 0.012, 16), chocDark))
-            disk.position.set(x, chY + 0.006, z)
-            boxGroup.add(disk)
-            m = shadows(new THREE.Mesh(rosetteGeo(0.05), chocMilk))
-            m.position.set(x, chY + 0.012, z)
+        for(const [xw, zw, kind, dr] of hbPlan){
+          const dl = hbMakeDoily(dr)
+          dl.position.set(xw, 0.361, zw)
+          dl.rotation.y = rnd(-0.08, 0.08)
+          hbInner.add(dl)
+          const ch = kind === 'heart' ? hbMakeHeartChoco() : hbMakers[kind]()
+          ch.position.set(xw, 0.367, zw)
+          ch.rotation.y = (kind==='roll') ? rnd(-0.04, 0.04) : rnd(-0.06, 0.06)
+          const sc = rnd(0.99, 1.02)
+          ch.scale.setScalar(sc)
+          hbInner.add(ch)
+          hbChocos.push({ g:ch, base:sc })
+        }
+        /* autoverificación del demo: holgura tapa-bombones */
+        hbInner.updateMatrixWorld(true)
+        {
+          const bb = new THREE.Box3()
+          for(const ch of hbChocos) bb.expandByObject(ch.g)
+          if(bb.max.y > HB_HINGEY - 0.03){
+            console.warn('⚠ bombones demasiado altos para la tapa: tope =', bb.max.y.toFixed(3))
           }
-          boxGroup.add(m)
         }
-        const heartChoc = shadows(new THREE.Mesh(heartGeometry(0.0016, 0.022, 0.004), chocWhite))
-        heartChoc.position.set(0, chY + 0.018, 0.012)
-        boxGroup.add(heartChoc)
-        for(const [dx,dz] of [[-0.055,0.075],[0.055,0.075],[0,-0.24]]){
-          const pearl = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.013, 10, 8), goldMat))
-          pearl.position.set(dx, chY + 0.011, dz)
-          boxGroup.add(pearl)
-        }
-
-        // tapa corazón abisagrada atrás — con forro interior y filete dorado
-        lid = new THREE.Group(); lid.position.set(0, 0.135, 0.32)
-        const lidOuter = shadows(new THREE.Mesh(heartGeometry(0.0059, 0.055, 0.01), velvet))
-        lidOuter.position.set(0, 0.028, -0.32)
-        const lidInner = new THREE.Mesh(heartGeometry(0.0052, 0.008, 0.006), linerM)
-        lidInner.position.set(0, -0.008, -0.32)
-        const lidGold = new THREE.Mesh(heartGeometry(0.00585, 0.004, 0.003), new THREE.MeshStandardMaterial({ color:0xd4af37, metalness:0.65, roughness:0.35 }))
-        lidGold.position.set(0, 0.018, -0.32)
-        const lidKnob = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.018, 10, 8), new THREE.MeshStandardMaterial({ color:0xd4af37, metalness:0.75, roughness:0.28 })))
-        lidKnob.position.set(0, 0.058, -0.02)
-        lid.add(lidOuter, lidInner, lidGold, lidKnob)
-        boxGroup.add(lid)
       }
       scene.add(boxGroup)
-      register('box', boxGroup, 0.5)
+      register('box', boxGroup, 0.55)
       let boxT = 0, boxTarget = 0
 
       // ── pluma ──
@@ -1448,7 +1706,7 @@ export default function MesaFlight({ onDone }) {
         letter:   { p:[0.95, 1.7, 3.1],  t:[0.72, 0.12, 1.18] },
         bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.89, 0.35, -0.82] },
         candles:  { p:[3.2, 1.5, 1.2],   t:[1.55, 0.7, -0.85] },
-        box:      { p:[3.0, 1.35, 1.9],  t:[2.25, 0.15, 0.55] },
+        box:      { p:[3.0, 1.45, 1.9],  t:[2.25, 0.22, 0.55] },
       }
       let camTween = null
       function flyTo(view, dur = 1.5){
@@ -1689,9 +1947,9 @@ export default function MesaFlight({ onDone }) {
           note.rotation.z = Math.sin(time*0.9)*0.05*ne
         }
 
-        // box
+        // box (tapa corazón: abre parada como tarjeta, −83° del demo)
         boxT += (boxTarget - boxT)*Math.min(1, dt*2.6)
-        lid.rotation.x = 1.9*(boxTarget === 1 ? backOut(clamp01(boxT)) : easeIO(clamp01(boxT)))
+        lid.rotation.x = -1.45*(boxTarget === 1 ? backOut(clamp01(boxT)) : easeIO(clamp01(boxT)))
 
         // onda de luz: enciende cada flor cuando la luz llega
         for(let i=rippleQueue.length-1; i>=0; i--){

@@ -37,7 +37,7 @@
 |---------|---------|-------|
 | Intro | `Intro.jsx:99` | UMBRA hero `100dvh` static, `StarRain 18/36` + `Frost 24/2` + `geometric circles` + `dust/ink/fog` + `GothicButton Recordemos` bat + `gothic-prism` foto 575px `prism-border` |
 | Countdown | `Countdown.jsx:7` | Fecha **26.08.2024** calendario real, `TimeBlock` 6 con anillo `gold/crimson` + watermark `II`, `pebble-button` bat, `Mi Canelita` badge |
-| Puzzle | `Puzzle.jsx:64` | 4×4 premium, `Saltar puzzle`/`Ver aviso` solo con `?debug=1` `src/components/Puzzle.jsx:138` |
+| Puzzle | `Puzzle.jsx:64` | 4×4 premium, `Saltar puzzle` siempre visible (decisión Alejandro 19-09-2026), `Ver aviso` solo con `?debug=1` `src/components/Puzzle.jsx:140` |
 | MemoryLane | `MemoryLane.jsx:17` | Swipe drag x 80/vel 400 |
 | Letter | `Letter.jsx:7` | Carta papyrus + **vuelo 3D gótico** `ButterflyFlight.jsx:1` (Danaus reutilizada + circuito CatmullRom 1 recorrido (~16s) + follow-cam, escena limpia sin títulos, fondo transparente sobre cosmos) |
 | Collage | `Collage.jsx:39` | Masonry 13 fotos sin hueco |
@@ -66,7 +66,7 @@ cd "C:\Users\USER\Desktop\anniversary-app"
 git checkout main; npm run dev          # http://localhost:5173
 npm run build
 git log --oneline -5
-# debug puzzle: http://localhost:5173/?debug=1  muestra Saltar/Ver aviso
+# debug puzzle: http://localhost:5173/?debug=1  muestra Ver aviso (Saltar siempre visible)
 ```
 
 **Deploy:** Vercel importa `stevenaraque/aniversary` branch `main` (auto).
@@ -167,4 +167,32 @@ Auditoría sección por sección: lo que trababa el navegador era cantidad de ca
 - **Cinta + moño** `ea992ff`: lazo torus SIN rotación (el tubo va en Z, el toro por defecto ya abraza — rotarlo lo pone de canto). Moño: lazadas gota `TubeGeometry` + nudo con venda + colas V curvas. Perillas: `bowGroup.scale`, `RIBBON_Y`, coef `3.0` colas.
 - **Onda de luz**: click → `lightRipple` + pétalos + `flyTo` (conservada del demo, sin toasts).
 - **Build:** `63kB CSS / 172kB JS + 538kB three + 130kB motion`, lint 0/0.
+
+## Update 19-09-2026 — fixes post-auditoría security-audit run-1
+- **Puzzle debug gate** `src/components/Puzzle.jsx:29-31,140-153` — `Saltar puzzle`/`Ver aviso` otra vez solo con `?debug=1` (`showDebug` vía `URLSearchParams.has('debug')`). Cierra drift docs-vs-código.
+- **Intro RAF guards** `src/components/Intro.jsx:36-42,63-78` — `StarRainCanvas` y `FrostCanvas` con flag `running` (no duplican RAF en `visibilitychange` espurios, paran en hidden, cleanup total). `FrostCanvas` con DPR cap 1.5 + `setTransform` (antes backing 1x sin escalar).
+- **Playlist toast cleanup** `src/components/Playlist.jsx:251-252` — `clearTimeout(toastTimeout)` en unmount.
+- **Headers prod** `vercel.json:1` (nuevo) — CSP (`self` + fonts.googleapis/gstatic + picsum + `data:` favicon, `frame-ancestors 'none'`), HSTS preload, nosniff, DENY frame, referrer estricta. Solo aplica en Vercel; dev intacto.
+- Reporte: `~/security-audit-skill/anniversary-app/run-1/REPORT.md` (0 confirmados, 8/8 covered).
+- Lint 0/0, build OK.
+
+## Update 19-09-2026 — moño rojo visible (MesaFlight)
+- **Problema:** el moño quedaba enterrado en la maza de tallos (posición Z más allá de la boca) y la cinta circular quedaba tragada por el kraft aplastado (escala 1.46/0.50) + churruscado. En captura no se veía ningún moño.
+- **Fix** `src/components/MesaFlight.jsx:760-850`: rojo terracota → rojo vivo `0xC81E2B` (+ brillo `metalness 0.08`), lazadas ×1.25 + tubo 0.024, nudo 0.048→0.060, colas largas en V (−0.30), escala moño 1.1→1.55, cinta `RIBBON_R` 0.40→0.44 (holgura sobre el papel), tubo cinta 0.030, **moño movido a la parte superior del anillo** `(0, RIBBON_Y+RIBBON_R+0.02, RIBBON_Z+0.02)` — antes flotaba en la maza de tallos.
+- **Verificado:** lint 0/0, build OK, captura headless vista `b1.png` (moño rojo + banda sobre el kraft, sin errores de consola).
+- Lint 0/0, build OK.
+
+## Update 19-09-2026 — Saltar puzzle siempre visible
+- `src/components/Puzzle.jsx` — `Saltar puzzle` otra vez siempre visible (petición Alejandro); `Ver aviso` sigue solo con `?debug=1`. Verificado en captura `puzzle-saltar.png` sin `?debug`. Lint 0/0.
+
+## Update 19-09-2026 — moño real + caja corazón nueva (MesaFlight)
+- **Moño ramo real** `src/components/MesaFlight.jsx:801-850` — nudo esferita → anillo estrangulador oscuro + capuchón rojo aplanado (técnica satén del demo), + 2ª lazada interior parada (moño doble), colas planas → extruidas sólidas con grosor. Verificado en captura.
+- **Caja corazón** (port fiel `CHOCOLATES.txt`, petición Alejandro) — fuera caja plana anterior; nueva: corazón borgoña con lunares dorados + filete oro, forro terciopelo, 9 bombones en rejilla (trufa/cuadro/cúpula/nuez/rollo + corazón chocolate al centro) sobre servilletas, tapa joyero con placa oro + motivo + bandas cruzadas + moño satén, abre parada −83° como tarjeta. Escala demo→mesa `0.23`, `boxGroup.rotation.y = 0.51` (punta hacia cámara box), `register` radio 0.55, vista box `t-y 0.22`. Sin sueltos del demo (quedan fuera de la mesa) ni DOM/toasts (Mesa no usa). Acción abrir/cerrar y loop intactos (misma `lid`/`boxT`/`boxTarget`).
+- **Verificado:** lint 0/0, build OK, capturas headless vistas `c1.png` (caja abierta con 9 bombones + tapa parada, 0 errores) y ramo con moño doble rojo.
+- Lint 0/0, build OK.
+
+## Update 19-09-2026 — caja +20% y 2 sillas (MesaFlight)
+- `HB_K` 0.23→0.276 (corazón ~20% más grande, verificado en `c1.png`).
+- **Sillas** `src/components/MesaFlight.jsx` (bloque tras el piso): 2 sillas enfrentadas en ±z (radio 4.35, leve yaw), madera clara `0x7A4A26` + cojín vino `0xA62639` (la madera oscura quedaba silueta). Patas/asiento/respaldo con travesaños. Decor (sin pick). Verificado en `c0.png`.
+- Lint 0/0, build OK.
 

@@ -33,11 +33,11 @@ function StarRainCanvas() {
     const stars=Array.from({length:COUNT},()=>({x:Math.random(),y:Math.random(),size:Math.random()*1.45+0.6,baseAlpha:Math.random()*0.42+0.26,speed:0.00014+Math.random()*0.00028,tx:(Math.random()-0.5)*0.055,ty:(Math.random()-0.5)*0.055,phase:Math.random()*Math.PI*2,tw:0.0005+Math.random()*0.00065}))
     const resize=()=>{const r=canvas.getBoundingClientRect();w=r.width;h=r.height;const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
     resize();window.addEventListener('resize',resize)
-    let last=0
-    const tick=(now)=>{if(now-last<34){raf=requestAnimationFrame(tick);return}last=now;ctx.clearRect(0,0,w,h);for(const s of stars){s.x+=s.tx*s.speed*34;s.y+=s.ty*s.speed*34;if(s.x<-0.05)s.x=1.05;if(s.x>1.05)s.x=-0.05;if(s.y<-0.05)s.y=1.05;if(s.y>1.05)s.y=-0.05;s.phase+=s.tw*34;const tw=(Math.sin(s.phase)+1)/2,a=s.baseAlpha*(0.28+tw*0.62),sc=0.65+tw*0.4;const r=s.size*sc;if(s.size>1.35){ctx.beginPath();ctx.arc(s.x*w,s.y*h,r*1.7,0,Math.PI*2);ctx.fillStyle=`rgba(255,248,220,${a*0.11})`;ctx.fill()}ctx.beginPath();ctx.arc(s.x*w,s.y*h,r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fill()}raf=requestAnimationFrame(tick)}
-    const onVis=()=>{if(document.hidden)cancelAnimationFrame(raf);else requestAnimationFrame(tick)}
+    let last=0, running=true
+    const tick=(now)=>{if(!running)return;if(now-last<34){raf=requestAnimationFrame(tick);return}last=now;ctx.clearRect(0,0,w,h);for(const s of stars){s.x+=s.tx*s.speed*34;s.y+=s.ty*s.speed*34;if(s.x<-0.05)s.x=1.05;if(s.x>1.05)s.x=-0.05;if(s.y<-0.05)s.y=1.05;if(s.y>1.05)s.y=-0.05;s.phase+=s.tw*34;const tw=(Math.sin(s.phase)+1)/2,a=s.baseAlpha*(0.28+tw*0.62),sc=0.65+tw*0.4;const r=s.size*sc;if(s.size>1.35){ctx.beginPath();ctx.arc(s.x*w,s.y*h,r*1.7,0,Math.PI*2);ctx.fillStyle=`rgba(255,248,220,${a*0.11})`;ctx.fill()}ctx.beginPath();ctx.arc(s.x*w,s.y*h,r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fill()}raf=requestAnimationFrame(tick)}
+    const onVis=()=>{if(document.hidden){running=false;cancelAnimationFrame(raf)}else if(!running){running=true;raf=requestAnimationFrame(tick)}}
     document.addEventListener('visibilitychange',onVis);raf=requestAnimationFrame(tick)
-    return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVis)}
+    return()=>{running=false;cancelAnimationFrame(raf);window.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVis)}
   },[])
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />
 }
@@ -52,8 +52,11 @@ function FrostCanvas() {
     const canvas=ref.current
     if(!canvas) return
     const ctx=canvas.getContext('2d')
-    let W=canvas.width=window.innerWidth, H=canvas.height=window.innerHeight
-    let raf=0, last=0
+    const dpr=Math.min(window.devicePixelRatio||1,1.5)
+    let W=window.innerWidth, H=window.innerHeight
+    const fit=()=>{W=window.innerWidth;H=window.innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+    fit()
+    let raf=0, last=0, running=true
     class Particle{constructor(){this.reset()} reset(){this.x=Math.random()*W;this.y=-10;this.z=Math.random();this.size=0.3+this.z*0.6;this.speed=0.18+this.z*0.4;this.drift=(Math.random()-0.5)*0.18;this.opacity=0.06+this.z*0.16} update(){this.y+=this.speed;this.x+=this.drift;if(this.y>H+10)this.reset()} draw(){ctx.fillStyle=`rgba(255,255,255,${this.opacity})`;ctx.fillRect(this.x,this.y,this.size,this.size)}}
     class IceCrystal{constructor(){this.reset()} reset(){this.x=Math.random()*W;this.y=H*0.86+Math.random()*40;this.size=12+Math.random()*18;this.angle=Math.random()*Math.PI*2;this.rotSpeed=(Math.random()-0.5)*0.006;this.opacity=0;this.maxOpacity=0.015+Math.random()*0.02;this.fadeIn=true;this.life=0;this.maxLife=260+Math.random()*180} update(){this.angle+=this.rotSpeed;this.life++;if(this.fadeIn){this.opacity+=0.0006;if(this.opacity>=this.maxOpacity)this.fadeIn=false}else if(this.life>this.maxLife*0.7)this.opacity-=0.0003;if(this.life>this.maxLife)this.reset()} draw(){ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.angle);ctx.strokeStyle=`rgba(255,255,255,${this.opacity})`;ctx.lineWidth=0.5;const arms=6;for(let i=0;i<arms;i++){ctx.save();ctx.rotate((Math.PI*2/arms)*i);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(this.size,0);ctx.stroke();ctx.restore()}ctx.restore()}}
     class FrostLine{constructor(){this.x1=Math.random()*W;this.y=H*0.86;this.length=0;this.maxLength=40+Math.random()*55;this.angle=(Math.random()-0.5)*0.4;this.opacity=0;this.growing=true} update(){if(this.growing){this.length+=0.35;this.opacity+=0.0012;if(this.length>=this.maxLength)this.growing=false}else this.opacity-=0.0006;return this.opacity>0} draw(){ctx.save();ctx.translate(this.x1,this.y);ctx.rotate(this.angle);ctx.strokeStyle=`rgba(255,255,255,${this.opacity*0.06})`;ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(this.length,0);ctx.stroke();ctx.restore()}}
@@ -61,6 +64,7 @@ function FrostCanvas() {
     const crystals=Array.from({length:2},()=>new IceCrystal())
     const frostLines=[]
     const loop=(now)=>{
+      if(!running) return
       if(now-last<50){raf=requestAnimationFrame(loop);return} last=now
       ctx.clearRect(0,0,W,H)
       particles.forEach(p=>{p.update();p.draw()})
@@ -69,10 +73,10 @@ function FrostCanvas() {
       for(let i=frostLines.length-1;i>=0;i--){if(!frostLines[i].update()) frostLines.splice(i,1); else frostLines[i].draw()}
       raf=requestAnimationFrame(loop)
     }
-    const onResize=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;particles.forEach(p=>p.reset());crystals.forEach(c=>c.reset())}
-    const onVis=()=>{if(document.hidden) cancelAnimationFrame(raf); else raf=requestAnimationFrame(loop)}
+    const onResize=()=>{fit();particles.forEach(p=>p.reset());crystals.forEach(c=>c.reset())}
+    const onVis=()=>{if(document.hidden){running=false;cancelAnimationFrame(raf)}else if(!running){running=true;raf=requestAnimationFrame(loop)}}
     window.addEventListener('resize',onResize); document.addEventListener('visibilitychange',onVis); raf=requestAnimationFrame(loop)
-    return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',onResize);document.removeEventListener('visibilitychange',onVis)}
+    return()=>{running=false;cancelAnimationFrame(raf);window.removeEventListener('resize',onResize);document.removeEventListener('visibilitychange',onVis)}
   },[])
   return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none opacity-50 hidden md:block" aria-hidden="true" />
 }

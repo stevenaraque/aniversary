@@ -28,6 +28,8 @@ export default function Puzzle({ onNext, onPrev }) {
   const [started, setStarted] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [previewWin, setPreviewWin] = useState(false)
+  // Ver aviso solo en debug (?debug=1); Saltar puzzle siempre visible (decisión Alejandro 19-09-2026)
+  const [showDebug] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug'))
   const boardRef = useRef(null)
 
   const isSolved = board.every((t, i) => t === i)
@@ -139,9 +141,11 @@ export default function Puzzle({ onNext, onPrev }) {
         <button onClick={onNext} className="mt-4 glass px-4 py-1.5 rounded-full text-white/25 text-[11px] tracking-widest uppercase hover:text-white/50 border border-transparent hover:border-gold/20 transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto">
           Saltar puzzle → <FlowerIcon className="w-3 h-3 text-gold/30" />
         </button>
+        {showDebug && (
         <button onClick={() => setPreviewWin(true)} className="glass px-4 py-1.5 rounded-full text-white/20 text-[10px] tracking-widest uppercase hover:text-white/40 border border-transparent transition-colors flex items-center gap-1.5 self-center order-3 lg:col-span-2 mx-auto" title="Vista previa del aviso">
           Ver aviso
         </button>
+        )}
 
         <AnimatePresence>
           {showWin && (

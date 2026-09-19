@@ -247,6 +247,9 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
     toastTimeout.current = setTimeout(() => setToast(''), 2000)
   }, [])
 
+  // Limpieza: evita setState en componente desmontado desde el toast
+  useEffect(() => () => { clearTimeout(toastTimeout.current) }, [])
+
   const playAudio = useCallback((play) => {
     const a = audioRef.current
     if (!a || !song.src) return
