@@ -523,10 +523,10 @@ export default function MesaFlight({ onDone }) {
         }
       }
 
-      // ── ramo de girasoles: port fiel del demo (20 flores en domo + kraft) ──
+      // ── ramo de girasoles tirado a ras (port fiel demo nuevo) ──
       const bouquet = new THREE.Group()
-      bouquet.position.set(-0.75, 0.03, -1.15) // orilla trasera, entre vela y anillo
-      bouquet.rotation.y = 2.72 // +90° a la derecha
+      bouquet.position.set(-0.65, 0.03, -1.00) // orilla trasera
+      bouquet.rotation.y = -0.91 // flores hacia la izquierda
       const roses = []
       const petalMats = []
       {
@@ -602,7 +602,7 @@ export default function MesaFlight({ onDone }) {
         const mkPetalMat = tint => new THREE.MeshStandardMaterial({
           map:sunPetalTex, color:tint, side:THREE.DoubleSide, roughness:0.82,
           emissive:0xFF9E2E, emissiveIntensity:0 })
-        petalMats.push(mkPetalMat(0xFFFFFF), mkPetalMat(0xFFF0BE), mkPetalMat(0xFFE098))
+        petalMats.push(mkPetalMat(0xFFFFFF), mkPetalMat(0xFFF0BE), mkPetalMat(0xFFE098), mkPetalMat(0xDFA23A))
         const sunLeafMat = new THREE.MeshStandardMaterial({ map:leafTex,
           side:THREE.DoubleSide, roughness:0.9 })
         const seedSide = mat(0x2E1C08, 0.9)
@@ -610,6 +610,7 @@ export default function MesaFlight({ onDone }) {
         const calyxMat = mat(0x4E6B34, 0.9)
         const bractMat = mat(0x53713A, 0.95)
         const stemMat  = mat(0x5E7A3E, 0.9)
+        const babyMat  = mat(0xF7F0DB, 0.9)
 
         /* geometrías base */
         const sunPetalGeo = sanitizeGeometry((() => {
@@ -637,10 +638,29 @@ export default function MesaFlight({ onDone }) {
           return g
         })())
 
-        /* cabeza de girasol: brácteas + 1 corona de 22 pétalos + disco + cáliz */
+        /* cabeza de girasol: doble corona (trasera corta + frontal) + disco + cáliz */
         function makeHead(size){
           const head = new THREE.Group()
           const mPetalRot = new THREE.Matrix4().makeRotationZ(-Math.PI/2)
+          const phase = rnd(0, 6.28)
+
+          /* corona trasera, más corta */
+          const partsC = []
+          for(let i=0;i<22;i++){
+            const a = (i+0.5)/22*6.2832 + phase
+            const L = 0.85*(0.90 + Math.random()*0.15)
+            const m = new THREE.Matrix4().makeRotationZ(a)
+              .multiply(new THREE.Matrix4().makeScale(L,L,L))
+              .multiply(new THREE.Matrix4().makeRotationY(0.50))
+              .multiply(new THREE.Matrix4().makeTranslation(0.19,0,0))
+              .multiply(mPetalRot)
+            partsC.push(sunPetalGeo.clone().applyMatrix4(m))
+          }
+          const back = new THREE.Mesh(sanitizeGeometry(mergeGeometries(partsC)), petalMats[3])
+          back.castShadow = true
+          head.add(back)
+
+          /* brácteas verdes */
           const bractParts = []
           for(let i=0;i<9;i++){
             const a = i/9*6.2832 + rnd(0, 0.35)
@@ -654,7 +674,7 @@ export default function MesaFlight({ onDone }) {
           const bracts = new THREE.Mesh(sanitizeGeometry(mergeGeometries(bractParts)), bractMat)
           bracts.castShadow = true
           head.add(bracts)
-          const phase = rnd(0, 6.28)
+          /* corona frontal, dos tintes alternados (reusa phase) */
           const partsA = [], partsB = []
           for(let i=0;i<22;i++){
             const a  = i/22*6.2832 + phase + (Math.random()-0.5)*0.05
@@ -686,63 +706,104 @@ export default function MesaFlight({ onDone }) {
           return head
         }
 
-        /* envoltura kraft (igual al demo) */
+        /* kraft aplastado y churruscado (igual al demo nuevo) */
         const wrapGroup = new THREE.Group()
-        wrapGroup.position.set(0, 0.18, -0.52)
-        wrapGroup.rotation.x = -0.28
-        wrapGroup.scale.set(1.5, 0.7, 1.5) // cono: boca ancha arriba, punta abajo
+        wrapGroup.position.set(0, 0.28, -0.53)
+        wrapGroup.rotation.x = -0.10
+        wrapGroup.scale.set(1.46, 0.50, 1.01)
         bouquet.add(wrapGroup)
-        const kraft = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
-        const mkWrap = (rT, rB, len, twist) => {
-          const geo = new THREE.CylinderGeometry(rT, rB, len, 12, 1, true)
-          geo.rotateY(twist); geo.rotateX(Math.PI/2)
-          return shadows(new THREE.Mesh(sanitizeGeometry(geo), kraft))
+        const kraft  = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
+        const kraft2 = mat(0xBD9A6B, 0.95, { side:THREE.DoubleSide })
+        const mkWrap = (rT, rB, len, twist, material, crumple) => {
+          const geo = new THREE.CylinderGeometry(rT, rB, len, 18, 6, true)
+          const p = geo.attributes.position
+          for(let i=0;i<p.count;i++){
+            const x = p.getX(i), y = p.getY(i), z = p.getZ(i)
+            const a = Math.atan2(z, x)
+            const t = (y + len/2)/len
+            const n = Math.sin(a*5 + t*9)*0.5 + Math.sin(a*9 - t*15)*0.3 + Math.sin(a*13 + t*23)*0.2
+            const f = 1 + n*crumple
+            p.setX(i, x*f)
+            p.setZ(i, z*f)
+            p.setY(i, y + Math.sin(a*7 + t*11)*crumple*len*0.22)
+          }
+          geo.rotateY(twist)
+          geo.rotateX(Math.PI/2)
+          geo.computeVertexNormals()
+          return shadows(new THREE.Mesh(sanitizeGeometry(geo), material))
         }
-        wrapGroup.add(mkWrap(0.50, 0.03, 0.84, 0.4))
-        wrapGroup.add(mkWrap(0.46, 0.03, 0.74, 2.1))
-        const innerGeo = new THREE.CylinderGeometry(0.12, 0.10, 0.30, 10)
-        innerGeo.rotateX(Math.PI/2)
-        const inner = new THREE.Mesh(sanitizeGeometry(innerGeo), mat(0x6E5638, 1))
-        inner.position.set(0, 0, 0.05); wrapGroup.add(inner)
-        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.022, 8, 26), mat(0xCE452C, 0.7)))
-        ribbon.position.set(0, 0, 0.02); wrapGroup.add(ribbon)
+        wrapGroup.add(mkWrap(0.52, 0.18, 1.05, 0.40, kraft, 0.07))
+        wrapGroup.add(mkWrap(0.47, 0.15, 0.94, 2.30, kraft2, 0.06))
+
+        /* cierre del papel en la punta + tallos cortados asomando */
+        const butt = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.165, 12, 10), kraft2))
+        butt.scale.set(1, 1, 0.72)
+        butt.position.set(0, 0, -0.525)
+        wrapGroup.add(butt)
+        for(let i=0;i<5;i++){
+          const a = i/5*6.2832
+          wrapGroup.add(strut(
+            new THREE.Vector3(Math.cos(a)*0.06, Math.sin(a)*0.06, -0.50),
+            new THREE.Vector3(Math.cos(a)*0.10, Math.sin(a)*0.05 - 0.05, -0.66),
+            0.018, 0.012, stemMat))
+        }
+
+        /* maza de tallos atados dentro de la boca */
+        const massGeo = new THREE.CylinderGeometry(0.34, 0.40, 0.44, 12)
+        massGeo.rotateX(Math.PI/2)
+        const mass = new THREE.Mesh(sanitizeGeometry(massGeo), mat(0x6B5A36, 1))
+        mass.position.set(0, 0, 0.28)
+        wrapGroup.add(mass)
+
+        /* cinta roja + moño */
+        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.40, 0.024, 8, 30), mat(0xCE452C, 0.7)))
+        ribbon.position.set(0, 0, 0.14)
+        wrapGroup.add(ribbon)
         const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), mat(0xCE452C, 0.7)))
-        knot.position.set(0, 0.33, 0.02); wrapGroup.add(knot)
+        knot.position.set(0, -0.12, 0.53); wrapGroup.add(knot)
         for(const s of [1,-1]){
-          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.17, 6), mat(0xCE452C, 0.7)))
-          loop.position.set(0.14*s, 0.34, 0.02)
-          loop.rotation.z = s*1.9
+          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 6), mat(0xCE452C, 0.7)))
+          loop.position.set(0.11*s, -0.13, 0.51)
+          loop.rotation.set(1.2, 0, s*0.5)
           wrapGroup.add(loop)
         }
-        const MOUTH = new THREE.Vector3(0, 0.35, 0.09)
 
-        /* 20 girasoles en domo: 1 centro + 7 + 12 */
+        /* boca, eje y perpendiculares del papel aplastado, en coords del ramo */
+        bouquet.updateMatrixWorld(true)
+        const _q = new THREE.Quaternion().copy(bouquet.quaternion).invert()
+        const MOUTH = new THREE.Vector3(0, 0, 0.525).applyMatrix4(wrapGroup.matrixWorld)
+        bouquet.worldToLocal(MOUTH)
+        const AXIS  = new THREE.Vector3(0,0,1).transformDirection(wrapGroup.matrixWorld).applyQuaternion(_q)
+        const PERP1 = new THREE.Vector3(1,0,0).transformDirection(wrapGroup.matrixWorld).applyQuaternion(_q)
+        const PERP2 = new THREE.Vector3(0,1,0).transformDirection(wrapGroup.matrixWorld).applyQuaternion(_q)
+
+        /* 20 girasoles a ras: caras arriba-adelante, tallos en abanico desde la boca */
         const defs = [
-    { p:[ 0.00, 0.42, 0.32], s:0.85, d:[ 0.00, 0.18] },
-    { p:[ 0.43, 0.34, 0.40], s:0.62, d:[ 0.21, 0.22] },
-    { p:[ 0.19, 0.34, 0.66], s:0.62, d:[ 0.10, 0.46] },
-    { p:[-0.19, 0.34, 0.66], s:0.62, d:[-0.10, 0.46] },
-    { p:[-0.43, 0.34, 0.40], s:0.62, d:[-0.21, 0.22] },
-    { p:[-0.34, 0.33, 0.08], s:0.60, d:[-0.17,-0.09] },
-    { p:[ 0.00, 0.33,-0.06], s:0.60, d:[ 0.00,-0.14] },
-    { p:[ 0.34, 0.33, 0.08], s:0.60, d:[ 0.17,-0.09] },
-    { p:[ 0.00, 0.24, 0.98], s:0.50, d:[ 0.00, 0.50] },
-    { p:[ 0.40, 0.24, 0.89], s:0.50, d:[ 0.20, 0.43] },
-    { p:[ 0.69, 0.24, 0.65], s:0.50, d:[ 0.35, 0.25] },
-    { p:[ 0.80, 0.24, 0.32], s:0.48, d:[ 0.40, 0.00] },
-    { p:[ 0.69, 0.23,-0.01], s:0.48, d:[ 0.35,-0.14] },
-    { p:[ 0.40, 0.23,-0.25], s:0.46, d:[ 0.20,-0.25] },
-    { p:[ 0.00, 0.23,-0.34], s:0.46, d:[ 0.00,-0.30] },
-    { p:[-0.40, 0.23,-0.25], s:0.46, d:[-0.20,-0.25] },
-    { p:[-0.69, 0.23,-0.01], s:0.48, d:[-0.35,-0.14] },
-    { p:[-0.80, 0.24, 0.32], s:0.48, d:[-0.40, 0.00] },
-    { p:[-0.69, 0.24, 0.65], s:0.50, d:[-0.35, 0.25] },
-    { p:[-0.40, 0.24, 0.89], s:0.50, d:[-0.20, 0.43] },
+    { p:[ 0.00, 0.36, 0.30], s:0.85, d:[ 0.00, 1.00, 0.18] },
+    { p:[ 0.44, 0.28, 0.32], s:0.62, d:[ 0.32, 1.00, 0.20] },
+    { p:[ 0.19, 0.29, 0.58], s:0.62, d:[ 0.13, 1.00, 0.48] },
+    { p:[-0.19, 0.29, 0.58], s:0.62, d:[-0.13, 1.00, 0.48] },
+    { p:[-0.44, 0.28, 0.32], s:0.62, d:[-0.32, 1.00, 0.20] },
+    { p:[-0.36, 0.26, 0.04], s:0.60, d:[-0.30, 1.00,-0.05] },
+    { p:[ 0.00, 0.25,-0.04], s:0.60, d:[ 0.00, 1.00,-0.10] },
+    { p:[ 0.36, 0.26, 0.04], s:0.60, d:[ 0.30, 1.00,-0.05] },
+    { p:[ 0.00, 0.13, 1.02], s:0.50, d:[ 0.00, 0.60, 0.80] },
+    { p:[ 0.42, 0.13, 0.93], s:0.50, d:[ 0.26, 0.60, 0.70] },
+    { p:[ 0.73, 0.14, 0.69], s:0.50, d:[ 0.46, 0.60, 0.45] },
+    { p:[ 0.84, 0.14, 0.36], s:0.48, d:[ 0.58, 0.60, 0.10] },
+    { p:[ 0.73, 0.13, 0.05], s:0.48, d:[ 0.48, 0.60,-0.20] },
+    { p:[ 0.42, 0.13,-0.14], s:0.46, d:[ 0.26, 0.65,-0.30] },
+    { p:[ 0.00, 0.24,-0.10], s:0.46, d:[ 0.00, 1.00,-0.18] },
+    { p:[-0.42, 0.13,-0.14], s:0.46, d:[-0.26, 0.65,-0.30] },
+    { p:[-0.73, 0.13, 0.05], s:0.48, d:[-0.48, 0.60,-0.20] },
+    { p:[-0.84, 0.14, 0.36], s:0.48, d:[-0.58, 0.60, 0.10] },
+    { p:[-0.73, 0.14, 0.69], s:0.50, d:[-0.46, 0.60, 0.45] },
+    { p:[-0.42, 0.13, 0.93], s:0.50, d:[-0.26, 0.60, 0.70] },
         ]
         const FACE = new THREE.Vector3(0,0,1)
         const D = new THREE.Vector3()
         for(const def of defs){
-          D.set(def.d[0], 1, def.d[1]).normalize()
+          D.set(def.d[0], def.d[1], def.d[2]).normalize()
           const head = makeHead(def.s)
           head.position.set(...def.p)
           head.quaternion.setFromUnitVectors(FACE, D)
@@ -750,14 +811,84 @@ export default function MesaFlight({ onDone }) {
           head.rotateX(rnd(-0.06, 0.06))
           bouquet.add(head)
           roses.push({ g:head, base:def.s, pulse:0, delay:0 })
-          const end = new THREE.Vector3(...def.p).addScaledVector(D, -0.12)
-          bouquet.add(strut(
-            MOUTH.clone().add(new THREE.Vector3(rnd(-0.10,0.10), rnd(-0.05,0.05), rnd(-0.05,0.05))),
-            end, 0.016, 0.010, stemMat))
+          /* tallo naciendo dentro de la boca aplastada */
+          const th = rnd(0, 6.28), rr = Math.sqrt(Math.random())*0.34
+          const start = MOUTH.clone()
+            .addScaledVector(PERP1, Math.cos(th)*rr*1.35)
+            .addScaledVector(PERP2, Math.sin(th)*rr*0.70)
+            .addScaledVector(AXIS, -rnd(0.05, 0.30))
+          const end = new THREE.Vector3(...def.p).addScaledVector(D, -0.14)
+          bouquet.add(strut(start, end, 0.030, 0.016, stemMat))
         }
 
-        /* capullos cerrados entre las flores */
-        for(const [bx,by,bz,ba] of [[-0.55,0.32,0.50,0.5],[0.58,0.32,0.44,-0.6],[0.10,0.32,1.02,0.15]]){
+        /* collar de hojas rastreras junto a la boca */
+        for(let i=0;i<9;i++){
+          const a = i/9*6.2832 + rnd(0, 0.4)
+          const arm = new THREE.Group()
+          arm.position.set(Math.cos(a)*0.72, 0.28 + Math.sin(a)*0.07, -0.04 + Math.sin(a)*0.55)
+          const dir = new THREE.Vector3(Math.cos(a)*0.95, 0.30, Math.sin(a)*0.75 + 0.15).normalize()
+          arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir)
+          const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
+          leaf.scale.setScalar(rnd(0.70, 0.95))
+          leaf.castShadow = true
+          arm.add(leaf)
+          bouquet.add(arm)
+        }
+        /* hojas intermedias entre anillos */
+        const midLeafDefs = [
+          { p:[ 0.55, 0.18, 0.60], d:[ 0.75, 0.30, 0.55], rx:-1.3, s:0.9 },
+          { p:[-0.55, 0.18, 0.60], d:[-0.75, 0.30, 0.55], rx:-1.3, s:0.9 },
+          { p:[ 0.30, 0.24, 0.85], d:[ 0.35, 0.45, 0.80], rx:-1.2, s:0.8 },
+          { p:[-0.30, 0.24, 0.85], d:[-0.35, 0.45, 0.80], rx:-1.2, s:0.8 },
+          { p:[ 0.70, 0.14, 0.15], d:[ 0.90, 0.18, 0.10], rx:-1.4, s:1.0 },
+          { p:[-0.70, 0.14, 0.15], d:[-0.90, 0.18, 0.10], rx:-1.4, s:1.0 },
+        ]
+        for(const L of midLeafDefs){
+          const arm = new THREE.Group()
+          arm.position.set(...L.p)
+          arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(...L.d).normalize())
+          const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
+          leaf.scale.setScalar(L.s)
+          leaf.rotation.x = L.rx
+          leaf.castShadow = true
+          arm.add(leaf)
+          bouquet.add(arm)
+        }
+
+        /* nube blanca (ramitas sin sombra: diminutas, ahorro de shadow pass) */
+        const makeSprig = () => {
+          const g = new THREE.Group()
+          const n = 6 + Math.floor(rnd(0, 3))
+          for(let i=0;i<n;i++){
+            const a = i/n*6.2832 + rnd(0, 0.7)
+            const tilt = rnd(0.55, 1.10)
+            const len = rnd(0.13, 0.26)
+            const sdir = new THREE.Vector3(Math.cos(a)*Math.sin(tilt), Math.cos(tilt), Math.sin(a)*Math.sin(tilt))
+            const tip = sdir.multiplyScalar(len)
+            const twig = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.005, tip.length(), 5), stemMat)
+            twig.position.copy(tip).multiplyScalar(0.5)
+            twig.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), tip.clone().normalize())
+            g.add(twig)
+            const bud = new THREE.Mesh(new THREE.SphereGeometry(rnd(0.02, 0.033), 6, 5), babyMat)
+            bud.position.copy(tip)
+            g.add(bud)
+          }
+          return g
+        }
+        const sprigDefs = [
+          [ 0.26, 0.24, 0.12],[-0.26, 0.24, 0.16],[ 0.60, 0.16, 0.60],[-0.60, 0.16, 0.58],
+          [ 0.16, 0.28, 0.70],[-0.14, 0.26, 0.72],[ 0.82, 0.14, 0.10],[-0.82, 0.14, 0.12],
+          [ 0.45, 0.13, 1.00],[-0.45, 0.13, 0.98],[ 0.05, 0.30, 0.32],[ 0.86, 0.16, 0.78],
+        ]
+        for(const p of sprigDefs){
+          const s = makeSprig()
+          s.position.set(...p)
+          s.rotation.set(rnd(-0.2, 0.2), rnd(0, 6.28), rnd(-0.25, 0.25))
+          bouquet.add(s)
+        }
+
+        /* capullos cerrados */
+        for(const [bx,by,bz,ba] of [[-0.58,0.28,0.50,0.5],[0.60,0.28,0.44,-0.6],[0.12,0.30,1.00,0.15]]){
           const bud = new THREE.Group()
           const pod = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 8), calyxMat))
           pod.scale.set(1, 0.85, 1); bud.add(pod)
@@ -776,15 +907,15 @@ export default function MesaFlight({ onDone }) {
           bouquet.add(bud)
         }
 
-        /* hojas caídas, pegadas al ramo (igual al demo) */
+        /* las 7 hojas caídas sobre la mesa */
         const leafDefs = [
-          { p:[-1.00, 0.10, 0.30], a: 2.40, x:-1.55, s:1.15 },
-          { p:[ 1.05, 0.10, 0.40], a:-1.00, x:-1.62, s:1.05 },
-          { p:[-0.75, 0.10, 1.00], a: 3.00, x:-1.45, s:0.95 },
-          { p:[ 0.80, 0.10, 1.05], a:-2.40, x:-1.75, s:1.10 },
-          { p:[-0.15, 0.10, 1.35], a: 0.50, x:-1.50, s:0.90 },
-          { p:[ 1.35, 0.10, 0.75], a:-1.90, x:-1.70, s:1.00 },
-          { p:[-1.30, 0.10, 0.70], a: 1.60, x:-1.60, s:1.00 },
+          { p:[-1.00, 0.04, 0.30], a: 2.40, x:-1.62, s:1.15 },
+          { p:[ 1.05, 0.04, 0.40], a:-1.00, x:-1.62, s:1.05 },
+          { p:[-0.75, 0.04, 1.00], a: 3.00, x:-1.55, s:0.95 },
+          { p:[ 0.80, 0.04, 1.05], a:-2.40, x:-1.62, s:1.10 },
+          { p:[-0.15, 0.04, 1.35], a: 0.50, x:-1.50, s:0.90 },
+          { p:[ 1.35, 0.04, 0.75], a:-1.90, x:-1.62, s:1.00 },
+          { p:[-1.30, 0.04, 0.70], a: 1.60, x:-1.55, s:1.00 },
         ]
         for(const L of leafDefs){
           const arm = new THREE.Group()
@@ -799,7 +930,7 @@ export default function MesaFlight({ onDone }) {
         }
       }
       scene.add(bouquet)
-      register('bouquet', bouquet, 1.1)
+      register('bouquet', bouquet, 1.3)
 
       // ── carta ──
       const letterGroup = new THREE.Group()
@@ -1175,7 +1306,7 @@ export default function MesaFlight({ onDone }) {
       const wingL = buildWingSide(); wingL.group.position.y = 0.10; wingL.group.scale.x = -1
       butterfly.add(wingR.group, wingL.group)
 
-      const perchPos = new THREE.Vector3(-0.60, 0.65, -1.42)
+      const perchPos = new THREE.Vector3(-0.87, 0.60, -0.80)
       butterfly.position.copy(perchPos)
       butterfly.rotation.y = 0.62
       scene.add(butterfly)
@@ -1272,7 +1403,7 @@ export default function MesaFlight({ onDone }) {
         butterfly:{ p:[2.6, 3.4, 4.8],   t:[0, 2.0, -0.4] },
         ring:     { p:[-0.1, 1.25, 2.6], t:[-1.25, 0.45, 1.05] },
         letter:   { p:[0.95, 1.7, 3.1],  t:[0.72, 0.12, 1.18] },
-        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.62, 0.40, -1.44] },
+        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.89, 0.35, -0.82] },
         candles:  { p:[3.2, 1.5, 1.2],   t:[1.55, 0.7, -0.85] },
         box:      { p:[3.0, 1.35, 1.9],  t:[2.25, 0.15, 0.55] },
       }
