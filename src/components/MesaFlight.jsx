@@ -525,7 +525,7 @@ export default function MesaFlight({ onDone }) {
 
       // ── ramo de girasoles: port fiel del demo (20 flores en domo + kraft) ──
       const bouquet = new THREE.Group()
-      bouquet.position.set(-0.52, 0.03, -0.89) // orilla entre vela y anillo
+      bouquet.position.set(-0.75, 0.03, -1.15) // orilla trasera, entre vela y anillo
       bouquet.rotation.y = 0.35 // misma orientación del demo
       const roses = []
       const petalMats = []
@@ -688,8 +688,9 @@ export default function MesaFlight({ onDone }) {
 
         /* envoltura kraft (igual al demo) */
         const wrapGroup = new THREE.Group()
-        wrapGroup.position.set(0, 0.34, -0.52)
+        wrapGroup.position.set(0, 0.26, -0.52)
         wrapGroup.rotation.x = -0.28
+        wrapGroup.scale.setScalar(1.5) // base grande, fondo tocando mesa
         bouquet.add(wrapGroup)
         const kraft = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
         const mkWrap = (rT, rB, len, twist) => {
@@ -713,7 +714,7 @@ export default function MesaFlight({ onDone }) {
           loop.rotation.z = s*1.9
           wrapGroup.add(loop)
         }
-        const MOUTH = new THREE.Vector3(0, 0.48, 0.0)
+        const MOUTH = new THREE.Vector3(0, 0.48, 0.24)
 
         /* 20 girasoles en domo: 1 centro + 7 + 12 */
         const defs = [
@@ -1174,7 +1175,7 @@ export default function MesaFlight({ onDone }) {
       const wingL = buildWingSide(); wingL.group.position.y = 0.10; wingL.group.scale.x = -1
       butterfly.add(wingR.group, wingL.group)
 
-      const perchPos = new THREE.Vector3(-0.39, 0.95, -0.57)
+      const perchPos = new THREE.Vector3(-0.62, 0.95, -0.83)
       butterfly.position.copy(perchPos)
       butterfly.rotation.y = 0.62
       scene.add(butterfly)
@@ -1271,7 +1272,7 @@ export default function MesaFlight({ onDone }) {
         butterfly:{ p:[2.6, 3.4, 4.8],   t:[0, 2.0, -0.4] },
         ring:     { p:[-0.1, 1.25, 2.6], t:[-1.25, 0.45, 1.05] },
         letter:   { p:[0.95, 1.7, 3.1],  t:[0.72, 0.12, 1.18] },
-        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.41, 0.7, -0.55] },
+        bouquet:  { p:[0.4, 2.05, 1.8],  t:[-0.64, 0.7, -0.85] },
         candles:  { p:[3.2, 1.5, 1.2],   t:[1.55, 0.7, -0.85] },
         box:      { p:[3.0, 1.35, 1.9],  t:[2.25, 0.15, 0.55] },
       }
