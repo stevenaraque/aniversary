@@ -755,49 +755,43 @@ export default function MesaFlight({ onDone }) {
         mass.position.set(0, 0, 0.28)
         wrapGroup.add(mass)
 
-        /* cinta roja + moño */
-        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.40, 0.024, 8, 30), mat(0xCE452C, 0.7)))
-        ribbon.position.set(0, 0, 0.14)
-        wrapGroup.add(ribbon)
-        /* ---------- MOÑO (reemplaza el knot y los loops antiguos) ---------- */
+        /* ---------- MOÑO esponjoso (en el lugar del lazo) ---------- */
         const bowGroup = new THREE.Group()
-        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.65, side:THREE.DoubleSide })
-        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0xB23A20, roughness:0.70, side:THREE.DoubleSide })
+        const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.6, side:THREE.DoubleSide })
+        const ribbonMatDark = new THREE.MeshStandardMaterial({ color:0xA82E18, roughness:0.65, side:THREE.DoubleSide })
 
-        /* las dos lazadas — toros parciales aplastados e inclinados */
+        /* lazadas rellenas: esferas aplastadas en V, como alas */
         for(const s of [1,-1]){
-          const loop = shadows(new THREE.Mesh(
-            new THREE.TorusGeometry(0.085, 0.030, 10, 24, Math.PI*1.25), ribbonMat))
-          loop.scale.set(1, 0.62, 0.5)
-          loop.position.set(0.085*s, 0.02, 0)
-          loop.rotation.set(0.15, s*0.35, s*0.45)
+          const loop = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 12), ribbonMat))
+          loop.scale.set(1.5, 0.72, 0.55)
+          loop.position.set(0.115*s, 0.035, -0.01)
+          loop.rotation.set(0.1, s*0.35, -s*0.38)
           bowGroup.add(loop)
         }
 
-        /* nudo central achatado */
-        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.042, 12, 10), ribbonMat))
-        knot.scale.set(1, 0.8, 0.75)
+        /* nudo central */
+        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.062, 12, 10), ribbonMat))
+        knot.scale.set(1.15, 0.85, 0.7)
         bowGroup.add(knot)
 
-        /* colas con punta en V (cinta cortada en pico) */
+        /* colas con punta en V */
         const tailShape = new THREE.Shape()
-        tailShape.moveTo(-0.035, 0)
-        tailShape.lineTo( 0.035, 0)
-        tailShape.lineTo( 0.035, -0.16)
-        tailShape.lineTo( 0,     -0.125)
-        tailShape.lineTo(-0.035, -0.16)
+        tailShape.moveTo(-0.045, 0)
+        tailShape.lineTo( 0.045, 0)
+        tailShape.lineTo( 0.045, -0.20)
+        tailShape.lineTo( 0,     -0.155)
+        tailShape.lineTo(-0.045, -0.20)
         tailShape.closePath()
         const tailGeo = new THREE.ShapeGeometry(tailShape, 4)
         for(const s of [1,-1]){
           const tail = shadows(new THREE.Mesh(tailGeo, ribbonMatDark))
-          tail.position.set(0.028*s, -0.01, 0.008)
-          tail.rotation.set(0.10, s*0.5, s*0.28)
+          tail.position.set(0.038*s, -0.045, 0.012)
+          tail.rotation.set(0.12, s*0.4, s*0.22)
           bowGroup.add(tail)
         }
 
-        /* posición: sobre el lazo rojo, bien grueso */
-        bowGroup.position.set(0, 0.55, 0.20)
-        bowGroup.scale.setScalar(2.0)   /* sube o baja este valor para agrandar/achicar */
+        /* sobre el frente del kraft, donde iba el lazo */
+        bowGroup.position.set(0, 0.42, 0.30)
         wrapGroup.add(bowGroup)
 
         /* boca, eje y perpendiculares del papel aplastado, en coords del ramo */
