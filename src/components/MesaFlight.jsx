@@ -690,35 +690,35 @@ export default function MesaFlight({ onDone }) {
           return head
         }
 
-        /* envoltura kraft */
+        /* envoltura kraft de pie: cono bajo sobre la mesa, boca ancha arriba */
         const wrapGroup = new THREE.Group()
-        wrapGroup.position.set(0, 0.26, -0.52)
-        wrapGroup.rotation.x = -0.28
-        wrapGroup.scale.setScalar(1.55) // kraft proporcionado al domo de 20 flores
+        wrapGroup.position.set(0, 0, 0.25)
         bouquet.add(wrapGroup)
         const kraft = mat(0xC9A87C, 0.95, { side:THREE.DoubleSide })
-        const mkWrap = (rT, rB, len, twist) => {
+        const mkWrap = (rT, rB, len, y, twist) => {
           const geo = new THREE.CylinderGeometry(rT, rB, len, 12, 1, true)
-          geo.rotateY(twist); geo.rotateX(Math.PI/2)
-          return shadows(new THREE.Mesh(sanitizeGeometry(geo), kraft))
+          geo.rotateY(twist)
+          const m = shadows(new THREE.Mesh(sanitizeGeometry(geo), kraft))
+          m.position.y = y
+          return m
         }
-        wrapGroup.add(mkWrap(0.52, 0.18, 1.05, 0.4))
-        wrapGroup.add(mkWrap(0.48, 0.16, 0.92, 2.1))
-        const innerGeo = new THREE.CylinderGeometry(0.20, 0.15, 0.5, 10)
-        innerGeo.rotateX(Math.PI/2)
+        wrapGroup.add(mkWrap(0.62, 0.20, 0.45, 0.255, 0.4))
+        wrapGroup.add(mkWrap(0.58, 0.18, 0.40, 0.27, 2.1))
+        const innerGeo = new THREE.CylinderGeometry(0.20, 0.16, 0.30, 10)
         const inner = new THREE.Mesh(sanitizeGeometry(innerGeo), mat(0x6E5638, 1))
-        inner.position.set(0, 0, 0.22); wrapGroup.add(inner)
-        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.022, 8, 26), mat(0xCE452C, 0.7)))
-        ribbon.position.set(0, 0, 0.02); wrapGroup.add(ribbon)
-        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), mat(0xCE452C, 0.7)))
-        knot.position.set(0, 0.33, 0.02); wrapGroup.add(knot)
+        inner.position.y = 0.30; wrapGroup.add(inner)
+        const ribbonGeo = new THREE.TorusGeometry(0.46, 0.024, 8, 26); ribbonGeo.rotateX(Math.PI/2)
+        const ribbon = shadows(new THREE.Mesh(ribbonGeo, mat(0xCE452C, 0.7)))
+        ribbon.position.y = 0.30; wrapGroup.add(ribbon)
+        const knot = shadows(new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), mat(0xCE452C, 0.7)))
+        knot.position.set(0, 0.35, 0.47); wrapGroup.add(knot)
         for(const s of [1,-1]){
-          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.17, 6), mat(0xCE452C, 0.7)))
-          loop.position.set(0.14*s, 0.34, 0.02)
-          loop.rotation.z = s*1.9
+          const loop = shadows(new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.18, 6), mat(0xCE452C, 0.7)))
+          loop.position.set(0.15*s, 0.37, 0.48)
+          loop.rotation.z = s*1.9; loop.rotation.x = 0.5
           wrapGroup.add(loop)
         }
-        const MOUTH = new THREE.Vector3(0, 0.48, 0.26)
+        const MOUTH = new THREE.Vector3(0, 0.45, 0.25)
 
         /* 20 girasoles en domo: 1 centro + 7 + 12 */
         const defs = [
@@ -809,23 +809,15 @@ export default function MesaFlight({ onDone }) {
           bouquet.add(bud)
         }
 
-        /* hojas caídas pegadas al ramo */
-        const leafDefs = [
-          { p:[-1.00, 0.10, 0.30], a: 2.40, x:-1.55, s:1.15 },
-          { p:[ 1.05, 0.10, 0.40], a:-1.00, x:-1.62, s:1.05 },
-          { p:[-0.75, 0.10, 1.00], a: 3.00, x:-1.45, s:0.95 },
-          { p:[ 0.80, 0.10, 1.05], a:-2.40, x:-1.75, s:1.10 },
-          { p:[-0.15, 0.10, 1.35], a: 0.50, x:-1.50, s:0.90 },
-          { p:[ 1.35, 0.10, 0.75], a:-1.90, x:-1.70, s:1.00 },
-          { p:[-1.30, 0.10, 0.70], a: 1.60, x:-1.60, s:1.00 },
-        ]
-        for(const L of leafDefs){
+        /* hojas en cascada desde el borde del kraft */
+        for(let i=0;i<7;i++){
+          const a0 = i/7*6.2832 + 0.3
           const arm = new THREE.Group()
-          arm.position.set(...L.p)
-          arm.rotation.y = L.a
+          arm.position.set(0.55*Math.cos(a0), 0.55, 0.25 + 0.55*Math.sin(a0))
+          arm.rotation.y = Math.atan2(-Math.cos(a0), -Math.sin(a0))
           const leaf = new THREE.Mesh(sunLeafGeo, sunLeafMat)
-          leaf.scale.setScalar(L.s)
-          leaf.rotation.x = L.x
+          leaf.scale.setScalar(0.95 + (i%3)*0.08)
+          leaf.rotation.x = -2.2 + (i%2)*0.15
           leaf.castShadow = true
           arm.add(leaf)
           bouquet.add(arm)
