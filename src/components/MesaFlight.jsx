@@ -755,6 +755,10 @@ export default function MesaFlight({ onDone }) {
         mass.position.set(0, 0, 0.28)
         wrapGroup.add(mass)
 
+        /* lazo rojo alrededor del kraft + moño */
+        const ribbon = shadows(new THREE.Mesh(new THREE.TorusGeometry(0.40, 0.024, 8, 30), mat(0xCE452C, 0.7)))
+        ribbon.position.set(0, 0, 0.14)
+        wrapGroup.add(ribbon)
         /* ---------- MOÑO (reemplaza el knot y los loops antiguos) ---------- */
         const bowGroup = new THREE.Group()
         const ribbonMat     = new THREE.MeshStandardMaterial({ color:0xCE452C, roughness:0.65, side:THREE.DoubleSide })
