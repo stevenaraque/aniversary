@@ -49,6 +49,17 @@ export default function MemoryLane({ memories: _memories = PLACEHOLDER_MEMORIES,
   })
   const isAllRead = readSet.size >= memories.length
   useEffect(() => {
+    const id = setTimeout(() => {
+      setCurrent((c) => Math.min(c, Math.max(memories.length - 1, 0)))
+      setReadSet((prev) => {
+        const next = new Set([...prev].filter((n) => typeof n === 'number' && n >= 0 && n < memories.length))
+        if (next.size === prev.size && [...next].every((n) => prev.has(n))) return prev
+        return next
+      })
+    }, 0)
+    return () => clearTimeout(id)
+  }, [memories.length])
+  useEffect(() => {
     try { localStorage.setItem(LS_KEY, JSON.stringify([...readSet])) } catch {}
   }, [readSet])
   const handleShowDesc = () => { setReadSet(prev => { const n = new Set(prev); n.add(current); return n }); setShowDesc(true) }

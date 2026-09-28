@@ -265,17 +265,8 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
     const id = setInterval(() => {
       const s = list[currentRef.current]
       if (playingRef.current && (!audioRef.current || !audioRef.current.src || !s.src)) {
-        setProgress(p => {
-          const next = p + 0.1
-          if (next >= s.seconds) {
-            if (repeatRef.current) {
-              return 0
-            }
-            goNext()
-            return 0
-          }
-          return next
-        })
+        const cap = s.seconds || 0
+        setProgress(p => Math.min(p + 0.1, cap))
         // perf: la onda la mueve su propio intervalo (180ms), no este de 100ms
       }
     }, 100)
@@ -305,6 +296,20 @@ export default function Playlist({ songs = DEFAULT_SONGS, onPrev, onNext, onRese
     const a = audioRef.current
     if (a && list[idx].src) { a.src = list[idx].src; if (playingRef.current) a.play().catch(() => {}) }
   }, [list])
+
+  // Avance a siguiente canción cuando el progreso simulado alcanza el total (updater puro arriba)
+  useEffect(() => {
+    const s = list[current]
+    if (!isPlaying || !s?.seconds) return
+    if (audioRef.current?.src && s.src) return
+    if (progress >= s.seconds) {
+      if (repeatRef.current) {
+        setProgress(0)
+      } else {
+        goNext()
+      }
+    }
+  }, [progress, isPlaying, current, list, goNext])
 
   const goPrev = useCallback(() => {
     let idx
